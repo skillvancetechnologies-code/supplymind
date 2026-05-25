@@ -1,4 +1,4 @@
-!pip install optuna
+
 
 import pandas as pd
 df_s = pd.read_csv('suppliers.csv')
