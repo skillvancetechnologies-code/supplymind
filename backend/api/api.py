@@ -16,7 +16,7 @@ nest_asyncio.apply()
 import os
 engine = create_engine(
     os.environ.get("DATABASE_URL", 
-    "postgresql://postgres:skillvance2025@localhost:5432/postgres")
+    "postgresql://YOURNAME:YOURPASSWORD@localhost:5432/postgres")
 )
 
 # FastAPI app
