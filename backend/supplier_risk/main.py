@@ -604,6 +604,10 @@ df = pd.read_csv("supplier_performance.csv")
 
 app = FastAPI(title="Supplier Risk API")
 
+@app.get("/")
+def home():
+    return {"message": "Supplier Risk API Running"}
+
 # ---------------------------------------------------
 # INPUT SCHEMA
 # ---------------------------------------------------
@@ -672,7 +676,7 @@ def get_risk_tier(score):
 # API ENDPOINT
 # ---------------------------------------------------
 
-@app.post("/api/supplier-risk")
+@app.get("/api/supplier-risk")
 def supplier_risk(request: SupplierRequest):
 
     result = compute_supplier_features(request.supplier_id)
@@ -906,7 +910,7 @@ def get_risk_tier(score):
 # API ENDPOINT
 # ---------------------------------------------------
 
-@app.post("/api/supplier-risk")
+@app.get("/api/supplier-risk")
 def supplier_risk(request: SupplierRequest):
 
     features_df, lt_trend, avg_quality_reject, avg_fill_rate, avg_capacity_util = compute_supplier_features(request.supplier_id)
