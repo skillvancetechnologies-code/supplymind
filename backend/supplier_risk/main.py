@@ -513,7 +513,7 @@ for sup_id in df_perf['supplier_id'].unique():
     })
 
 df_otif_slope = pd.DataFrame(supplier_features)
-display(df_otif_slope.head())
+print(df_otif_slope.head())
 
 import pandas as pd
 df_perf = pd.read_csv('supplier_performance.csv')
