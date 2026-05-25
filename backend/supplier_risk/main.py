@@ -573,7 +573,7 @@ joblib.dump(best_model, 'supplier_risk_model.pkl')
 joblib.dump(scaler_final, 'supplier_risk_scaler.pkl')
 print("Model and scaler saved successfully!")
 
-!pip install pyngrok nest_asyncio
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
