@@ -1,21 +1,8 @@
-export const USE_MOCK = true
+export const USE_MOCK = false
 
-export const RESPONSE_PLAN_API =
-'https://watch-marsupial-rummage.ngrok-free.dev/api/response-plan'
-
-export const SUPPLIER_RISK_API =
-'https://disprove-gains-prognosis.ngrok-free.dev/api/supplier-risk'
-
-export const FORECAST_API =
-'https://hurdle-culprit-felt-tip.ngrok-free.dev/api/forecast'
-
-
-/* =========================
-   PAVAN APIs
-========================= */
-
+/* Pavan Render URL */
 export const BASE_URL =
-'https://numerator-cataract-bloating.ngrok-free.dev'
+'https://pavan-render-url.onrender.com'
 
 export const INVENTORY_API =
 `${BASE_URL}/api/analytics/inventory-summary`
@@ -28,3 +15,18 @@ export const SUPPLIER_API =
 
 export const DISRUPTION_API =
 `${BASE_URL}/api/analytics/disruption-risks`
+
+
+/* Karthi Render URL */
+export const RESPONSE_PLAN_API =
+'https://supplymind-response-engine.onrender.com/api/response-plan'
+
+
+/* Dhanush Render URL */
+export const SUPPLIER_RISK_API =
+'https://dhanush-render-url.onrender.com/api/supplier-risk'
+
+
+/* Rahul Render URL */
+export const FORECAST_API =
+'https://supplymind-forecast-api.onrender.com/api/forecast'

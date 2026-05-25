@@ -657,14 +657,19 @@ const Forecasts = () => {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'ngrok-skip-browser-warning':'true'
+        
       },
       body:JSON.stringify({
         sku_id:skuId,
         forecast_days:Number(forecastDays)
       })
     })
-      .then(r => r.json())
+      .then(r => {
+  if (!r.ok) {
+    throw new Error('Forecast API failed')
+  }
+  return r.json()
+})
       .then(data => {
         console.log('Rahul Forecast API:', data)
         setForecastResult(data)
@@ -1105,13 +1110,20 @@ ${mock.checklist.join('\n')}
     // REAL API CALL
     const response = await fetch(RESPONSE_PLAN_API, {
       method:'POST',
-      headers:{
-  'Content-Type':'application/json',
-  'ngrok-skip-browser-warning':'true'
+    headers:{
+  'Content-Type':'application/json'
 },
-      body:JSON.stringify({
-        sku:item.sku_name
-      })
+body:JSON.stringify({
+  disruption_type:'Stock Risk',
+  sku_name:item.sku_name,
+  category:item.category,
+  closing_stock_units:item.closing_stock_units || 100,
+  daily_consumption_units:20,
+  days_of_cover:item.days_of_cover,
+  otif_percentage:70,
+  lead_time_days:10,
+  alternate_supplier:'Backup Supplier'
+})
     })
 
     // BACKEND FAILURE
@@ -1120,23 +1132,14 @@ ${mock.checklist.join('\n')}
     }
 
     const data = await response.json()
+    console.log('Karthi Live API response:', data)
 
 setResponsePlan(`
-Situation Summary:
-${data?.summary || data?.situation_summary || data?.plan_summary || 'No summary returned'}
-
-Immediate Actions:
-${Array.isArray(data?.actions) ? data.actions.join('\n') : data?.actions || data?.immediate_actions || 'No actions returned'}
-Alternate Supplier:
-${data.alternateSupplier || data.alternate_supplier || 'No alternate supplier returned'}
+${data.plan}
 
 Recommended Reorder Quantity:
-${data.reorderQuantity || data.reorder_quantity || 'No reorder quantity returned'}
-
-Monitoring Checklist:
-${Array.isArray(data.checklist) ? data.checklist.join('\n') : data.checklist || data.monitoring_checklist || 'No checklist returned'}
+${data.reorder_qty}
 `)
-
   } catch (error) {
 
     console.log('API failed. Using mock fallback.')
