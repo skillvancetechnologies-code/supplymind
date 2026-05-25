@@ -736,7 +736,7 @@ print("Swagger URL:")
 print(public_url)
 print("API is running! You can access it via the ngrok URL.")
 
-!pip install optuna -q
+
 
 import optuna
 from sklearn.model_selection import cross_val_score
@@ -811,7 +811,7 @@ joblib.dump(best_model, 'supplier_risk_model.pkl')
 joblib.dump(scaler_final, 'supplier_risk_scaler.pkl')
 print("Model and scaler saved successfully!")
 
-!pip install pyngrok nest_asyncio
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
