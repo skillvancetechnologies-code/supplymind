@@ -13,8 +13,10 @@ import nest_asyncio
 nest_asyncio.apply()
 
 # PostgreSQL connection
+import os
 engine = create_engine(
-    'postgresql://YOUR_USERNAME:YOUR_PASSWORD@localhost:5432/postgres'
+    os.environ.get("DATABASE_URL", 
+    "postgresql://postgres:skillvance2025@localhost:5432/postgres")
 )
 
 # FastAPI app
@@ -24,7 +26,7 @@ app = FastAPI(title="SupplyMind Analytics API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -294,7 +296,11 @@ def supplier_risks():
     return result.to_dict(orient='records')
 
 
-@app.get("/api/analytics/forecast-accuracy")
+@app.get(
+    "/api/analytics/forecast-accuracy",
+    summary="Forecast Accuracy Metrics",
+    description="Returns 30-day MAPE forecast accuracy metrics for all SKUs"
+)
 def forecast_accuracy():
 
     try:
@@ -376,11 +382,17 @@ def forecast_accuracy():
         return {"error": str(e)}
 
 
-@app.get("/api/analytics/inventory-summary")
+@app.get(
+    "/api/analytics/inventory-summary",
+    summary="Inventory Health Summary",
+    description="Returns inventory risk KPIs and top critical SKUs"
+)
 def inventory_summary():
 
     try:
-
+       # Thresholds adjusted because this dataset
+       # has high baseline inventory coverage.
+       # Below 14 days is treated as critical risk.
         summary = pd.read_sql("""
             SELECT
                 COUNT(DISTINCT sku_id)
@@ -455,4 +467,5 @@ def inventory_summary():
         return {"error": str(e)}
 
 
-uvicorn.run(app, host="0.0.0.0", port=8001)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
