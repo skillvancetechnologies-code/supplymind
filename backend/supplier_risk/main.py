@@ -879,7 +879,12 @@ lr.fit(X, y)
 
 otif_slope_3m = lr.coef_[0]
     # Lead time trend
-    lt_trend = (last3['avg_lead_time_days'].mean() - prev3['avg_lead_time_days'].mean())
+    prev3 = supplier_df.iloc[-6:-3]
+
+lt_trend = (
+    last3['avg_lead_time_days'].mean()
+    - prev3['avg_lead_time_days'].mean()
+)
 
     # Other features (averages over last 3 months)
     avg_quality_reject = last3['quality_reject_rate_pct'].mean()
