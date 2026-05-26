@@ -7,3 +7,4 @@ pyngrok
 nest_asyncio
 joblib
 optuna
+requests
