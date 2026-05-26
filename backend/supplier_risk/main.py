@@ -860,38 +860,45 @@ def compute_supplier_features(supplier_id):
 
     supplier_df = df[df["supplier_id"] == supplier_id].copy()
 
-    if len(supplier_df) < 6: # Need at least 6 months for trends
-        return None, None, None, None, None # Return None for all values if insufficient data
+    # Need at least 6 months
+    if len(supplier_df) < 6:
+        return None
 
     supplier_df = supplier_df.sort_values("month")
 
+    # Last 6 months
     last6 = supplier_df.tail(6)
-    last3 = last6.tail(3)
+
+    # Split into previous 3 and latest 3
     prev3 = last6.head(3)
-            # OTIF slope (last 3 months)
-last3 = supplier_df.tail(3)
+    last3 = last6.tail(3)
 
-X = np.arange(len(last3)).reshape(-1, 1)
-y = last3["otif_percentage"].values
+    # Current OTIF
+    current_otif = last3["otif_percentage"].iloc[-1]
 
-lr = LinearRegression()
-lr.fit(X, y)
+    # OTIF slope (trend)
+    X = np.arange(len(last3)).reshape(-1, 1)
+    y = last3["otif_percentage"].values
 
-otif_slope_3m = lr.coef_[0]
+    lr = LinearRegression()
+    lr.fit(X, y)
+
+    otif_slope_3m = lr.coef_[0]
+
     # Lead time trend
-    prev3 = supplier_df.iloc[-6:-3]
+    lt_trend = (
+        last3["avg_lead_time_days"].mean()
+        - prev3["avg_lead_time_days"].mean()
+    )
 
-lt_trend = (
-    last3['avg_lead_time_days'].mean()
-    - prev3['avg_lead_time_days'].mean()
-)
+    # Other features
+    avg_quality_reject = last3["quality_reject_rate_pct"].mean()
 
-    # Other features (averages over last 3 months)
-    avg_quality_reject = last3['quality_reject_rate_pct'].mean()
-    avg_fill_rate = last3['fill_rate_pct'].mean()
-    avg_capacity_util = last3['capacity_utilization_pct'].mean()
+    avg_fill_rate = last3["fill_rate_pct"].mean()
 
-    # Compile features for prediction
+    avg_capacity_util = last3["capacity_utilization_pct"].mean()
+
+    # Feature dataframe
     features = pd.DataFrame([
         {
             "lead_time_trend": round(lt_trend, 2),
@@ -901,9 +908,7 @@ lt_trend = (
         }
     ])
 
-    # Also return raw values for potential risk explanation
     return features, otif_slope_3m, current_otif
-
 # ---------------------------------------------------
 # RISK TIER FUNCTION
 # ---------------------------------------------------
