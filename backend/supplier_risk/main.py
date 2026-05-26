@@ -650,16 +650,25 @@ def compute_supplier_features(supplier_id):
     reject_rate = supplier_df["quality_reject_rate_pct"].mean()
     capacity_util = supplier_df["capacity_utilization_pct"].mean()
 
-   # Ensure correct feature order
-features = features[[
-    "otif_slope_3m",
-    "current_otif",
-    "avg_lead_time_days",
-    "quality_reject_rate_pct",
-    "capacity_utilization_pct"
-]]
+    # Create feature dataframe
+    features = pd.DataFrame([{
+        "otif_slope_3m": otif_slope_3m,
+        "current_otif": current_otif,
+        "avg_lead_time_days": avg_lead_time,
+        "quality_reject_rate_pct": reject_rate,
+        "capacity_utilization_pct": capacity_util
+    }])
 
-     return features, otif_slope_3m, current_otif
+    # Ensure correct feature order
+    features = features[[
+        "otif_slope_3m",
+        "current_otif",
+        "avg_lead_time_days",
+        "quality_reject_rate_pct",
+        "capacity_utilization_pct"
+    ]]
+
+    return features, otif_slope_3m, current_otif
 # ---------------------------------------------------
 # RISK TIER FUNCTION
 # ---------------------------------------------------
