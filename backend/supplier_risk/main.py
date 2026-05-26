@@ -703,13 +703,7 @@ def get_supplier_risk(supplier_id: str):
 
         features, otif_slope_3m, current_otif = result
 
-        features_df = features[[
-            "otif_slope_3m",
-            "current_otif",
-            "avg_lead_time_days",
-            "quality_reject_rate_pct",
-            "capacity_utilization_pct"
-        ]]
+        features_df = features
 
         scaled = scaler.transform(features_df)
 
@@ -943,14 +937,7 @@ def get_supplier_risk(supplier_id: str):
 
         features, otif_slope_3m, current_otif = result
 
-        features_df = features[[
-            "otif_slope_3m",
-            "current_otif",
-            "avg_lead_time_days",
-            "quality_reject_rate_pct",
-            "capacity_utilization_pct"
-        ]]
-
+       features_df = features
         scaled = scaler.transform(features_df)
 
         prediction = model.predict(scaled)[0]
