@@ -600,7 +600,13 @@ df = pd.read_csv("supplier_performance.csv")
 # ---------------------------------------------------
 
 app = FastAPI(title="Supplier Risk API")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # or ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get("/")
 def home():
     return {"message": "Supplier Risk API Running"}
@@ -820,6 +826,13 @@ df = pd.read_csv("supplier_performance.csv")
 # ---------------------------------------------------
 
 app = FastAPI(title="Supplier Risk API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # or ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get("/")
 def home():
     return {"message": "Supplier Risk API Running"}
