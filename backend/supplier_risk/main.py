@@ -581,7 +581,7 @@ import numpy as np
 import joblib
 from sklearn.linear_model import LinearRegression
 import uvicorn
-
+from fastapi.middleware.cors import CORSMiddleware
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
@@ -806,7 +806,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import uvicorn
-
+from fastapi.middleware.cors import CORSMiddleware
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
