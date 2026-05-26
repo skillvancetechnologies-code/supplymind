@@ -888,7 +888,7 @@ def compute_supplier_features(supplier_id):
     ])
 
     # Also return raw values for potential risk explanation
-    return features, lt_trend, avg_quality_reject, avg_fill_rate, avg_capacity_util
+    return features, otif_slope_3m, current_otif
 
 # ---------------------------------------------------
 # RISK TIER FUNCTION
