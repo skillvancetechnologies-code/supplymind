@@ -868,7 +868,16 @@ def compute_supplier_features(supplier_id):
     last6 = supplier_df.tail(6)
     last3 = last6.tail(3)
     prev3 = last6.head(3)
+            # OTIF slope (last 3 months)
+last3 = supplier_df.tail(3)
 
+X = np.arange(len(last3)).reshape(-1, 1)
+y = last3["otif_percentage"].values
+
+lr = LinearRegression()
+lr.fit(X, y)
+
+otif_slope_3m = lr.coef_[0]
     # Lead time trend
     lt_trend = (last3['avg_lead_time_days'].mean() - prev3['avg_lead_time_days'].mean())
 
