@@ -714,7 +714,7 @@ def get_supplier_risk(supplier_id: str):
         risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
         return {
             "supplier_id": supplier_id,
-            "risk_score": float(prediction),
+            "risk_score": float(risk_score),
             "otif_slope_3m": float(otif_slope_3m),
             "current_otif": float(current_otif)
         }
@@ -752,7 +752,7 @@ def get_supplier_risk(supplier_id: str):
         risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
         return {
             "supplier_id": supplier_id,
-            "risk_score": float(prediction),
+            "risk_score": float(risk_score),
             "otif_slope_3m": float(otif_slope_3m),
             "current_otif": float(current_otif)
         }
@@ -990,7 +990,7 @@ def get_supplier_risk(supplier_id: str):
 
         return {
             "supplier_id": supplier_id,
-            "risk_score": float(prediction),
+            "risk_score": float(risk_score),
             "otif_slope_3m": float(otif_slope_3m),
             "current_otif": float(current_otif)
         }
