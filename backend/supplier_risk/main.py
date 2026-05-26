@@ -688,49 +688,48 @@ def get_risk_tier(score):
 # API ENDPOINT
 # ---------------------------------------------------
 
-@app.get("/api/supplier-risk")
-def supplier_risk(supplier_id: str):
+@app.get("/supplier-risk")
+def get_supplier_risk(supplier_id: str):
 
-    result = compute_supplier_features(supplier_id)
-    if result is None:
-        return {"error": "Supplier not found or insufficient data"}
+    try:
 
-    features, otif_slope_3m, current_otif = result
+        result = compute_supplier_features(supplier_id)
 
-    # Scale features
-    scaled = scaler.transform(features)
+        if result is None:
+            return {
+                "error": "Supplier not found or insufficient data",
+                "supplier_id": supplier_id
+            }
 
-    # Predict risk probability
-    risk_prob = model.predict_proba(scaled)[0][1]
+        features, otif_slope_3m, current_otif = result
 
-    # Convert to 0-100
-    risk_score = round(risk_prob * 100, 2)
+        features_df = features[[
+            "otif_slope_3m",
+            "current_otif",
+            "avg_lead_time_days",
+            "quality_reject_rate_pct",
+            "capacity_utilization_pct"
+        ]]
 
-    risk_tier = get_risk_tier(risk_score)
+        scaled = scaler.transform(features_df)
 
-    top_features = []
+        prediction = model.predict(scaled)[0]
 
-    if otif_slope_3m < 0:
-        top_features.append("Declining OTIF")
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": float(prediction),
+            "otif_slope_3m": float(otif_slope_3m),
+            "current_otif": float(current_otif)
+        }
 
-    if current_otif < 85:
-        top_features.append("Low Current OTIF")
+    except Exception as e:
 
-    if features["quality_reject_rate_pct"].iloc[0] > 5:
-        top_features.append("High Reject Rate")
+        print(f"ERROR: {str(e)}")
 
-    if features["avg_lead_time_days"].iloc[0] > 10:
-        top_features.append("High Lead Time")
-
-    return {
-        "supplier_id": request.supplier_id,
-        "risk_score": risk_score,
-        "risk_tier": risk_tier,
-        "top_features": top_features,
-        "otif_slope_3m": round(float(otif_slope_3m), 2),
-        "current_otif": round(float(current_otif), 2)
-    }
-
+        return {
+            "error": str(e),
+            "supplier_id": supplier_id
+        }
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
@@ -910,52 +909,48 @@ def get_risk_tier(score):
 # API ENDPOINT
 # ---------------------------------------------------
 
-@app.get("/api/supplier-risk")
-def supplier_risk(supplier_id: str):
+@app.get("/supplier-risk")
+def get_supplier_risk(supplier_id: str):
 
-    result = compute_supplier_features(supplier_id)
+    try:
 
-    features_df, lt_trend, avg_quality_reject, avg_fill_rate, avg_capacity_util = compute_supplier_features(request.supplier_id)
+        result = compute_supplier_features(supplier_id)
 
-    if features_df is None:
-        return {"error": "Supplier not found or insufficient data (less than 6 months of performance data)"}
+        if result is None:
+            return {
+                "error": "Supplier not found or insufficient data",
+                "supplier_id": supplier_id
+            }
 
-    # Scale features
-    scaled = scaler.transform(features_df)
+        features, otif_slope_3m, current_otif = result
 
-    # Predict risk probability
-    risk_prob = model.predict_proba(scaled)[0][1]
+        features_df = features[[
+            "otif_slope_3m",
+            "current_otif",
+            "avg_lead_time_days",
+            "quality_reject_rate_pct",
+            "capacity_utilization_pct"
+        ]]
 
-    # Convert to 0-100
-    risk_score = round(risk_prob * 100, 2)
+        scaled = scaler.transform(features_df)
 
-    risk_tier = get_risk_tier(risk_score)
+        prediction = model.predict(scaled)[0]
 
-    # Top features for explanation (based on the clean feature set)
-    top_features = []
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": float(prediction),
+            "otif_slope_3m": float(otif_slope_3m),
+            "current_otif": float(current_otif)
+        }
 
-    if lt_trend > 2: # Example threshold for increasing lead time
-        top_features.append("Increasing Lead Time Trend")
+    except Exception as e:
 
-    if avg_quality_reject > 3: # Example threshold for high reject rate
-        top_features.append("High Avg Quality Reject Rate")
+        print(f"ERROR: {str(e)}")
 
-    if avg_fill_rate < 85: # Example threshold for low fill rate
-        top_features.append("Low Avg Fill Rate")
-
-    if avg_capacity_util < 70: # Example threshold for low capacity utilization
-        top_features.append("Low Avg Capacity Utilization")
-
-    return {
-        "supplier_id": request.supplier_id,
-        "risk_score": risk_score,
-        "risk_tier": risk_tier,
-        "top_features": top_features,
-        "lead_time_trend": round(float(lt_trend), 2),
-        "avg_quality_reject": round(float(avg_quality_reject), 2),
-        "avg_fill_rate": round(float(avg_fill_rate), 2),
-        "avg_capacity_util": round(float(avg_capacity_util), 2)
-    }
+        return {
+            "error": str(e),
+            "supplier_id": supplier_id
+        }
 
 # ---------------------------------------------------
 # RUN API
