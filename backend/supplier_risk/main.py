@@ -711,7 +711,7 @@ def get_supplier_risk(supplier_id: str):
 
         # Predict
         prediction = model.predict(scaled)[0]
-                risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
+        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
         return {
             "supplier_id": supplier_id,
             "risk_score": float(prediction),
@@ -749,7 +749,7 @@ def get_supplier_risk(supplier_id: str):
 
         # Predict
         prediction = model.predict(scaled)[0]
-                risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
+        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
         return {
             "supplier_id": supplier_id,
             "risk_score": float(prediction),
