@@ -820,6 +820,9 @@ df = pd.read_csv("supplier_performance.csv")
 # ---------------------------------------------------
 
 app = FastAPI(title="Supplier Risk API")
+@app.get("/")
+def home():
+    return {"message": "Supplier Risk API Running"}
 
 # ---------------------------------------------------
 # INPUT SCHEMA
