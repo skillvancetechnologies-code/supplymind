@@ -703,10 +703,51 @@ def get_supplier_risk(supplier_id: str):
 
         features, otif_slope_3m, current_otif = result
 
+        # Use features directly
         features_df = features
 
+        # Scale features
         scaled = scaler.transform(features_df)
 
+        # Predict
+        prediction = model.predict(scaled)[0]
+
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": float(prediction),
+            "otif_slope_3m": float(otif_slope_3m),
+            "current_otif": float(current_otif)
+        }
+
+    except Exception as e:
+
+        print(f"ERROR: {str(e)}")
+
+        return {
+            "error": str(e),
+            "supplier_id": supplier_id
+        }@app.get("/supplier-risk")
+def get_supplier_risk(supplier_id: str):
+
+    try:
+
+        result = compute_supplier_features(supplier_id)
+
+        if result is None:
+            return {
+                "error": "Supplier not found or insufficient data",
+                "supplier_id": supplier_id
+            }
+
+        features, otif_slope_3m, current_otif = result
+
+        # Use features directly
+        features_df = features
+
+        # Scale features
+        scaled = scaler.transform(features_df)
+
+        # Predict
         prediction = model.predict(scaled)[0]
 
         return {
@@ -937,9 +978,13 @@ def get_supplier_risk(supplier_id: str):
 
         features, otif_slope_3m, current_otif = result
 
-       features_df = features
+        # Use features directly
+        features_df = features
+
+        # Scale features
         scaled = scaler.transform(features_df)
 
+        # Predict
         prediction = model.predict(scaled)[0]
 
         return {
