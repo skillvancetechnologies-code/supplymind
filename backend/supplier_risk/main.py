@@ -581,9 +581,6 @@ import numpy as np
 import joblib
 from sklearn.linear_model import LinearRegression
 import uvicorn
-from pyngrok import ngrok
-import nest_asyncio
-import threading
 
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
@@ -677,10 +674,9 @@ def get_risk_tier(score):
 # ---------------------------------------------------
 
 @app.get("/api/supplier-risk")
-def supplier_risk(request: SupplierRequest):
+def supplier_risk(supplier_id: str):
 
-    result = compute_supplier_features(request.supplier_id)
-
+    result = compute_supplier_features(supplier_id)
     if result is None:
         return {"error": "Supplier not found or insufficient data"}
 
@@ -723,24 +719,6 @@ def supplier_risk(request: SupplierRequest):
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
-
-nest_asyncio.apply()
-
-ngrok.set_auth_token("3Dvw26qTcrNe8w5DKCzJr73GMWr_3iHNi5G7L6fSzQvfqMEBU")
-
-def run_uvicorn():
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="warning")
-
-thread = threading.Thread(target=run_uvicorn)
-thread.start()
-
-public_url = ngrok.connect(8000)
-
-print("Swagger URL:")
-print(public_url)
-print("API is running! You can access it via the ngrok URL.")
-
-
 
 import optuna
 from sklearn.model_selection import cross_val_score
@@ -822,9 +800,6 @@ import pandas as pd
 import numpy as np
 import joblib
 import uvicorn
-from pyngrok import ngrok
-import nest_asyncio
-import threading
 
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
@@ -911,7 +886,9 @@ def get_risk_tier(score):
 # ---------------------------------------------------
 
 @app.get("/api/supplier-risk")
-def supplier_risk(request: SupplierRequest):
+def supplier_risk(supplier_id: str):
+
+    result = compute_supplier_features(supplier_id)
 
     features_df, lt_trend, avg_quality_reject, avg_fill_rate, avg_capacity_util = compute_supplier_features(request.supplier_id)
 
@@ -959,21 +936,7 @@ def supplier_risk(request: SupplierRequest):
 # RUN API
 # ---------------------------------------------------
 
-nest_asyncio.apply()
 
-ngrok.set_auth_token("3Dvw26qTcrNe8w5DKCzJr73GMWr_3iHNi5G7L6fSzQvfqMEBU")
-
-def run_uvicorn():
-    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="warning")
-
-thread = threading.Thread(target=run_uvicorn)
-thread.start()
-
-public_url = ngrok.connect(8001)
-
-print("Swagger URL:")
-print(public_url)
-print("API is running! You can access it via the ngrok URL.")
 
 import requests
 import json
