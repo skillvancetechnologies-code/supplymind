@@ -659,7 +659,7 @@ features = features[[
     "capacity_utilization_pct"
 ]]
 
-return features, otif_slope_3m, current_otif
+     return features, otif_slope_3m, current_otif
 # ---------------------------------------------------
 # RISK TIER FUNCTION
 # ---------------------------------------------------
