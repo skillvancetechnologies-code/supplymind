@@ -712,36 +712,37 @@ def get_supplier_risk(supplier_id: str):
         # Predict
         prediction = model.predict(scaled)[0]
 
-# Convert to 0-100 scale
-risk_score = round(float(prediction) * 100, 2)
+        # Convert to 0-100 scale
+        risk_score = round(float(prediction) * 100, 2)
 
-# Risk tier
-if risk_score >= 70:
-    risk_tier = "High"
+        # Risk tier
+        if risk_score >= 70:
+            risk_tier = "High"
 
-elif risk_score >= 40:
-    risk_tier = "Medium"
+        elif risk_score >= 40:
+            risk_tier = "Medium"
 
-else:
-    risk_tier = "Low"
+        else:
+            risk_tier = "Low"
 
-# Top features
-top_features = []
+        # Top features
+        top_features = []
 
-if otif_slope_3m < 0:
-    top_features.append("Declining OTIF")
+        if otif_slope_3m < 0:
+            top_features.append("Declining OTIF")
 
-if current_otif < 85:
-    top_features.append("Low Current OTIF")
+        if current_otif < 85:
+            top_features.append("Low Current OTIF")
 
-return {
-    "supplier_id": supplier_id,
-    "risk_score": risk_score,
-    "risk_tier": risk_tier,
-    "top_features": top_features,
-    "otif_slope_3m": round(float(otif_slope_3m), 2),
-    "current_otif": round(float(current_otif), 2)
-}
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": risk_score,
+            "risk_tier": risk_tier,
+            "top_features": top_features,
+            "otif_slope_3m": round(float(otif_slope_3m), 2),
+            "current_otif": round(float(current_otif), 2)
+        }
+
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
@@ -749,7 +750,8 @@ return {
         return {
             "error": str(e),
             "supplier_id": supplier_id
-        }@app.get("/supplier-risk")
+        }
+@app.get("/supplier-risk")
 def get_supplier_risk(supplier_id: str):
 
     try:
@@ -771,38 +773,39 @@ def get_supplier_risk(supplier_id: str):
         scaled = scaler.transform(features_df)
 
         # Predict
-       prediction = model.predict(scaled)[0]
+        prediction = model.predict(scaled)[0]
 
-# Convert to 0-100 scale
-risk_score = round(float(prediction) * 100, 2)
+        # Convert to 0-100 scale
+        risk_score = round(float(prediction) * 100, 2)
 
-# Risk tier
-if risk_score >= 70:
-    risk_tier = "High"
+        # Risk tier
+        if risk_score >= 70:
+            risk_tier = "High"
 
-elif risk_score >= 40:
-    risk_tier = "Medium"
+        elif risk_score >= 40:
+            risk_tier = "Medium"
 
-else:
-    risk_tier = "Low"
+        else:
+            risk_tier = "Low"
 
-# Top features
-top_features = []
+        # Top features
+        top_features = []
 
-if otif_slope_3m < 0:
-    top_features.append("Declining OTIF")
+        if otif_slope_3m < 0:
+            top_features.append("Declining OTIF")
 
-if current_otif < 85:
-    top_features.append("Low Current OTIF")
+        if current_otif < 85:
+            top_features.append("Low Current OTIF")
 
-return {
-    "supplier_id": supplier_id,
-    "risk_score": risk_score,
-    "risk_tier": risk_tier,
-    "top_features": top_features,
-    "otif_slope_3m": round(float(otif_slope_3m), 2),
-    "current_otif": round(float(current_otif), 2)
-}
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": risk_score,
+            "risk_tier": risk_tier,
+            "top_features": top_features,
+            "otif_slope_3m": round(float(otif_slope_3m), 2),
+            "current_otif": round(float(current_otif), 2)
+        }
+
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
@@ -1033,36 +1036,37 @@ def get_supplier_risk(supplier_id: str):
         # Predict
         prediction = model.predict(scaled)[0]
 
-# Convert to 0-100 scale
-risk_score = round(float(prediction) * 100, 2)
+        # Convert to 0-100 scale
+        risk_score = round(float(prediction) * 100, 2)
 
-# Risk tier
-if risk_score >= 70:
-    risk_tier = "High"
+        # Risk tier
+        if risk_score >= 70:
+            risk_tier = "High"
 
-elif risk_score >= 40:
-    risk_tier = "Medium"
+        elif risk_score >= 40:
+            risk_tier = "Medium"
 
-else:
-    risk_tier = "Low"
+        else:
+            risk_tier = "Low"
 
-# Top features
-top_features = []
+        # Top features
+        top_features = []
 
-if otif_slope_3m < 0:
-    top_features.append("Declining OTIF")
+        if otif_slope_3m < 0:
+            top_features.append("Declining OTIF")
 
-if current_otif < 85:
-    top_features.append("Low Current OTIF")
+        if current_otif < 85:
+            top_features.append("Low Current OTIF")
 
-return {
-    "supplier_id": supplier_id,
-    "risk_score": risk_score,
-    "risk_tier": risk_tier,
-    "top_features": top_features,
-    "otif_slope_3m": round(float(otif_slope_3m), 2),
-    "current_otif": round(float(current_otif), 2)
-}
+        return {
+            "supplier_id": supplier_id,
+            "risk_score": risk_score,
+            "risk_tier": risk_tier,
+            "top_features": top_features,
+            "otif_slope_3m": round(float(otif_slope_3m), 2),
+            "current_otif": round(float(current_otif), 2)
+        }
+
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
@@ -1071,7 +1075,6 @@ return {
             "error": str(e),
             "supplier_id": supplier_id
         }
-
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
