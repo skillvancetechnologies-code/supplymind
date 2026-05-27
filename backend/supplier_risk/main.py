@@ -713,7 +713,7 @@ def get_supplier_risk(supplier_id: str):
         prediction = model.predict(scaled)[0]
 
         # Convert to 0-100 scale
-        risk_score = round(float(prediction) * 100, 2)
+        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
 
         # Risk tier
         if risk_score >= 70:
@@ -776,7 +776,7 @@ def get_supplier_risk(supplier_id: str):
         prediction = model.predict(scaled)[0]
 
         # Convert to 0-100 scale
-        risk_score = round(float(prediction) * 100, 2)
+        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
 
         # Risk tier
         if risk_score >= 70:
@@ -1037,7 +1037,7 @@ def get_supplier_risk(supplier_id: str):
         prediction = model.predict(scaled)[0]
 
         # Convert to 0-100 scale
-        risk_score = round(float(prediction) * 100, 2)
+        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
 
         # Risk tier
         if risk_score >= 70:
