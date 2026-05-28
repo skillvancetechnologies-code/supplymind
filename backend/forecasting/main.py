@@ -179,17 +179,50 @@ def forecast(req: ForecastRequest):
     )
 
     # =========================
-    # Return Forecast
+    # Build Forecast Response
     # =========================
 
-    forecast_values = pred[
-        :req.forecast_days
-    ].tolist()
+    results = []
+
+    forecast_count = min(
+        req.forecast_days,
+        len(pred)
+    )
+
+    for i in range(forecast_count):
+
+        predicted_value = round(
+            float(pred[i]),
+            2
+        )
+
+        results.append({
+
+            "forecast_date": str(
+                test.iloc[i]["date"].date()
+            ),
+
+            "sku_id": req.sku_id,
+
+            "predicted_demand": predicted_value,
+
+            "confidence_interval_low": round(
+                predicted_value * 0.9,
+                2
+            ),
+
+            "confidence_interval_high": round(
+                predicted_value * 1.1,
+                2
+            ),
+
+            "mape": round(
+                mape,
+                2
+            )
+        })
 
     return {
-        "sku_id": req.sku_id,
-        "forecast_days": req.forecast_days,
-        "predicted_demand": forecast_values,
-        "mape": round(mape, 2),
-        "status": "success"
+        "status": "success",
+        "forecasts": results
     }
