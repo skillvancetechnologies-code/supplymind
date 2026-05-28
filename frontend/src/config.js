@@ -2,7 +2,7 @@ export const USE_MOCK = false
 
 /* Pavan Render URL */
 export const BASE_URL =
-'https://pavan-render-url.onrender.com'
+'https://supplymind-zmk0.onrender.com'
 
 export const INVENTORY_API =
 `${BASE_URL}/api/analytics/inventory-summary`
@@ -12,6 +12,9 @@ export const FORECAST_ACCURACY_API =
 
 export const SUPPLIER_API =
 `${BASE_URL}/api/analytics/supplier-risks`
+
+export const SUPPLIER_DETAIL_API =
+`${BASE_URL}/api/analytics/supplier-details`
 
 export const DISRUPTION_API =
 `${BASE_URL}/api/analytics/disruption-risks`
@@ -23,10 +26,10 @@ export const RESPONSE_PLAN_API =
 
 
 /* Dhanush Render URL */
+
 export const SUPPLIER_RISK_API =
-'https://dhanush-render-url.onrender.com/api/supplier-risk'
-
-
+  'https://supply-risk.onrender.com/supplier-risk'
+  
 /* Rahul Render URL */
 export const FORECAST_API =
 'https://supplymind-forecast-api.onrender.com/api/forecast'

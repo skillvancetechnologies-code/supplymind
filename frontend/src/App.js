@@ -451,7 +451,7 @@ const tc = (t = '') =>
     : '#B7791F'
 
 const Suppliers = () => {
-    const [suppliers, setSuppliers] = useState(mockSuppliers)
+    const [suppliers, setSuppliers] = useState([])
 
  useEffect(() => {
 
@@ -464,53 +464,23 @@ const Suppliers = () => {
   )
     .then(r => r.json())
     .then(data => {
-      console.log('Pavan supplier API response:', data)
-      
- const fixedSuppliers = data.map((s, index) => ({
-  id: s.supplier_id || s.id || index,
+  console.log('Pavan supplier API response:', data)
+  console.log('Loaded suppliers:', data.length)
 
-  name:
-    s.supplier_name ||
-    s.name ||
-    s.supplier_id ||
-    '-',
-
-  city:
-    s.city ||
-    s.supplier_city ||
-    '-',
-
-  tier:
-    s.city_tier ||
-    s.tier ||
-    '-',
-
-  otif:
-    s.current_otif ||
-    s.otif ||
-    s.otif_percent ||
-    '-',
-
-  risk:
-    s.risk_tier ||
-    s.risk ||
-    s.risk_level ||
-    (
-      Number(s.current_otif || s.otif || s.otif_percent) < 70
-        ? 'High'
-        : Number(s.current_otif || s.otif || s.otif_percent) < 85
-        ? 'Medium'
-        : 'Low'
-    ),
-
-  trend:
-    s.trend ||
-    s.performance_trend ||
-    'Stable'
-}))
+  const fixedSuppliers = data.map((s, index) => ({
+    supplier_id: s.supplier_id,
+    name: s.supplier_name || s.name || s.supplier_id || '-',
+    city: s.city || s.supplier_city || '-',
+    tier: s.city_tier || s.tier || '-',
+    otif: s.current_otif || s.otif || s.otif_percent || '-',
+    risk: s.risk_tier || s.risk || s.risk_level || 'Unknown',
+    trend: s.trend || s.performance_trend || 'Stable'
+  }))
 
   setSuppliers(fixedSuppliers)
 })
+    
+
     .catch(error => {
 
       console.log('Supplier API error:', error)
@@ -577,7 +547,7 @@ const Suppliers = () => {
 
       <tbody>
         {suppliers.map((s,i) => (
-          <tr key={s.id || s.supplier_id || i}
+          <tr key={s.supplier_id || i}
             style={{
               background:i%2===0 ? '#F4F6F9' : 'white'
             }}
@@ -586,14 +556,14 @@ const Suppliers = () => {
             <td style={{padding:'10px'}}>
 
   <Link
-    to={`/suppliers/${s.id || s.supplier_id}`}
+    to={`/suppliers/${s.supplier_id}`}
     style={{
       color:'#1B2A4A',
       textDecoration:'none',
       fontWeight:'bold'
     }}
   >
-    {s.name || s.supplier_name}
+    {s.supplier_id}
   </Link>
 
 </td>
@@ -965,28 +935,28 @@ const Forecasts = () => {
     </thead>
 
     <tbody>
-      {forecastResult.forecast?.map(item => (
-        <tr
-          key={item.day}
-          style={{borderBottom:'1px solid #E2E8F0'}}
-        >
-          <td style={{
-            padding:'12px',
-            textAlign:'center'
-          }}>
-            {item.day}
-          </td>
+      {forecastResult.predicted_demand?.map((demand, index) => (
+  <tr
+    key={index}
+    style={{borderBottom:'1px solid #E2E8F0'}}
+  >
+    <td style={{
+      padding:'12px',
+      textAlign:'center'
+    }}>
+      {index + 1}
+    </td>
 
-          <td style={{
-            padding:'12px',
-            textAlign:'center',
-            fontWeight:'bold',
-            color:'#1B2A4A'
-          }}>
-            {item.predicted_demand}
-          </td>
-        </tr>
-      ))}
+    <td style={{
+      padding:'12px',
+      textAlign:'center',
+      fontWeight:'bold',
+      color:'#1B2A4A'
+    }}>
+      {Math.round(demand)}
+    </td>
+  </tr>
+))}
     </tbody>
 
   </table>
