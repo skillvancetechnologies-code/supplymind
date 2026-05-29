@@ -7,17 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import date, timedelta
 import uvicorn
-import nest_asyncio
 
-# Fix async issue
-nest_asyncio.apply()
 
 # PostgreSQL connection
 import os
 engine = create_engine(
-    os.environ.get("DATABASE_URL", 
-    "postgresql://YOURNAME:YOURPASSWORD@localhost:5432/postgres")
+    os.environ.get("DATABASE_URL")
 )
+supplier_df=pd.read_sql("SELECT * FROM suppliers",engine)
 
 # FastAPI app
 app = FastAPI(title="SupplyMind Analytics API")
@@ -268,34 +265,54 @@ def disruption_risks():
 
     return result.to_dict(orient='records')
 
-
 @app.get("/api/analytics/supplier-risks")
-def supplier_risks():
+def get_supplier_risks():
+    try:
+        df = pd.read_sql("""
+            SELECT 
+                s.supplier_id,
+                s.city,
+                s.city_tier,
+                s.avg_lead_time_days,
+                AVG(p.otif_percentage) as current_otif,
+                AVG(p.fill_rate_pct) as fill_rate_pct
+            FROM suppliers s
+            LEFT JOIN supplier_performance p 
+                ON s.supplier_id = p.supplier_id
+            GROUP BY 
+                s.supplier_id, s.city, 
+                s.city_tier, s.avg_lead_time_days
+        """, engine)
 
-    query = """
-    SELECT
-      s.supplier_id,
-      s.city_tier,
-      sp.otif_percentage as current_otif,
-      sp.avg_lead_time_days,
-      sp.fill_rate_pct
-    FROM suppliers s
-    JOIN supplier_performance sp
-      ON s.supplier_id = sp.supplier_id
-    WHERE sp.month = (
-      SELECT MAX(month)
-      FROM supplier_performance
-    )
-    AND sp.otif_percentage < 75
-    ORDER BY sp.otif_percentage ASC
-    LIMIT 10
-    """
+        result = []
+        for _, row in df.iterrows():
+            otif = float(row.get("current_otif") or 0)
+            lead = float(row.get("avg_lead_time_days") or 0)
+            fill = float(row.get("fill_rate_pct") or 0)
 
-    result = pd.read_sql(query, engine)
+            score = 100
+            if otif < 40: score -= 40
+            elif otif < 70: score -= 20
+            if lead > 20: score -= 20
+            elif lead > 10: score -= 10
+            if fill < 70: score -= 20
+            elif fill < 85: score -= 10
 
-    return result.to_dict(orient='records')
+            result.append({
+                "supplier_id": str(row.get("supplier_id", "")),
+                "city": str(row.get("city", "")),
+                "tier": str(row.get("city_tier", "")),
+                "current_otif": round(otif, 1),
+                "avg_lead_time_days": round(lead, 1),
+                "fill_rate_pct": round(fill, 1),
+                "risk_score": round(max(score, 0), 1),
+                "risk_tier": "High" if otif < 40 else "Medium" if otif < 70 else "Low",
+                "trend": "Improving" if otif > 80 else "Declining" if otif < 50 else "Stable"
+            })
 
-
+        return result
+    except Exception as e:
+        return {"error": str(e)}
 @app.get(
     "/api/analytics/forecast-accuracy",
     summary="Forecast Accuracy Metrics",
@@ -465,7 +482,56 @@ def inventory_summary():
 
     except Exception as e:
         return {"error": str(e)}
+@app.get("/api/analytics/supplier-details")
+def get_supplier_details(supplier_id: str):
+    try:
+        sup_df = pd.read_sql(
+            "SELECT * FROM suppliers WHERE supplier_id = %(sid)s",
+            engine, params={"sid": supplier_id}
+        )
+        if sup_df.empty:
+            return {"detail": "Not Found"}
+        s = sup_df.iloc[0].to_dict()
 
+        perf_df = pd.read_sql(
+            "SELECT * FROM supplier_performance WHERE supplier_id = %(sid)s ORDER BY month DESC LIMIT 6",
+            engine, params={"sid": supplier_id}
+        )
 
+        if not perf_df.empty:
+            latest = perf_df.iloc[0].to_dict()
+            otif = float(latest.get("otif_percentage") or 0)
+            fill = float(latest.get("fill_rate_pct") or 0)
+            trend = [
+                {
+                    "month": str(row.get("month", "")),
+                    "otif": float(row.get("otif_percentage") or 0)
+                }
+                for row in perf_df.to_dict(orient="records")
+            ]
+        else:
+            otif = 0.0
+            fill = 0.0
+            trend = []
+        skus_df = pd.read_sql(
+            "SELECT DISTINCT sku_id FROM purchase_orders WHERE supplier_id = %(sid)s LIMIT 10",
+            engine,
+            params={"sid": supplier_id}
+        )
+        sku_list = skus_df["sku_id"].tolist() if not skus_df.empty else []
+
+        return {
+            "supplier_id": str(s.get("supplier_id", "")),
+            "city": str(s.get("city", "")),
+            "tier": str(s.get("city_tier", "")),
+            "current_otif": otif,
+            "avg_lead_time_days": float(s.get("avg_lead_time_days") or 0),
+            "fill_rate_pct": fill,
+            "trend": trend,
+            "skus": sku_list,
+            "supplied_skus": sku_list
+        }
+    except Exception as e:
+        return {"error": str(e)}
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
