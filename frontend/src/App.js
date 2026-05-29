@@ -96,13 +96,7 @@ const Dashboard = () => {
 
     // Inventory Summary API
      
-  fetch(INVENTORY_API,
-  {
-    headers:{
-      'ngrok-skip-browser-warning':'true'
-    }
-  }
-)
+  fetch(INVENTORY_API)
     .then(r => r.json())
     .then(data => {
       setSummary(data)
@@ -116,12 +110,7 @@ const Dashboard = () => {
 
     // Forecast Accuracy API
  
-  fetch(FORECAST_ACCURACY_API,{
-    headers:{
-      'ngrok-skip-browser-warning':'true'
-    }
-  }
-)
+  fetch(FORECAST_ACCURACY_API)
   .then(r => r.json())
   .then(data => setForecast(data))
   .catch(error => {
@@ -169,7 +158,7 @@ const Dashboard = () => {
   marginBottom:'30px'
 }}>
   {summaryStatus === 'live'
-  ? 'Live inventory summary from Pavan API'
+  ? 'Live inventory summary '
   : summaryStatus === 'mock'
   ? 'Showing mock inventory data'
   : 'Loading inventory summary...'}
@@ -759,7 +748,7 @@ const Forecasts = () => {
       </h2>
 
       <p style={{ color:'#4A5568' }}>
-        AI-powered demand forecasting using Rahul API
+        AI-powered demand forecasting 
       </p>
 
       <div style={{
@@ -778,7 +767,7 @@ const Forecasts = () => {
           fontWeight:'bold'
         }}>
           {forecastStatus === 'live'
-            ? 'Live forecast generated from Rahul API'
+            ? 'Live forecast generated'
             : 'Loading forecast data...'}
         </p>
 
@@ -948,11 +937,7 @@ const Disruptions = () => {
 
   useEffect(() => {
 
-  fetch(DISRUPTION_API, {
-    headers:{
-      'ngrok-skip-browser-warning':'true'
-    }
-  })
+  fetch(DISRUPTION_API)
     .then(r => r.json())
     .then(data => setDisruptions(data))
     .catch(error => {
@@ -963,7 +948,7 @@ const Disruptions = () => {
 }, [])
     
   const generatePlan = async (item) => {
-
+    console.log("Sending to Karthi:", item)
   try {
 
     setResponsePlan('Loading response plan...')
@@ -1013,16 +998,16 @@ ${mock.checklist.join('\n')}
     headers:{
   'Content-Type':'application/json'
 },
-body:JSON.stringify({
-  disruption_type:'Stock Risk',
-  sku_name:item.sku_name,
-  category:item.category,
-  closing_stock_units:item.closing_stock_units || 100,
-  daily_consumption_units:20,
-  days_of_cover:item.days_of_cover,
-  otif_percentage:70,
-  lead_time_days:10,
-  alternate_supplier:'Backup Supplier'
+body: JSON.stringify({
+  disruption_type: 'Stock Risk',
+  sku_name: item.sku_name,
+  category: item.category,
+  closing_stock_units: Number(item.closing_stock_units || 100),
+  daily_consumption_units: Math.round(Number(item.daily_consumption_units || 20)),
+  days_of_cover: Number(item.days_of_cover || 0),
+  otif_percentage: Number(item.otif_percentage || 70),
+  lead_time_days: Math.round(Number(item.lead_time_days || 10)),
+  alternate_supplier: item.alternate_supplier || 'Backup Supplier'
 })
     })
 
@@ -1215,35 +1200,107 @@ ${mock.checklist.join('\n')}
 
       </div>
 
-      {responsePlan && (
+     {responsePlan && (
+  <div style={{
+    marginTop:'32px',
+    background:'#FFFFFF',
+    borderRadius:'16px',
+    border:'1px solid #E5E7EB',
+    boxShadow:'0 10px 28px rgba(15,23,42,0.08)',
+    overflow:'hidden'
+  }}>
 
-        <div style={{
-          marginTop:'30px',
-          background:'white',
-          borderRadius:'8px',
-          padding:'20px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+    <div style={{
+      padding:'22px 26px',
+      borderBottom:'1px solid #E5E7EB',
+      display:'flex',
+      justifyContent:'space-between',
+      alignItems:'center',
+      gap:'20px',
+      background:'#FFFFFF'
+    }}>
+      <div>
+        <h3 style={{
+          margin:0,
+          color:'#0F172A',
+          fontSize:'22px',
+          fontWeight:'800'
         }}>
+          AI Response Plan
+        </h3>
 
-          <h3 style={{
-            color:'#1B2A4A',
-            marginBottom:'16px'
-          }}>
-            AI Response Plan
-          </h3>
+        <p style={{
+          margin:'6px 0 0',
+          color:'#64748B',
+          fontSize:'14px'
+        }}>
+          Live response generated from backend data
+        </p>
+      </div>
 
-          <pre style={{
-            whiteSpace:'pre-wrap',
-            fontFamily:'inherit',
-            lineHeight:'1.7',
-            color:'#2D3748'
-          }}>
-            {responsePlan}
-          </pre>
-
+      <div style={{
+        background:'#F8FAFC',
+        border:'1px solid #E2E8F0',
+        borderRadius:'14px',
+        padding:'12px 18px',
+        minWidth:'170px'
+      }}>
+        <div style={{
+          color:'#64748B',
+          fontSize:'12px',
+          fontWeight:'700'
+        }}>
+          Reorder Quantity
         </div>
 
-      )}
+        <div style={{
+          color:'#1D4ED8',
+          fontSize:'28px',
+          fontWeight:'900',
+          marginTop:'4px'
+        }}>
+          {responsePlan.match(/Recommended Reorder Quantity:\s*([\d,]+)/i)?.[1] || '-'}
+        </div>
+      </div>
+    </div>
+
+    <div style={{
+      padding:'26px',
+      background:'#F8FAFC'
+    }}>
+      <div style={{
+        background:'#FFFFFF',
+        border:'1px solid #E2E8F0',
+        borderRadius:'14px',
+        padding:'24px'
+      }}>
+        <div
+  style={{
+    whiteSpace:'pre-wrap',
+    fontFamily:'"Segoe UI", Inter, sans-serif',
+    lineHeight:'2',
+    fontSize:'16px',
+    color:'#334155',
+    fontWeight:'500'
+  }}
+>
+  {responsePlan
+    .replace(/\*\*/g, '')
+    .replace(/Situation Summary/g, '📋 Situation Summary')
+    .replace(/Immediate Actions/g, '⚡ Immediate Actions')
+    .replace(
+      /Alternate Supplier Recommendation/g,
+      '🤝 Alternate Supplier Recommendation'
+    )
+    .replace(/Reorder Quantity/g, '📦 Reorder Quantity')
+    .replace(/Monitoring Checklist/g, '📊 Monitoring Checklist')
+  }
+</div>
+      </div>
+    </div>
+
+  </div>
+)}
 
     </div>
   )

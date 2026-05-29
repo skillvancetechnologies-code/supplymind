@@ -1,4 +1,4 @@
-export const USE_MOCK = false
+export const USE_MOCK = true
 
 /* Pavan Render URL */
 export const BASE_URL =
