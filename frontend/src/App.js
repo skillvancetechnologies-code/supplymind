@@ -10,7 +10,6 @@ import SupplierDetail
 from './pages/SupplierDetail'
 import {
   mockPlans,
-  mockSuppliers,
   mockInventorySummary
 } from './mocks/mockData'
 import {
@@ -22,6 +21,16 @@ import {
   SUPPLIER_API,
   DISRUPTION_API
 } from './api/config'
+import {
+  AreaChart,
+  Area,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine
+} from 'recharts'
 
 /* =========================
    INVENTORY DATA
@@ -444,240 +453,298 @@ const rc = (r) =>
     : '#C53030'
 
 const tc = (t = '') =>
-  t.startsWith('↑')
+  t === 'Improving'
     ? '#1A6B3A'
-    : t.startsWith('↓')
+    : t === 'Declining'
     ? '#C53030'
     : '#B7791F'
 
 const Suppliers = () => {
-    const [suppliers, setSuppliers] = useState([])
+  const [suppliers, setSuppliers] = useState([])
 
- useEffect(() => {
+  useEffect(() => {
+    fetch(SUPPLIER_API)
+      .then(r => r.json())
+      .then(data => {
+        console.log('Pavan supplier API response:', data)
 
-  fetch(SUPPLIER_API,
-    {
-      headers:{
-        'ngrok-skip-browser-warning':'true'
-      }
-    }
-  )
-    .then(r => r.json())
-    .then(data => {
-  console.log('Pavan supplier API response:', data)
-  console.log('Loaded suppliers:', data.length)
+        const supplierList =
+          Array.isArray(data)
+            ? data
+            : data.supplier_risks ||
+              data.suppliers ||
+              data.data ||
+              data.results ||
+              []
 
-  const fixedSuppliers = data.map((s, index) => ({
-    supplier_id: s.supplier_id,
-    name: s.supplier_name || s.name || s.supplier_id || '-',
-    city: s.city || s.supplier_city || '-',
-    tier: s.city_tier || s.tier || '-',
-    otif: s.current_otif || s.otif || s.otif_percent || '-',
-    risk: s.risk_tier || s.risk || s.risk_level || 'Unknown',
-    trend: s.trend || s.performance_trend || 'Stable'
-  }))
+        console.log('Actual supplier list:', supplierList)
+        console.log('First supplier object:', supplierList[0])
+        console.log('First 5 suppliers:', supplierList.slice(0, 5))
+        
 
-  setSuppliers(fixedSuppliers)
+        const fixedSuppliers = supplierList.map((s) => {
+          const riskScore = Number(
+            s.risk_score ??
+            s.supplier_risk_score ??
+            s.score ??
+            0
+          )
+
+          const otifValue =
+            s.current_otif ??
+            s.otif ??
+            s.otif_percent ??
+            s.otif_percentage ??
+            s.otif_pct ??
+            s.avg_otif ??
+            s.current_otif_percentage ??
+            '-'
+
+          const riskValue =
+            s.risk_tier ??
+            s.risk_level ??
+            s.risk ??
+            (riskScore >= 70 ? 'High' : riskScore >= 40 ? 'Medium' : 'Low')
+
+          const trendValue =
+            s.trend ??
+            s.performance_trend ??
+            s.risk_trend ??
+            (riskScore >= 70 ? 'Declining' : riskScore >= 40 ? 'Watch' : 'Stable')
+
+          return {
+            supplier_id: s.supplier_id,
+            name: s.supplier_name || s.name || s.supplier_id || '-',
+            city: s.city || s.supplier_city || '-',
+            tier: s.city_tier || s.tier || '-',
+           current_otif: otifValue,
+           risk_tier: riskValue,
+            trend: trendValue,
+            risk_score: riskScore
+          }
+        })
+
+        setSuppliers(fixedSuppliers)
+      })
+      .catch(error => {
+  console.log('Supplier API error:', error)
+  alert('Supplier backend API failed. Check console.')
+  setSuppliers([])
 })
-    
-
-    .catch(error => {
-
-      console.log('Supplier API error:', error)
-
-      setSuppliers(mockSuppliers)
-    })
-
-}, [])
+  }, [])
 
   return (
-  <div style={{
-    padding:'40px',
-    flex:1
-  }}>
-
-    <h2 style={{
-      color:'#1B2A4A'
-    }}>
-      Supplier Scoreboard
-    </h2>
-
-    <p style={{
-      color:'#4A5568',
-      marginBottom:'20px'
-    }}>
-      Sorted by risk level — High risk first
-    </p>
-
-    <table style={{
-      width:'100%',
-      borderCollapse:'collapse',
-      background:'white',
-      borderRadius:'8px',
-      overflow:'hidden',
-      boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+    <div style={{
+      padding:'40px',
+      flex:1
     }}>
 
-      <thead>
-        <tr style={{
-          background:'#1B2A4A'
-        }}>
-          {[
-  'Supplier',
-  'City',
-  'Tier',
-  'OTIF %',
-  'Risk',
-  'Trend',
-  'Details'
-].map(h => (
-            <th
-              key={h}
+      <h2 style={{
+        color:'#1B2A4A'
+      }}>
+        Supplier Scoreboard
+      </h2>
+
+      <p style={{
+        color:'#4A5568',
+        marginBottom:'20px'
+      }}>
+       Sorted by supplier ID — Ascending order
+      </p>
+
+      <table style={{
+        width:'100%',
+        borderCollapse:'collapse',
+         tableLayout:'fixed',
+        background:'white',
+        borderRadius:'8px',
+        overflow:'hidden',
+        boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+       
+      }}>
+
+        <thead>
+          <tr style={{
+            background:'#1B2A4A'
+          }}>
+            {[
+              'Supplier',
+              'City',
+              'Tier',
+              'OTIF %',
+              'Risk',
+              'Trend',
+              'Details'
+            ].map(h => (
+              <th
+                key={h}
+                style={{
+                 
+                  padding:'12px',
+                  color:'white',
+                  textAlign:'left'
+                }}
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+        {[...suppliers]
+  .sort((a, b) => {
+    const numA = Number(a.supplier_id.replace('SUP-', ''))
+    const numB = Number(b.supplier_id.replace('SUP-', ''))
+
+    return numA - numB
+  })
+  .map((s, i) => (
+            <tr
+              key={s.supplier_id || i}
               style={{
-                padding:'12px',
-                color:'white',
-                textAlign:'left'
+                height:'56px',
+                background:i%2===0 ? '#F4F6F9' : 'white'
               }}
             >
-              {h}
-            </th>
+
+              <td style={{padding:'10px',
+                verticalAlign:'middle'
+              }}>
+                <Link
+                  to={`/suppliers/${s.supplier_id}`}
+                  style={{
+                    color:'#1B2A4A',
+                    textDecoration:'none',
+                    fontWeight:'bold'
+                  }}
+                >
+                  {s.supplier_id}
+                </Link>
+              </td>
+
+              <td style={{padding:'10px'}}>
+                {s.city}
+              </td>
+
+              <td style={{padding:'10px'}}>
+                {s.tier}
+              </td>
+
+              <td style={{padding:'10px'}}>
+                {s.current_otif !== '-' ? `${s.current_otif}%` : '-'}
+              </td>
+
+              <td style={{
+                padding:'10px',
+                fontWeight:'bold',
+                color: rc(s.risk_tier)
+              }}>
+                {s.risk_tier}
+              </td>
+
+              <td style={{
+                padding:'10px',
+                fontWeight:'bold',
+                color:tc(s.trend)
+              }}>
+                {s.trend}
+              </td>
+
+              <td style={{padding:'10px'}}>
+                <Link
+                  to={`/suppliers/${s.supplier_id}`}
+                  style={{
+                    color:'#1B2A4A',
+                    fontWeight:'bold',
+                    textDecoration:'none'
+                  }}
+                >
+                  View Details
+                </Link>
+              </td>
+
+            </tr>
           ))}
-        </tr>
-      </thead>
+        </tbody>
 
-      <tbody>
-        {suppliers.map((s,i) => (
-          <tr key={s.supplier_id || i}
-            style={{
-              background:i%2===0 ? '#F4F6F9' : 'white'
-            }}
-          >
+      </table>
 
-            <td style={{padding:'10px'}}>
-
-  <Link
-    to={`/suppliers/${s.supplier_id}`}
-    style={{
-      color:'#1B2A4A',
-      textDecoration:'none',
-      fontWeight:'bold'
-    }}
-  >
-    {s.supplier_id}
-  </Link>
-
-</td>
-            <td style={{padding:'10px'}}>{s.city || s.supplier_city || '-'}</td>
-            <td style={{padding:'10px'}}>{s.tier || s.city_tier || '-'}</td>
-            <td style={{padding:'10px'}}>
-  {s.otif !== '-' ? `${s.otif}%` : '-'}
-</td>
-
-            <td style={{
-              padding:'10px',
-              fontWeight:'bold',
-              color: rc(s.risk || s.risk_level || s.risk_tier)
-            }}>
-              {s.risk || s.risk_level || s.risk_tier || '-'}
-            </td>
-
-            <td style={{
-              padding:'10px',
-              fontWeight:'bold',
-              color:tc(s.trend || 'Stable')
-            }}>
-              {s.trend || 'Stable'}
-            </td>
-            <td style={{padding:'10px'}}>
-
-  <Link
-  to={`/suppliers/${s.id || s.supplier_id}`}
-  style={{
-    color:'#1B2A4A',
-    fontWeight:'bold',
-    textDecoration:'none'
-  }}
->
-  View Details
-</Link>
-</td>
-
-          </tr>
-        ))}
-      </tbody>
-
-    </table>
-
-  </div>
-)
+    </div>
+  )
 }
 /* =========================
    FORECAST PAGE
 ========================= */
 const Forecasts = () => {
-  const [skuId, setSkuId] = useState('SKU-00064')
-  const [forecastDays, setForecastDays] = useState(30)
-  const [forecastResult, setForecastResult] = useState(null)
   const [forecastStatus, setForecastStatus] = useState('idle')
+  const [allForecasts, setAllForecasts] = useState([])
+  const [selectedForecast, setSelectedForecast] = useState(null)
 
-  const generateForecast = () => {
+  const forecastDays = 30
+
+  useEffect(() => {
+    const rahulSkus = [
+  'SKU-00201',
+  'SKU-00278',
+  'SKU-00477',
+  'SKU-00064',
+  'SKU-00463',
+  'SKU-00216',
+  'SKU-00269',
+  'SKU-00247',
+  'SKU-00474',
+  'SKU-00377'
+]
     setForecastStatus('loading')
 
-    fetch(FORECAST_API, {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        
-      },
-      body:JSON.stringify({
-        sku_id:skuId,
-        forecast_days:Number(forecastDays)
-      })
-    })
-      .then(r => {
-  if (!r.ok) {
-    throw new Error('Forecast API failed')
-  }
-  return r.json()
-})
-      .then(data => {
-        console.log('Rahul Forecast API:', data)
-        setForecastResult(data)
+    Promise.all(
+      rahulSkus.map(sku =>
+        fetch(FORECAST_API, {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            sku_id: sku,
+            forecast_days: Number(forecastDays)
+          })
+        })
+          .then(r => r.json())
+          .then(data => {
+            console.log('Rahul Forecast API:', sku, data)
+
+            const demands = data.predicted_demand || []
+
+            const avgDemand =
+              demands.length > 0
+                ? demands.reduce((sum, value) => sum + value, 0) / demands.length
+                : 0
+
+            const minDemand = demands.length > 0 ? Math.min(...demands) : 0
+            const maxDemand = demands.length > 0 ? Math.max(...demands) : 0
+
+            return {
+              sku_id: sku,
+              predicted_demand: avgDemand.toFixed(1),
+              confidence: `${Math.round(minDemand)} - ${Math.round(maxDemand)}`,
+              minDemand: Math.round(minDemand),
+              maxDemand: Math.round(maxDemand),
+              demand_values: demands
+            }
+          })
+      )
+    )
+      .then(results => {
+        setAllForecasts(results)
+        setSelectedForecast(results[0])
         setForecastStatus('live')
       })
       .catch(error => {
         console.log('Forecast API error:', error)
         setForecastStatus('mock')
-        setForecastResult({
-          message:'Forecast API unavailable — showing mock fallback',
-          sku_id:skuId,
-          forecast_days:forecastDays,
-          forecast:[
-            {day:1, predicted_demand:120},
-            {day:2, predicted_demand:135},
-            {day:3, predicted_demand:128}
-          ]
-        })
       })
-  }
-
-  const statusText =
-    forecastStatus === 'live'
-      ? 'Live forecast generated from Rahul API'
-      : forecastStatus === 'mock'
-      ? 'Mock forecast data shown because backend is unavailable'
-      : forecastStatus === 'loading'
-      ? 'Generating forecast...'
-      : 'Enter SKU details and generate demand forecast'
-
-  const statusColor =
-    forecastStatus === 'live'
-      ? '#1A6B3A'
-      : forecastStatus === 'mock'
-      ? '#B7791F'
-      : forecastStatus === 'loading'
-      ? '#1B2A4A'
-      : '#4A5568'
+  }, [])
 
   return (
     <div style={{
@@ -687,297 +754,160 @@ const Forecasts = () => {
       minHeight:'100vh'
     }}>
 
+      <h2 style={{ color:'#1B2A4A' }}>
+        Forecast Center
+      </h2>
+
+      <p style={{ color:'#4A5568' }}>
+        AI-powered demand forecasting using Rahul API
+      </p>
+
       <div style={{
-        display:'flex',
-        justifyContent:'space-between',
-        alignItems:'center',
-        marginBottom:'25px'
+        background:'white',
+        padding:'24px',
+        borderRadius:'10px',
+        boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
       }}>
-        <div>
-          <h2 style={{
-            color:'#1B2A4A',
-            marginBottom:'8px'
-          }}>
-            Forecast Center
-          </h2>
 
-          <p style={{
-            color:'#4A5568',
-            margin:0
-          }}>
-            AI-powered demand forecasting using Rahul API
-          </p>
-        </div>
+        <h3 style={{ color:'#1B2A4A' }}>
+          Forecast Output
+        </h3>
 
-        <div style={{
-          background:'white',
-          padding:'10px 16px',
-          borderRadius:'20px',
-          color:statusColor,
-          fontWeight:'bold',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.08)'
+        <p style={{
+          color:'#1A6B3A',
+          fontWeight:'bold'
         }}>
           {forecastStatus === 'live'
-            ? 'LIVE API'
-            : forecastStatus === 'mock'
-            ? 'MOCK MODE'
-            : forecastStatus === 'loading'
-            ? 'LOADING'
-            : 'READY'}
-        </div>
-      </div>
+            ? 'Live forecast generated from Rahul API'
+            : 'Loading forecast data...'}
+        </p>
 
-      <div style={{
-        display:'grid',
-        gridTemplateColumns:'1fr 1fr 1fr',
-        gap:'20px',
-        marginBottom:'25px'
-      }}>
-
-        <div style={{
-          background:'white',
-          padding:'20px',
-          borderRadius:'10px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+        <table style={{
+          width:'100%',
+          borderCollapse:'collapse',
+          background:'white'
         }}>
-          <p style={{color:'#4A5568'}}>Selected SKU</p>
-          <h2 style={{color:'#1B2A4A'}}>{skuId}</h2>
-        </div>
-
-        <div style={{
-          background:'white',
-          padding:'20px',
-          borderRadius:'10px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{color:'#4A5568'}}>Forecast Horizon</p>
-          <h2 style={{color:'#1B2A4A'}}>{forecastDays} Days</h2>
-        </div>
-
-        <div style={{
-          background:'white',
-          padding:'20px',
-          borderRadius:'10px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{color:'#4A5568'}}>Forecast Source</p>
-          <h2 style={{color:statusColor}}>
-            {forecastStatus === 'live' ? 'Rahul API' : forecastStatus === 'mock' ? 'Mock Data' : 'Pending'}
-          </h2>
-        </div>
-
-      </div>
-
-      <div style={{
-        display:'grid',
-        gridTemplateColumns:'1fr 2fr',
-        gap:'20px'
-      }}>
-
-        <div style={{
-          background:'white',
-          padding:'24px',
-          borderRadius:'10px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-
-          <h3 style={{
-            color:'#1B2A4A',
-            marginTop:0
-          }}>
-            Generate Forecast
-          </h3>
-
-          <p style={{
-            color:'#4A5568',
-            fontSize:'14px'
-          }}>
-            Enter SKU ID and forecast duration to generate predicted demand.
-          </p>
-
-          <label style={{fontWeight:'bold', color:'#1B2A4A'}}>
-            SKU ID
-          </label>
-
-          <input
-            value={skuId}
-            onChange={e => setSkuId(e.target.value)}
-            style={{
-  padding:'14px',
-  width:'100%',
-  marginTop:'8px',
-  marginBottom:'18px',
-  border:'2px solid #CBD5E0',
-  borderRadius:'10px',
-  fontSize:'16px',
-  fontWeight:'480',
-  color:'#1B2A4A',
-  background:'#FFFFFF',
-  outline:'none',
-  boxShadow:'0 2px 6px rgba(0,0,0,0.08)'
-}}
-          />
-
-          <label style={{fontWeight:'bold', color:'#1B2A4A'}}>
-            Forecast Days
-          </label>
-
-          <input
-            type="number"
-            value={forecastDays}
-            onChange={e => setForecastDays(e.target.value)}
-            style={{
-  padding:'14px',
-  width:'100%',
-  marginTop:'8px',
-  marginBottom:'20px',
-  border:'2px solid #CBD5E0',
-  borderRadius:'10px',
-  fontSize:'16px',
-  fontWeight:'480',
-  color:'#1B2A4A',
-  background:'#FFFFFF',
-  outline:'none',
-  boxShadow:'0 2px 6px rgba(0,0,0,0.08)'
-}}
-          />
-
-          <button
-            onClick={generateForecast}
-            style={{
+          <thead>
+            <tr style={{
               background:'#1B2A4A',
-              color:'white',
-              border:'none',
-              padding:'12px 18px',
-              borderRadius:'6px',
-              cursor:'pointer',
-              width:'100%',
-              fontWeight:'bold'
-            }}
-          >
-            Generate Forecast
-          </button>
-
-        </div>
-
-        <div style={{
-          background:'white',
-          padding:'24px',
-          borderRadius:'10px',
-          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-
-          <h3 style={{
-            color:'#1B2A4A',
-            marginTop:0
-          }}>
-            Forecast Output
-          </h3>
-
-          <p style={{
-            color:statusColor,
-            fontWeight:'bold'
-          }}>
-            {statusText}
-          </p>
-
-          {forecastResult ? (
-            <div style={{
-  background:'#F8FAFC',
-  padding:'20px',
-  borderRadius:'12px',
-  border:'1px solid #E2E8F0'
-}}>
-
-  <div style={{marginBottom:'16px'}}>
-    <p style={{color:'#718096', marginBottom:'4px'}}>
-      SKU ID
-    </p>
-
-    <h3 style={{color:'#1B2A4A', margin:0}}>
-      {forecastResult.sku_id}
-    </h3>
-  </div>
-
-  <div style={{marginBottom:'16px'}}>
-    <p style={{color:'#718096', marginBottom:'4px'}}>
-      Forecast Days
-    </p>
-
-    <h3 style={{color:'#1B2A4A', margin:0}}>
-      {forecastResult.forecast_days} Days
-    </h3>
-  </div>
-
-  <p style={{
-    color:'#718096',
-    marginBottom:'10px'
-  }}>
-    Predicted Demand
-  </p>
-
-  <table style={{
-    width:'100%',
-    borderCollapse:'collapse',
-    background:'white',
-    borderRadius:'8px',
-    overflow:'hidden'
-  }}>
-
-    <thead>
-      <tr style={{
-        background:'#1B2A4A',
-        color:'white'
-      }}>
-        <th style={{padding:'12px', textAlign:'center'}}>Day</th>
-        <th style={{padding:'12px', textAlign:'center'}}>Predicted Demand</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {forecastResult.predicted_demand?.map((demand, index) => (
-  <tr
-    key={index}
-    style={{borderBottom:'1px solid #E2E8F0'}}
-  >
-    <td style={{
-      padding:'12px',
-      textAlign:'center'
-    }}>
-      {index + 1}
-    </td>
-
-    <td style={{
-      padding:'12px',
-      textAlign:'center',
-      fontWeight:'bold',
-      color:'#1B2A4A'
-    }}>
-      {Math.round(demand)}
-    </td>
-  </tr>
-))}
-    </tbody>
-
-  </table>
-
-</div>
-          ) : (
-            <div style={{
-              background:'#F4F6F9',
-              padding:'40px',
-              borderRadius:'8px',
-              textAlign:'center',
-              color:'#4A5568'
+              color:'white'
             }}>
-              No forecast generated yet
-            </div>
-          )}
+              <th style={{ padding:'12px' }}>SKU ID</th>
+              <th style={{ padding:'12px' }}>Predicted Demand</th>
+              <th style={{ padding:'12px' }}>Confidence</th>
+            </tr>
+          </thead>
 
-        </div>
+          <tbody>
+            {allForecasts.map(item => (
+              <tr
+                key={item.sku_id}
+                onClick={() => setSelectedForecast(item)}
+                style={{
+                  cursor:'pointer',
+                  borderBottom:'1px solid #E2E8F0',
+                  background:selectedForecast?.sku_id === item.sku_id
+                    ? '#E8F0FE'
+                    : 'white'
+                }}
+              >
+                <td style={{
+                  padding:'12px',
+                  textAlign:'center',
+                  fontWeight:'bold'
+                }}>
+                  {item.sku_id}
+                </td>
+
+                <td style={{
+                  padding:'12px',
+                  textAlign:'center',
+                  fontWeight:'bold'
+                }}>
+                  {item.predicted_demand}
+                </td>
+
+                <td style={{
+                  padding:'12px',
+                  textAlign:'center',
+                  color:'#1A6B3A',
+                  fontWeight:'bold'
+                }}>
+                  {item.confidence}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {selectedForecast && (
+          <div style={{
+            marginTop:'30px',
+            background:'#F8FAFC',
+            padding:'24px',
+            borderRadius:'12px',
+            border:'1px solid #E2E8F0'
+          }}>
+
+            <h3 style={{ color:'#1B2A4A' }}>
+              30-Day Forecast — {selectedForecast.sku_id}
+            </h3>
+
+            <p>
+              <b>Average Predicted Demand:</b> {selectedForecast.predicted_demand}
+            </p>
+
+            <p>
+              <b>Confidence Interval:</b>{' '}
+              Minimum expected demand = {selectedForecast.minDemand},{' '}
+              Maximum expected demand = {selectedForecast.maxDemand}
+            </p>
+
+            <ResponsiveContainer width="100%" height={320}>
+              <AreaChart
+                data={selectedForecast.demand_values.map((value, index) => ({
+                  day: `Day ${index + 1}`,
+                  demand: Math.max(0, Number(value.toFixed(1))),
+                  confidenceRange: [
+                    Math.max(0, selectedForecast.minDemand),
+                    selectedForecast.maxDemand
+                  ]
+                }))}
+              >
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+
+                <Area
+                  type="monotone"
+                  dataKey="confidenceRange"
+                  stroke="none"
+                  fill="#CBD5E1"
+                  fillOpacity={0.35}
+                  name="Confidence band"
+                />
+
+                <ReferenceLine
+                  y={Number(selectedForecast.predicted_demand)}
+                  stroke="red"
+                  strokeDasharray="5 5"
+                  label="Average Demand"
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="demand"
+                  strokeWidth={3}
+                  dot={false}
+                  name="Daily predicted demand"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+
+          </div>
+        )}
 
       </div>
-
     </div>
   )
 }
