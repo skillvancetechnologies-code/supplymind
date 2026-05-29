@@ -582,6 +582,7 @@ import joblib
 from sklearn.linear_model import LinearRegression
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
@@ -751,32 +752,39 @@ def get_supplier_risk(supplier_id: str):
             "error": str(e),
             "supplier_id": supplier_id
         }
+# ---------------------------------------------------
+# API ENDPOINT
+# ---------------------------------------------------
+
 @app.get("/supplier-risk")
 def get_supplier_risk(supplier_id: str):
 
     try:
 
+        if not supplier_id:
+            raise HTTPException(
+                status_code=400,
+                detail="supplier_id is required"
+            )
+
         result = compute_supplier_features(supplier_id)
 
         if result is None:
-            return {
-                "error": "Supplier not found or insufficient data",
-                "supplier_id": supplier_id
-            }
+            raise HTTPException(
+                status_code=404,
+                detail="Supplier not found or insufficient data"
+            )
 
         features, otif_slope_3m, current_otif = result
 
-        # Use features directly
-        features_df = features
-
         # Scale features
-        scaled = scaler.transform(features_df)
+        scaled = scaler.transform(features)
 
-        # Predict
-        prediction = model.predict(scaled)[0]
-
-        # Convert to 0-100 scale
-        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
+        # Predict probability
+        risk_score = round(
+            model.predict_proba(scaled)[0][1] * 100,
+            1
+        )
 
         # Risk tier
         if risk_score >= 70:
@@ -806,14 +814,25 @@ def get_supplier_risk(supplier_id: str):
             "current_otif": round(float(current_otif), 2)
         }
 
+    except HTTPException as e:
+        raise e
+
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
 
-        return {
-            "error": str(e),
-            "supplier_id": supplier_id
-        }
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+# ---------------------------------------------------
+# RUN API
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
@@ -1012,32 +1031,47 @@ def get_risk_tier(score):
 # API ENDPOINT
 # ---------------------------------------------------
 
+# ---------------------------------------------------
+# API ENDPOINT
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# API ENDPOINT
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# API ENDPOINT
+# ---------------------------------------------------
+
 @app.get("/supplier-risk")
 def get_supplier_risk(supplier_id: str):
 
     try:
 
+        if not supplier_id:
+            raise HTTPException(
+                status_code=400,
+                detail="supplier_id is required"
+            )
+
         result = compute_supplier_features(supplier_id)
 
         if result is None:
-            return {
-                "error": "Supplier not found or insufficient data",
-                "supplier_id": supplier_id
-            }
+            raise HTTPException(
+                status_code=404,
+                detail="Supplier not found or insufficient data"
+            )
 
         features, otif_slope_3m, current_otif = result
 
-        # Use features directly
-        features_df = features
-
         # Scale features
-        scaled = scaler.transform(features_df)
+        scaled = scaler.transform(features)
 
-        # Predict
-        prediction = model.predict(scaled)[0]
-
-        # Convert to 0-100 scale
-        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
+        # Predict probability
+        risk_score = round(
+            model.predict_proba(scaled)[0][1] * 100,
+            1
+        )
 
         # Risk tier
         if risk_score >= 70:
@@ -1067,14 +1101,37 @@ def get_supplier_risk(supplier_id: str):
             "current_otif": round(float(current_otif), 2)
         }
 
+    except HTTPException as e:
+        raise e
+
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
 
-        return {
-            "error": str(e),
-            "supplier_id": supplier_id
-        }
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+# ---------------------------------------------------
+# RUN API
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+# ---------------------------------------------------
+# RUN API
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+# ---------------------------------------------------
+# RUN API
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
