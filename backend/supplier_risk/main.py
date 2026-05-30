@@ -579,345 +579,11 @@ from pydantic import BaseModel
 import pandas as pd
 import numpy as np
 import joblib
-from sklearn.linear_model import LinearRegression
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException
-# ---------------------------------------------------
-# LOAD MODEL + SCALER
-# ---------------------------------------------------
+from sklearn.linear_model import LinearRegression
 
-model = joblib.load("supplier_risk_model.pkl")
-scaler = joblib.load("supplier_risk_scaler.pkl")
-
-# ---------------------------------------------------
-# LOAD DATA
-# ---------------------------------------------------
-
-df = pd.read_csv("supplier_performance.csv")
-
-# ---------------------------------------------------
-# FASTAPI APP
-# ---------------------------------------------------
-
-app = FastAPI(title="Supplier Risk API")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],   # or ["http://localhost:3000"]
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-@app.get("/")
-def home():
-    return {"message": "Supplier Risk API Running"}
-
-# ---------------------------------------------------
-# INPUT SCHEMA
-# ---------------------------------------------------
-
-class SupplierRequest(BaseModel):
-    supplier_id: str
-
-# ---------------------------------------------------
-# FEATURE ENGINEERING FUNCTION
-# ---------------------------------------------------
-
-def compute_supplier_features(supplier_id):
-
-    supplier_df = df[df["supplier_id"] == supplier_id].copy()
-
-    if len(supplier_df) < 3:
-        return None
-
-    supplier_df = supplier_df.sort_values("month")
-
-    # Current OTIF
-    current_otif = supplier_df["otif_percentage"].iloc[-1]
-
-    # OTIF slope (last 3 months)
-    last3 = supplier_df.tail(3)
-
-    X = np.arange(len(last3)).reshape(-1, 1)
-    y = last3["otif_percentage"].values
-
-    lr = LinearRegression()
-    lr.fit(X, y)
-
-    otif_slope_3m = lr.coef_[0]
-
-    # Other features
-    avg_lead_time = supplier_df["avg_lead_time_days"].mean()
-    reject_rate = supplier_df["quality_reject_rate_pct"].mean()
-    capacity_util = supplier_df["capacity_utilization_pct"].mean()
-
-    # Create feature dataframe
-    features = pd.DataFrame([{
-        "otif_slope_3m": otif_slope_3m,
-        "current_otif": current_otif,
-        "avg_lead_time_days": avg_lead_time,
-        "quality_reject_rate_pct": reject_rate,
-        "capacity_utilization_pct": capacity_util
-    }])
-
-    # Ensure correct feature order
-    features = features[[
-        "otif_slope_3m",
-        "current_otif",
-        "avg_lead_time_days",
-        "quality_reject_rate_pct",
-        "capacity_utilization_pct"
-    ]]
-
-    return features, otif_slope_3m, current_otif
-# ---------------------------------------------------
-# RISK TIER FUNCTION
-# ---------------------------------------------------
-
-def get_risk_tier(score):
-
-    if score >= 70:
-        return "High"
-
-    elif score >= 40:
-        return "Medium"
-
-    else:
-        return "Low"
-
-# ---------------------------------------------------
-# API ENDPOINT
-# ---------------------------------------------------
-
-@app.get("/supplier-risk")
-def get_supplier_risk(supplier_id: str):
-
-    try:
-
-        result = compute_supplier_features(supplier_id)
-
-        if result is None:
-            return {
-                "error": "Supplier not found or insufficient data",
-                "supplier_id": supplier_id
-            }
-
-        features, otif_slope_3m, current_otif = result
-
-        # Use features directly
-        features_df = features
-
-        # Scale features
-        scaled = scaler.transform(features_df)
-
-        # Predict
-        prediction = model.predict(scaled)[0]
-
-        # Convert to 0-100 scale
-        risk_score = round(model.predict_proba(scaled)[0][1] * 100, 1)
-
-        # Risk tier
-        if risk_score >= 70:
-            risk_tier = "High"
-
-        elif risk_score >= 40:
-            risk_tier = "Medium"
-
-        else:
-            risk_tier = "Low"
-
-        # Top features
-        top_features = []
-
-        if otif_slope_3m < 0:
-            top_features.append("Declining OTIF")
-
-        if current_otif < 85:
-            top_features.append("Low Current OTIF")
-
-        return {
-            "supplier_id": supplier_id,
-            "risk_score": risk_score,
-            "risk_tier": risk_tier,
-            "top_features": top_features,
-            "otif_slope_3m": round(float(otif_slope_3m), 2),
-            "current_otif": round(float(current_otif), 2)
-        }
-
-    except Exception as e:
-
-        print(f"ERROR: {str(e)}")
-
-        return {
-            "error": str(e),
-            "supplier_id": supplier_id
-        }
-# ---------------------------------------------------
-# API ENDPOINT
-# ---------------------------------------------------
-
-@app.get("/supplier-risk")
-def get_supplier_risk(supplier_id: str):
-
-    try:
-
-        if not supplier_id:
-            raise HTTPException(
-                status_code=400,
-                detail="supplier_id is required"
-            )
-
-        result = compute_supplier_features(supplier_id)
-
-        if result is None:
-            raise HTTPException(
-                status_code=404,
-                detail="Supplier not found or insufficient data"
-            )
-
-        features, otif_slope_3m, current_otif = result
-
-        # Scale features
-        scaled = scaler.transform(features)
-
-        # Predict probability
-        risk_score = round(
-            model.predict_proba(scaled)[0][1] * 100,
-            1
-        )
-
-        # Risk tier
-        if risk_score >= 70:
-            risk_tier = "High"
-
-        elif risk_score >= 40:
-            risk_tier = "Medium"
-
-        else:
-            risk_tier = "Low"
-
-        # Top features
-        top_features = []
-
-        if otif_slope_3m < 0:
-            top_features.append("Declining OTIF")
-
-        if current_otif < 85:
-            top_features.append("Low Current OTIF")
-
-        return {
-            "supplier_id": supplier_id,
-            "risk_score": risk_score,
-            "risk_tier": risk_tier,
-            "top_features": top_features,
-            "otif_slope_3m": round(float(otif_slope_3m), 2),
-            "current_otif": round(float(current_otif), 2)
-        }
-
-    except HTTPException as e:
-        raise e
-
-    except Exception as e:
-
-        print(f"ERROR: {str(e)}")
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
-
-
-# ---------------------------------------------------
-# RUN API
-# ---------------------------------------------------
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-# ---------------------------------------------------
-# RUN API
-# ---------------------------------------------------
-
-import optuna
-from sklearn.model_selection import cross_val_score
-import lightgbm as lgb # Import LightGBM
-
-def objective(trial):
-    params = {
-        'n_estimators': trial.suggest_int(
-            'n_estimators', 50, 300
-        ),
-        'max_depth': trial.suggest_int(
-            'max_depth', 3, 10
-        ),
-        'learning_rate': trial.suggest_float(
-            'learning_rate', 0.01, 0.3
-        ),
-        'num_leaves': trial.suggest_int(
-            'num_leaves', 20, 100
-        ),
-        'min_child_samples': trial.suggest_int(
-            'min_child_samples', 5, 50
-        )
-    }
-
-    # The LGBMClassifier needs to be imported, previously it was not defined
-    model = lgb.LGBMClassifier(**params, random_state=42, verbose=-1)
-    score = cross_val_score(
-        model, X, y, # Use X and y (full dataset) as defined in previous cells
-        scoring='roc_auc',
-        cv=5
-    ).mean()
-    return score
-
-study = optuna.create_study(
-    direction='maximize'
-)
-study.optimize(objective, n_trials=30)
-
-print("Best AUC:", study.best_value)
-print("Best params:", study.best_params)
-
-# Retrain with best params (corrected to use best_params from study and full data X, y)
-best_model = lgb.LGBMClassifier(
-    **study.best_params,
-    class_weight='balanced',
-    random_state=42,
-    verbose=-1
-)
-best_model.fit(X, y)
-
-import joblib
-import lightgbm as lgb
-from sklearn.preprocessing import StandardScaler
-
-# Initialize and fit the scaler on the entire dataset
-scaler_final = StandardScaler()
-X_scaled_final = scaler_final.fit_transform(X)
-
-# Initialize the best model with the parameters found by Optuna
-best_model = lgb.LGBMClassifier(
-    **best_params,
-    class_weight='balanced',
-    random_state=42,
-    verbose=-1
-)
-
-# Fit the best model on the entire scaled dataset
-best_model.fit(X_scaled_final, y)
-
-# Save the model and the scaler
-joblib.dump(best_model, 'supplier_risk_model.pkl')
-joblib.dump(scaler_final, 'supplier_risk_scaler.pkl')
-print("Model and scaler saved successfully!")
-
-
-from fastapi import FastAPI
-from pydantic import BaseModel
-import pandas as pd
-import numpy as np
-import joblib
-import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
@@ -1012,6 +678,7 @@ def compute_supplier_features(supplier_id):
     ])
 
     return features, otif_slope_3m, current_otif
+
 # ---------------------------------------------------
 # RISK TIER FUNCTION
 # ---------------------------------------------------
@@ -1026,18 +693,6 @@ def get_risk_tier(score):
 
     else:
         return "Low"
-
-# ---------------------------------------------------
-# API ENDPOINT
-# ---------------------------------------------------
-
-# ---------------------------------------------------
-# API ENDPOINT
-# ---------------------------------------------------
-
-# ---------------------------------------------------
-# API ENDPOINT
-# ---------------------------------------------------
 
 # ---------------------------------------------------
 # API ENDPOINT
@@ -1120,61 +775,80 @@ def get_supplier_risk(supplier_id: str):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-# ---------------------------------------------------
-# RUN API
-# ---------------------------------------------------
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-# ---------------------------------------------------
-# RUN API
-# ---------------------------------------------------
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-# ---------------------------------------------------
-# RUN API
-# ---------------------------------------------------
 
 
+import optuna
+from sklearn.model_selection import cross_val_score
+import lightgbm as lgb # Import LightGBM
 
-import requests
-import json
+def objective(trial):
+    params = {
+        'n_estimators': trial.suggest_int(
+            'n_estimators', 50, 300
+        ),
+        'max_depth': trial.suggest_int(
+            'max_depth', 3, 10
+        ),
+        'learning_rate': trial.suggest_float(
+            'learning_rate', 0.01, 0.3
+        ),
+        'num_leaves': trial.suggest_int(
+            'num_leaves', 20, 100
+        ),
+        'min_child_samples': trial.suggest_int(
+            'min_child_samples', 5, 50
+        )
+    }
 
-# Extract the ngrok URL from the previous output programmatically
-# This assumes the ngrok URL is in the last print statement of the cell P9QTKs7n21GZ
-import re
+    # The LGBMClassifier needs to be imported, previously it was not defined
+    model = lgb.LGBMClassifier(**params, random_state=42, verbose=-1)
+    score = cross_val_score(
+        model, X, y, # Use X and y (full dataset) as defined in previous cells
+        scoring='roc_auc',
+        cv=5
+    ).mean()
+    return score
 
-# The ngrok URL is usually in the form 'https://<random_string>.ngrok-free.dev'
-# Let's assume it's part of the standard_output of the cell P9QTKs7n21GZ
-# and we need to parse it from the execution_results. The regex will help.
+study = optuna.create_study(
+    direction='maximize'
+)
+study.optimize(objective, n_trials=30)
 
-# Given the current setup, we need to manually get the URL from the user's execution output.
-# For now, let's use the one explicitly mentioned in the previous turn.
+print("Best AUC:", study.best_value)
+print("Best params:", study.best_params)
 
-public_url_from_context = "https://disprove-gains-prognosis.ngrok-free.dev"
-api_endpoint = f"{public_url_from_context}/api/supplier-risk"
+# Retrain with best params (corrected to use best_params from study and full data X, y)
+best_model = lgb.LGBMClassifier(
+    **study.best_params,
+    class_weight='balanced',
+    random_state=42,
+    verbose=-1
+)
+best_model.fit(X, y)
 
-# Define the supplier ID to test
-supplier_id_to_test = "SUP-0069"
+import joblib
+import lightgbm as lgb
+from sklearn.preprocessing import StandardScaler
 
-# Prepare the request payload
-payload = {"supplier_id": supplier_id_to_test}
-headers = {"Content-Type": "application/json"}
+# Initialize and fit the scaler on the entire dataset
+scaler_final = StandardScaler()
+X_scaled_final = scaler_final.fit_transform(X)
 
-print(f"Testing API endpoint: {api_endpoint}")
-print(f"Requesting risk for supplier: {supplier_id_to_test}")
+# Initialize the best model with the parameters found by Optuna
+best_model = lgb.LGBMClassifier(
+    **best_params,
+    class_weight='balanced',
+    random_state=42,
+    verbose=-1
+)
 
-try:
-    response = requests.post(api_endpoint, data=json.dumps(payload), headers=headers)
-    response.raise_for_status()  # Raise an exception for HTTP errors
-    result = response.json()
-    print("\nAPI Response:")
-    print(json.dumps(result, indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Error making API request: {e}")
-    if hasattr(e, 'response') and e.response is not None:
-        print(f"Response content: {e.response.text}")
+# Fit the best model on the entire scaled dataset
+best_model.fit(X_scaled_final, y)
+
+# Save the model and the scaler
+joblib.dump(best_model, 'supplier_risk_model.pkl')
+joblib.dump(scaler_final, 'supplier_risk_scaler.pkl')
+print("Model and scaler saved successfully!")
 
 
 # Remove the leaking feature 'otif_slope_3m'
@@ -1348,44 +1022,6 @@ for key, value in trial_cleaned.params.items():
 
 best_params_cleaned = trial_cleaned.params
 best_cv_auc_cleaned = trial_cleaned.value
-
-# Define the Optuna objective function for the cleaned feature set
-def objective_cleaned(trial):
-    n_estimators = trial.suggest_int('n_estimators', 50, 300)
-    learning_rate = trial.suggest_float('learning_rate', 0.01, 0.1)
-    num_leaves = trial.suggest_int('num_leaves', 10, 40)
-    min_child_samples = trial.suggest_int('min_child_samples', 5, 30)
-
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    auc_scores = []
-
-    for fold, (train_idx, val_idx) in enumerate(cv.split(X_cleaned, y_cleaned)):
-        X_train_fold = X_cleaned[train_idx]
-        X_val_fold = X_cleaned[val_idx]
-        y_train_fold = y_cleaned[train_idx]
-        y_val_fold = y_cleaned[val_idx]
-
-        scaler_fold = StandardScaler()
-        X_train_scaled_fold = scaler_fold.fit_transform(X_train_fold)
-        X_val_scaled_fold = scaler_fold.transform(X_val_fold)
-
-        model_fold = lgb.LGBMClassifier(
-            n_estimators=n_estimators,
-            learning_rate=learning_rate,
-            num_leaves=num_leaves,
-            min_child_samples=min_child_samples,
-            class_weight='balanced',
-            random_state=42,
-            verbose=-1
-        )
-        model_fold.fit(X_train_scaled_fold, y_train_fold)
-
-        preds_fold = model_fold.predict_proba(X_val_scaled_fold)[:, 1]
-        if len(np.unique(y_val_fold)) > 1:
-            auc_fold = roc_auc_score(y_val_fold, preds_fold)
-            auc_scores.append(auc_fold)
-
-    return np.mean(auc_scores) if auc_scores else 0.0
 
 import optuna
 
