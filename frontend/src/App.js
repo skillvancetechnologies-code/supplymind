@@ -10,7 +10,8 @@ import SupplierDetail
 from './pages/SupplierDetail'
 import {
   mockPlans,
-  mockInventorySummary
+  mockInventorySummary,
+  mockSuppliers
 } from './mocks/mockData'
 import {
   USE_MOCK,
@@ -98,10 +99,12 @@ const Dashboard = () => {
      
   fetch(INVENTORY_API)
     .then(r => r.json())
-    .then(data => {
-      setSummary(data)
-      setSummaryStatus('live')
-    })
+   .then(data => {
+    console.log('Inventory API Response:', data)
+  console.log('Top 3 Critical SKUs:', data.top_3_critical)
+  setSummary(data)
+  setSummaryStatus('live')
+})
     .catch(error => {
       console.log('Inventory API error:', error)
       setSummary(mockInventorySummary)
@@ -297,9 +300,15 @@ const Dashboard = () => {
                     {sku.days_of_cover} days
                   </td>
 
-                  <td style={{padding:'10px'}}>
-                    -
-                  </td>
+                 <td style={{
+  padding:'10px'
+}}>
+  {sku.stock ||
+   sku.closing_stock_units ||
+   sku.current_stock ||
+   sku.stock_units ||
+   '-'}
+</td>
 
                 </tr>
 
@@ -450,6 +459,8 @@ const tc = (t = '') =>
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+const suppliersPerPage = 30
 
   useEffect(() => {
     fetch(SUPPLIER_API)
@@ -516,11 +527,39 @@ const Suppliers = () => {
         setSuppliers(fixedSuppliers)
       })
       .catch(error => {
-  console.log('Supplier API error:', error)
-  alert('Supplier backend API failed. Check console.')
-  setSuppliers([])
+  console.log('Supplier API error. Using mock suppliers:', error)
+
+  const fixedMockSuppliers = mockSuppliers.map(s => ({
+    supplier_id: s.id || s.supplier_id,
+    name: s.name || s.id,
+    city: s.city || '-',
+    tier: s.tier || '-',
+    current_otif: s.otif ?? '-',
+    risk_tier: s.risk || 'Low',
+    trend: s.trend || 'Stable',
+    risk_score:
+      s.risk === 'High'
+        ? 80
+        : s.risk === 'Medium'
+        ? 50
+        : 25
+  }))
+
+  setSuppliers(fixedMockSuppliers)
 })
   }, [])
+  const sortedSuppliers = [...suppliers].sort((a, b) => {
+  const numA = Number(a.supplier_id.replace('SUP-', ''))
+  const numB = Number(b.supplier_id.replace('SUP-', ''))
+  return numA - numB
+})
+
+const totalPages = Math.ceil(sortedSuppliers.length / suppliersPerPage)
+
+const startIndex = (currentPage - 1) * suppliersPerPage
+const endIndex = startIndex + suppliersPerPage
+
+const currentSuppliers = sortedSuppliers.slice(startIndex, endIndex)
 
   return (
     <div style={{
@@ -581,14 +620,7 @@ const Suppliers = () => {
         </thead>
 
         <tbody>
-        {[...suppliers]
-  .sort((a, b) => {
-    const numA = Number(a.supplier_id.replace('SUP-', ''))
-    const numB = Number(b.supplier_id.replace('SUP-', ''))
-
-    return numA - numB
-  })
-  .map((s, i) => (
+       {currentSuppliers.map((s, i) => (
             <tr
               key={s.supplier_id || i}
               style={{
@@ -658,6 +690,31 @@ const Suppliers = () => {
         </tbody>
 
       </table>
+      <div style={{
+  display:'flex',
+  justifyContent:'center',
+  alignItems:'center',
+  gap:'16px',
+  marginTop:'24px'
+}}>
+  <button
+    onClick={() => setCurrentPage(currentPage - 1)}
+    disabled={currentPage === 1}
+  >
+    Previous
+  </button>
+
+  <span>
+    Showing {startIndex + 1} - {Math.min(endIndex, sortedSuppliers.length)} of {sortedSuppliers.length}
+  </span>
+
+  <button
+    onClick={() => setCurrentPage(currentPage + 1)}
+    disabled={currentPage === totalPages}
+  >
+    Next
+  </button>
+</div>
 
     </div>
   )
@@ -729,10 +786,35 @@ const Forecasts = () => {
         setSelectedForecast(results[0])
         setForecastStatus('live')
       })
-      .catch(error => {
-        console.log('Forecast API error:', error)
-        setForecastStatus('mock')
-      })
+     .catch(error => {
+  console.log('Forecast API error. Using mock forecast data:', error)
+
+  const mockForecasts = rahulSkus.map((sku, index) => {
+    const base = 120 + index * 18
+    const demands = Array.from({ length: 30 }, (_, day) =>
+      base + Math.round(Math.sin(day / 3) * 12) + day
+    )
+
+    const avgDemand =
+      demands.reduce((sum, value) => sum + value, 0) / demands.length
+
+    const minDemand = Math.min(...demands)
+    const maxDemand = Math.max(...demands)
+
+    return {
+      sku_id: sku,
+      predicted_demand: avgDemand.toFixed(1),
+      confidence: `${minDemand} - ${maxDemand}`,
+      minDemand,
+      maxDemand,
+      demand_values: demands
+    }
+  })
+
+  setAllForecasts(mockForecasts)
+  setSelectedForecast(mockForecasts[0])
+  setForecastStatus('mock')
+})
   }, [])
 
   return (
@@ -766,9 +848,11 @@ const Forecasts = () => {
           color:'#1A6B3A',
           fontWeight:'bold'
         }}>
-          {forecastStatus === 'live'
-            ? 'Live forecast generated'
-            : 'Loading forecast data...'}
+         {forecastStatus === 'live'
+  ? 'Live forecast generated'
+  : forecastStatus === 'mock'
+  ? 'Showing mock forecast data'
+  : 'Loading forecast data...'}
         </p>
 
         <table style={{
