@@ -616,5 +616,49 @@ def get_supplier_details(supplier_id: str):
         latency = round((time.time() - start) * 1000, 2)
         log_request("supplier-details",latency,0,f"ERROR: {str(e)}")
         return {"error": str(e)}
+
+@app.get("/api/analytics/inventory-detail")
+def inventory_detail(status: str = None, category: str = None):
+    start = time.time()
+    try:
+        query = """
+            SELECT
+                ip.sku_id,
+                sk.sku_name,
+                sk.category,
+                ip.closing_stock_units as current_stock,
+                ip.days_of_cover,
+                CASE
+                    WHEN ip.days_of_cover < 14 THEN 'critical'
+                    WHEN ip.days_of_cover >= 14
+                    AND ip.days_of_cover < 30 THEN 'warning'
+                    ELSE 'healthy'
+                END as status
+            FROM inventory_positions ip
+            JOIN skus sk ON ip.sku_id = sk.sku_id
+            WHERE ip.date = (
+                SELECT MAX(date)
+                FROM inventory_positions
+            )
+            ORDER BY ip.days_of_cover ASC
+        """
+        df = pd.read_sql(query, engine)
+
+        if status:
+            df = df[df['status'] == status.lower()]
+
+        if category:
+            df = df[df['category'].str.lower() == category.lower()]
+
+        result = df.to_dict(orient='records')
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("inventory-detail", latency, len(result), "200")
+        return result
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("inventory-detail", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
