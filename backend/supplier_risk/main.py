@@ -1,4 +1,5 @@
-
+import logging
+import time
 
 import pandas as pd
 df_s = pd.read_csv('suppliers.csv')
@@ -583,7 +584,8 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException
 from sklearn.linear_model import LinearRegression
-
+import logging
+import time
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
@@ -597,7 +599,11 @@ scaler = joblib.load("supplier_risk_scaler_cleaned.pkl")
 # ---------------------------------------------------
 
 df = pd.read_csv("supplier_performance.csv")
-
+logging.basicConfig(
+    filename="riskscore.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s"
+)
 # ---------------------------------------------------
 # FASTAPI APP
 # ---------------------------------------------------
@@ -702,7 +708,7 @@ def get_risk_tier(score):
 def get_supplier_risk(supplier_id: str):
 
     try:
-
+                start_time = time.time()
         if not supplier_id:
             raise HTTPException(
                 status_code=400,
@@ -746,7 +752,12 @@ def get_supplier_risk(supplier_id: str):
 
         if current_otif < 85:
             top_features.append("Low Current OTIF")
-
+                    logging.info(
+    f"supplier_id={supplier_id}, "
+    f"latency_ms={latency_ms}, "
+    f"risk_band={risk_tier}, "
+    f"status=SUCCESS"
+)
         return {
             "supplier_id": supplier_id,
             "risk_score": risk_score,
@@ -754,6 +765,7 @@ def get_supplier_risk(supplier_id: str):
             "top_features": top_features,
             "otif_slope_3m": round(float(otif_slope_3m), 2),
             "current_otif": round(float(current_otif), 2)
+            latency_ms = round((time.time() - start_time) * 1000, 2)
         }
 
     except HTTPException as e:
@@ -762,6 +774,11 @@ def get_supplier_risk(supplier_id: str):
     except Exception as e:
 
         print(f"ERROR: {str(e)}")
+            logging.error(
+    f"supplier_id={supplier_id}, "
+    f"status=FAILED, "
+    f"error={str(e)}"
+)
 
         raise HTTPException(
             status_code=500,
