@@ -707,8 +707,9 @@ def get_risk_tier(score):
 @app.get("/supplier-risk")
 def get_supplier_risk(supplier_id: str):
 
+    start_time = time.time()
+
     try:
-                start_time = time.time()
         if not supplier_id:
             raise HTTPException(
                 status_code=400,
@@ -737,10 +738,8 @@ def get_supplier_risk(supplier_id: str):
         # Risk tier
         if risk_score >= 70:
             risk_tier = "High"
-
         elif risk_score >= 40:
             risk_tier = "Medium"
-
         else:
             risk_tier = "Low"
 
@@ -752,39 +751,56 @@ def get_supplier_risk(supplier_id: str):
 
         if current_otif < 85:
             top_features.append("Low Current OTIF")
-                    logging.info(
-    f"supplier_id={supplier_id}, "
-    f"latency_ms={latency_ms}, "
-    f"risk_band={risk_tier}, "
-    f"status=SUCCESS"
-)
+
+        # Calculate latency
+        latency_ms = round((time.time() - start_time) * 1000, 2)
+
+        # Log success
+        logging.info(
+            f"supplier_id={supplier_id}, "
+            f"latency_ms={latency_ms}, "
+            f"risk_band={risk_tier}, "
+            f"status=SUCCESS"
+        )
+
         return {
             "supplier_id": supplier_id,
             "risk_score": risk_score,
             "risk_tier": risk_tier,
             "top_features": top_features,
             "otif_slope_3m": round(float(otif_slope_3m), 2),
-            "current_otif": round(float(current_otif), 2)
-            latency_ms = round((time.time() - start_time) * 1000, 2)
+            "current_otif": round(float(current_otif), 2),
+            "latency_ms": latency_ms
         }
 
     except HTTPException as e:
+
+        latency_ms = round((time.time() - start_time) * 1000, 2)
+
+        logging.error(
+            f"supplier_id={supplier_id}, "
+            f"latency_ms={latency_ms}, "
+            f"status=FAILED, "
+            f"error={e.detail}"
+        )
+
         raise e
 
     except Exception as e:
 
-        print(f"ERROR: {str(e)}")
-            logging.error(
-    f"supplier_id={supplier_id}, "
-    f"status=FAILED, "
-    f"error={str(e)}"
-)
+        latency_ms = round((time.time() - start_time) * 1000, 2)
+
+        logging.error(
+            f"supplier_id={supplier_id}, "
+            f"latency_ms={latency_ms}, "
+            f"status=FAILED, "
+            f"error={str(e)}"
+        )
 
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
 
 # ---------------------------------------------------
 # RUN API
