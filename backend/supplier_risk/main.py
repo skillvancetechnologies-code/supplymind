@@ -632,35 +632,6 @@ class SupplierRequest(BaseModel):
 # ---------------------------------------------------
 
 def compute_supplier_features(supplier_id):
-            def calculate_risk_trend(supplier_id):
-
-    supplier_df = df[df["supplier_id"] == supplier_id].copy()
-
-    if len(supplier_df) < 7:
-        return "Stable", 0
-
-    supplier_df = supplier_df.sort_values("month")
-
-    last7 = supplier_df.tail(7)
-
-    X = np.arange(len(last7)).reshape(-1, 1)
-    y = last7["otif_percentage"].values
-
-    lr = LinearRegression()
-    lr.fit(X, y)
-
-    velocity = float(lr.coef_[0])
-
-    if velocity < -1:
-        trend = "Increasing Risk"
-
-    elif velocity > 1:
-        trend = "Decreasing Risk"
-
-    else:
-        trend = "Stable"
-
-    return trend, velocity
 
     supplier_df = df[df["supplier_id"] == supplier_id].copy()
 
@@ -680,14 +651,14 @@ def compute_supplier_features(supplier_id):
     # Current OTIF
     current_otif = last3["otif_percentage"].iloc[-1]
 
-    # OTIF slope (trend)
+    # OTIF slope
     X = np.arange(len(last3)).reshape(-1, 1)
     y = last3["otif_percentage"].values
 
     lr = LinearRegression()
     lr.fit(X, y)
 
-    otif_slope_3m = lr.coef_[0]
+    otif_slope_3m = float(lr.coef_[0])
 
     # Lead time trend
     lt_trend = (
@@ -697,40 +668,73 @@ def compute_supplier_features(supplier_id):
 
     # Other features
     avg_quality_reject = last3["quality_reject_rate_pct"].mean()
-
     avg_fill_rate = last3["fill_rate_pct"].mean()
-
     avg_capacity_util = last3["capacity_utilization_pct"].mean()
 
-    # Feature dataframe
-    features = pd.DataFrame([
-        {
-            "lead_time_trend": round(lt_trend, 2),
-            "avg_quality_reject": round(avg_quality_reject, 2),
-            "avg_fill_rate": round(avg_fill_rate, 2),
-            "avg_capacity_util": round(avg_capacity_util, 2)
-        }
-    ])
+    # Feature DataFrame
+    features = pd.DataFrame([{
+        "lead_time_trend": round(lt_trend, 2),
+        "avg_quality_reject": round(avg_quality_reject, 2),
+        "avg_fill_rate": round(avg_fill_rate, 2),
+        "avg_capacity_util": round(avg_capacity_util, 2)
+    }])
 
     return features, otif_slope_3m, current_otif
+
+
+# ---------------------------------------------------
+# RISK TREND FUNCTION
+# ---------------------------------------------------
+
+def calculate_risk_trend(supplier_id):
+
+    supplier_df = df[df["supplier_id"] == supplier_id].copy()
+
+    if len(supplier_df) < 6:
+        return "Stable", 0
+
+    supplier_df = supplier_df.sort_values("month")
+
+    # Use available history (last 6 months)
+    history = supplier_df.tail(6)
+
+    X = np.arange(len(history)).reshape(-1, 1)
+    y = history["otif_percentage"].values
+
+    lr = LinearRegression()
+    lr.fit(X, y)
+
+    velocity = float(lr.coef_[0])
+
+    if velocity < -1:
+        trend = "Increasing Risk"
+
+    elif velocity > 1:
+        trend = "Decreasing Risk"
+
+    else:
+        trend = "Stable"
+
+    return trend, velocity
 
 # ---------------------------------------------------
 # RISK TIER FUNCTION
 # ---------------------------------------------------
 
 def get_risk_tier(score):
+    """
+    Returns the risk tier based on the risk score.
+    """
 
     if score >= 70:
         return "High"
-
     elif score >= 40:
         return "Medium"
-
     else:
         return "Low"
 
 # ---------------------------------------------------
-# API ENDPOINT
+# SUPPLIER RISK ENDPOINT
 # ---------------------------------------------------
 
 @app.get("/supplier-risk")
@@ -739,6 +743,7 @@ def get_supplier_risk(supplier_id: str):
     start_time = time.time()
 
     try:
+
         if not supplier_id:
             raise HTTPException(
                 status_code=400,
@@ -755,24 +760,15 @@ def get_supplier_risk(supplier_id: str):
 
         features, otif_slope_3m, current_otif = result
 
-        # Scale features
         scaled = scaler.transform(features)
 
-        # Predict probability
         risk_score = round(
             model.predict_proba(scaled)[0][1] * 100,
             1
         )
 
-        # Risk tier
-        if risk_score >= 70:
-            risk_tier = "High"
-        elif risk_score >= 40:
-            risk_tier = "Medium"
-        else:
-            risk_tier = "Low"
+        risk_tier = get_risk_tier(risk_score)
 
-        # Top features
         top_features = []
 
         if otif_slope_3m < 0:
@@ -781,10 +777,11 @@ def get_supplier_risk(supplier_id: str):
         if current_otif < 85:
             top_features.append("Low Current OTIF")
 
-        # Calculate latency
-        latency_ms = round((time.time() - start_time) * 1000, 2)
+        latency_ms = round(
+            (time.time() - start_time) * 1000,
+            2
+        )
 
-        # Log success
         logging.info(
             f"supplier_id={supplier_id}, "
             f"latency_ms={latency_ms}, "
@@ -804,7 +801,10 @@ def get_supplier_risk(supplier_id: str):
 
     except HTTPException as e:
 
-        latency_ms = round((time.time() - start_time) * 1000, 2)
+        latency_ms = round(
+            (time.time() - start_time) * 1000,
+            2
+        )
 
         logging.error(
             f"supplier_id={supplier_id}, "
@@ -817,7 +817,10 @@ def get_supplier_risk(supplier_id: str):
 
     except Exception as e:
 
-        latency_ms = round((time.time() - start_time) * 1000, 2)
+        latency_ms = round(
+            (time.time() - start_time) * 1000,
+            2
+        )
 
         logging.error(
             f"supplier_id={supplier_id}, "
@@ -830,7 +833,13 @@ def get_supplier_risk(supplier_id: str):
             status_code=500,
             detail=str(e)
         )
-                @app.get("/api/analytics/risk-prediction/{supplier_id}")
+
+
+# ---------------------------------------------------
+# RISK PREDICTION ENDPOINT
+# ---------------------------------------------------
+
+@app.get("/api/analytics/risk-prediction/{supplier_id}")
 def risk_prediction(supplier_id: str):
 
     start_time = time.time()
@@ -854,6 +863,8 @@ def risk_prediction(supplier_id: str):
             1
         )
 
+        risk_tier = get_risk_tier(risk_score)
+
         trend, velocity = calculate_risk_trend(supplier_id)
 
         predicted_days = None
@@ -867,28 +878,23 @@ def risk_prediction(supplier_id: str):
                     1
                 )
 
-        warning = "No early warning"
-
         alert = False
+        warning = "No early warning."
 
-        alert = False
-
-if abs(velocity) > 10:
-    alert = True
-
-if predicted_days is not None and predicted_days <= 7:
-    alert = True
-
-if risk_score >= 70:
-    alert = True
-
-            warning = (
-                f"Supplier risk increasing. "
-                f"May reach High Risk in "
-                f"{predicted_days} months."
-            )
-
+        if abs(velocity) > 10:
             alert = True
+
+        if predicted_days is not None and predicted_days <= 7:
+            alert = True
+
+        if risk_score >= 70:
+            alert = True
+
+        if alert:
+            warning = (
+                "Supplier risk increasing. "
+                "Immediate intervention recommended."
+            )
 
         latency_ms = round(
             (time.time() - start_time) * 1000,
@@ -896,32 +902,29 @@ if risk_score >= 70:
         )
 
         logging.info(
-    f"timestamp={time.strftime('%Y-%m-%d %H:%M:%S')}, "
-    f"supplier_id={supplier_id}, "
-    f"current_score={risk_score}, "
-    f"trend={trend}, "
-    f"alert_fired={alert}"
-)
+            f"timestamp={time.strftime('%Y-%m-%d %H:%M:%S')}, "
+            f"supplier_id={supplier_id}, "
+            f"current_score={risk_score}, "
+            f"trend={trend}, "
+            f"alert_fired={alert}"
+        )
 
         return {
 
             "supplier_id": supplier_id,
-
             "current_risk_score": risk_score,
-
+            "risk_tier": risk_tier,
             "trend": trend,
-
             "velocity": round(velocity, 2),
-
             "predicted_days_to_high_risk": predicted_days,
-
             "early_warning": warning,
-
             "alert_fired": alert,
-
             "latency_ms": latency_ms
 
         }
+
+    except HTTPException as e:
+        raise e
 
     except Exception as e:
 
@@ -931,17 +934,6 @@ if risk_score >= 70:
             status_code=500,
             detail=str(e)
         )
-if alert:
-
-    warning = (
-        "Supplier risk increasing. "
-        "Immediate intervention recommended."
-    )
-
-else:
-
-    warning = "No early warning."
-
 # ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
