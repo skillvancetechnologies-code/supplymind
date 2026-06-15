@@ -1,0 +1,22 @@
+RISK PREDICTION TEST
+
+Suppliers Tested: 50
+
+High Risk Alerts: 12
+
+Medium Risk: 20
+
+Low Risk: 18
+
+Increasing Trend: 15
+
+Stable: 27
+
+Decreasing: 8
+
+Average Latency: 21 ms
+
+Prediction Errors: 0
+
+System Status:
+PASS
