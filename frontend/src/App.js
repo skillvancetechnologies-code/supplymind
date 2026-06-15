@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import SupplierDetail
 from './pages/SupplierDetail'
+import SupplierIntelligenceDashboard from './pages/SupplierIntelligenceDashboard'
 import {
   mockPlans,
   mockInventorySummary,
@@ -20,7 +21,8 @@ import {
   INVENTORY_API,
   FORECAST_ACCURACY_API,
   SUPPLIER_API,
-  DISRUPTION_API
+  DISRUPTION_API,
+  INVENTORY_DETAIL_API
 } from './api/config'
 import {
   AreaChart,
@@ -37,48 +39,14 @@ import {
    INVENTORY DATA
 ========================= */
 
-const inventoryData = [
-  {
-    sku:'SKU-00064',
-    name:'Electronics Component 64',
-    category:'Electronics',
-    stock:45,
-    doc:1.4,
-    status:'Critical'
-  },
-  {
-    sku:'SKU-00123',
-    name:'Packaging Component 12',
-    category:'Packaging',
-    stock:980,
-    doc:6.2,
-    status:'Warning'
-  },
-  {
-    sku:'SKU-00201',
-    name:'Raw Materials Component 20',
-    category:'Raw Materials',
-    stock:5200,
-    doc:18.5,
-    status:'Healthy'
-  },
-  {
-    sku:'SKU-00312',
-    name:'Mechanical Component 31',
-    category:'Mechanical',
-    stock:320,
-    doc:2.1,
-    status:'Critical'
-  },
-]
 
-const statusColor = (s) =>
-  s === 'Critical'
-    ? '#C53030'
-    : s === 'Warning'
-    ? '#B7791F'
-    : '#1A6B3A'
+const statusColor = (s = '') => {
+  const status = s.toLowerCase()
 
+  if (status === 'critical') return '#C53030'
+  if (status === 'warning') return '#B7791F'
+  return '#1A6B3A'
+}
 /* =========================
    DASHBOARD
 ========================= */
@@ -367,77 +335,113 @@ const Dashboard = () => {
    INVENTORY PAGE
 ========================= */
 
-const Inventory = () => (
-  <div style={{
-    padding:'40px',
-    flex:1
-  }}>
+const Inventory = () => {
+  const [inventory, setInventory] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState('pending')
 
-    <h2 style={{
-      color:'#1B2A4A'
-    }}>
-      Inventory Positions
-    </h2>
+  useEffect(() => {
+    fetch(INVENTORY_DETAIL_API)
+      .then(r => {
+        if (!r.ok) throw new Error('Inventory detail endpoint not ready')
+        return r.json()
+      })
+      .then(data => {
+        const rows = Array.isArray(data)
+          ? data
+          : data.inventory_detail || data.data || data.results || []
 
-    <table style={{
-      width:'100%',
-      borderCollapse:'collapse',
-      marginTop:'20px',
-      background:'white',
-      borderRadius:'8px',
-      overflow:'hidden',
-      boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
-    }}>
+        setInventory(rows)
+        setStatus('live')
+      })
+      .catch(error => {
+        console.log('Inventory detail API pending:', error)
+        setInventory([])
+        setStatus('pending')
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
-      <thead>
-        <tr style={{
-          background:'#1B2A4A'
+  return (
+    <div style={{ padding:'40px', flex:1 }}>
+      <h2 style={{ color:'#1B2A4A' }}>
+        Inventory Positions
+      </h2>
+
+      <p style={{ color:'#4A5568' }}>
+        {status === 'live'
+          ? 'Live SKU-level inventory data'
+          : 'Inventory detail endpoint pending from backend'}
+      </p>
+
+      {loading && (
+        <div style={{
+          background:'white',
+          padding:'20px',
+          borderRadius:'8px',
+          marginTop:'20px'
         }}>
-          {['SKU ID','Product','Category','Stock','Days of Cover','Status'].map(h => (
-            <th
-              key={h}
-              style={{
-                padding:'12px',
-                color:'white',
-                textAlign:'left'
-              }}
-            >
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
+          Inventory detail loading...
+        </div>
+      )}
 
-      <tbody>
-        {inventoryData.map((r,i) => (
-          <tr
-            key={r.sku}
-            style={{
-              background:i%2===0 ? '#F4F6F9' : 'white'
-            }}
-          >
+      {!loading && inventory.length === 0 && (
+        <div style={{
+          background:'white',
+          padding:'20px',
+          borderRadius:'8px',
+          marginTop:'20px',
+          color:'#B7791F',
+          fontWeight:'bold'
+        }}>
+          No live SKU inventory rows available yet. Waiting for /api/analytics/inventory-detail.
+        </div>
+      )}
 
-            <td style={{padding:'10px'}}>{r.sku}</td>
-            <td style={{padding:'10px'}}>{r.name}</td>
-            <td style={{padding:'10px'}}>{r.category}</td>
-            <td style={{padding:'10px'}}>{r.stock}</td>
-            <td style={{padding:'10px'}}>{r.doc} days</td>
+      {!loading && inventory.length > 0 && (
+        <table style={{
+          width:'100%',
+          borderCollapse:'collapse',
+          marginTop:'20px',
+          background:'white',
+          borderRadius:'8px',
+          overflow:'hidden',
+          boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <thead>
+            <tr style={{ background:'#1B2A4A' }}>
+              {['SKU ID','SKU Name','Category','Current Stock','Days of Cover','Status'].map(h => (
+                <th key={h} style={{ padding:'12px', color:'white', textAlign:'left' }}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-            <td style={{
-              padding:'10px',
-              fontWeight:'bold',
-              color:statusColor(r.status)
-            }}>
-              {r.status}
-            </td>
+          <tbody>
+            {inventory.map((r, i) => (
+              <tr key={r.sku_id || i} style={{ background:i%2===0 ? '#F4F6F9' : 'white' }}>
+                <td style={{ padding:'10px' }}>{r.sku_id}</td>
+                <td style={{ padding:'10px' }}>{r.sku_name}</td>
+                <td style={{ padding:'10px' }}>{r.category}</td>
+                <td style={{ padding:'10px' }}>{r.current_stock}</td>
+                <td style={{ padding:'10px' }}>{r.days_of_cover} days</td>
+                <td style={{
+                  padding:'10px',
+                  fontWeight:'bold',
+                  color:statusColor(String(r.status).toLowerCase())
+                }}>
+                  {r.status}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}
 
-          </tr>
-        ))}
-      </tbody>
-
-    </table>
-  </div>
-)
 
 /* =========================
    SUPPLIERS PAGE
@@ -460,94 +464,98 @@ const tc = (t = '') =>
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-const suppliersPerPage = 30
+const suppliersPerPage = 10
 
   useEffect(() => {
-    fetch(SUPPLIER_API)
-      .then(r => r.json())
-      .then(data => {
-        console.log('Pavan supplier API response:', data)
+  const cachedData = sessionStorage.getItem('supplierRisksCache')
 
-        const supplierList =
-          Array.isArray(data)
-            ? data
-            : data.supplier_risks ||
-              data.suppliers ||
-              data.data ||
-              data.results ||
-              []
+  if (cachedData) {
+    console.log('Using cached supplier risks')
+    setSuppliers(JSON.parse(cachedData))
+    return
+  }
 
-        console.log('Actual supplier list:', supplierList)
-        console.log('First supplier object:', supplierList[0])
-        console.log('First 5 suppliers:', supplierList.slice(0, 5))
-        
+  fetch(SUPPLIER_API)
+    .then(r => r.json())
+    .then(data => {
+      console.log('Pavan supplier API response:', data)
 
-        const fixedSuppliers = supplierList.map((s) => {
-          const riskScore = Number(
-            s.risk_score ??
-            s.supplier_risk_score ??
-            s.score ??
-            0
-          )
+      const supplierList =
+        Array.isArray(data)
+          ? data
+          : data.supplier_risks ||
+            data.suppliers ||
+            data.data ||
+            data.results ||
+            []
 
-          const otifValue =
-            s.current_otif ??
-            s.otif ??
-            s.otif_percent ??
-            s.otif_percentage ??
-            s.otif_pct ??
-            s.avg_otif ??
-            s.current_otif_percentage ??
-            '-'
+      const fixedSuppliers = supplierList.map((s) => {
+        const riskScore = Number(
+          s.risk_score ??
+          s.supplier_risk_score ??
+          s.score ??
+          0
+        )
 
-          const riskValue =
-            s.risk_tier ??
-            s.risk_level ??
-            s.risk ??
-            (riskScore >= 70 ? 'High' : riskScore >= 40 ? 'Medium' : 'Low')
+        const otifValue =
+          s.current_otif ??
+          s.otif ??
+          s.otif_percent ??
+          s.otif_percentage ??
+          s.otif_pct ??
+          s.avg_otif ??
+          s.current_otif_percentage ??
+          '-'
 
-          const trendValue =
-            s.trend ??
-            s.performance_trend ??
-            s.risk_trend ??
-            (riskScore >= 70 ? 'Declining' : riskScore >= 40 ? 'Watch' : 'Stable')
+        const riskValue =
+          s.risk_tier ??
+          s.risk_level ??
+          s.risk ??
+          (riskScore >= 70 ? 'High' : riskScore >= 40 ? 'Medium' : 'Low')
 
-          return {
-            supplier_id: s.supplier_id,
-            name: s.supplier_name || s.name || s.supplier_id || '-',
-            city: s.city || s.supplier_city || '-',
-            tier: s.city_tier || s.tier || '-',
-           current_otif: otifValue,
-           risk_tier: riskValue,
-            trend: trendValue,
-            risk_score: riskScore
-          }
-        })
+        const trendValue =
+          s.trend ??
+          s.performance_trend ??
+          s.risk_trend ??
+          (riskScore >= 70 ? 'Declining' : riskScore >= 40 ? 'Watch' : 'Stable')
 
-        setSuppliers(fixedSuppliers)
+        return {
+          supplier_id: s.supplier_id,
+          name: s.supplier_name || s.name || s.supplier_id || '-',
+          city: s.city || s.supplier_city || '-',
+          tier: s.city_tier || s.tier || '-',
+          current_otif: otifValue,
+          risk_tier: riskValue,
+          trend: trendValue,
+          risk_score: riskScore
+        }
       })
-      .catch(error => {
-  console.log('Supplier API error. Using mock suppliers:', error)
 
-  const fixedMockSuppliers = mockSuppliers.map(s => ({
-    supplier_id: s.id || s.supplier_id,
-    name: s.name || s.id,
-    city: s.city || '-',
-    tier: s.tier || '-',
-    current_otif: s.otif ?? '-',
-    risk_tier: s.risk || 'Low',
-    trend: s.trend || 'Stable',
-    risk_score:
-      s.risk === 'High'
-        ? 80
-        : s.risk === 'Medium'
-        ? 50
-        : 25
-  }))
+      setSuppliers(fixedSuppliers)
+      sessionStorage.setItem('supplierRisksCache', JSON.stringify(fixedSuppliers))
+    })
+    .catch(error => {
+      console.log('Supplier API error. Using mock suppliers:', error)
 
-  setSuppliers(fixedMockSuppliers)
-})
-  }, [])
+      const fixedMockSuppliers = mockSuppliers.map(s => ({
+        supplier_id: s.id || s.supplier_id,
+        name: s.name || s.id,
+        city: s.city || '-',
+        tier: s.tier || '-',
+        current_otif: s.otif ?? '-',
+        risk_tier: s.risk || 'Low',
+        trend: s.trend || 'Stable',
+        risk_score:
+          s.risk === 'High'
+            ? 80
+            : s.risk === 'Medium'
+            ? 50
+            : 25
+      }))
+
+      setSuppliers(fixedMockSuppliers)
+    })
+}, [])
   const sortedSuppliers = [...suppliers].sort((a, b) => {
   const numA = Number(a.supplier_id.replace('SUP-', ''))
   const numB = Number(b.supplier_id.replace('SUP-', ''))
@@ -705,8 +713,8 @@ const currentSuppliers = sortedSuppliers.slice(startIndex, endIndex)
   </button>
 
   <span>
-    Showing {startIndex + 1} - {Math.min(endIndex, sortedSuppliers.length)} of {sortedSuppliers.length}
-  </span>
+  Showing {startIndex + 1} - {Math.min(endIndex, sortedSuppliers.length)} of {sortedSuppliers.length}
+</span>
 
   <button
     onClick={() => setCurrentPage(currentPage + 1)}
@@ -1022,8 +1030,11 @@ const Disruptions = () => {
   useEffect(() => {
 
   fetch(DISRUPTION_API)
-    .then(r => r.json())
-    .then(data => setDisruptions(data))
+  .then(r => r.json())
+  .then(data => {
+    console.log("Disruption API Response:", data)
+    setDisruptions(data)
+  })
     .catch(error => {
       console.log('Disruption API error:', error)
       console.log('Using mock data')
@@ -1478,6 +1489,15 @@ function App() {
 >
   📈 Forecasts
 </div>
+<div
+  onClick={() => setPage('supplierIntelligence')}
+  style={{
+    cursor:'pointer',
+    fontWeight:'bold'
+  }}
+>
+  🧠 Supplier Intelligence
+</div>
 
           </div>
         </div>
@@ -1521,6 +1541,7 @@ function App() {
         {page === 'suppliers' && <Suppliers />}
         {page === 'disruptions' && <Disruptions />}
         {page === 'forecasts' && <Forecasts />}
+        {page === 'supplierIntelligence' && <SupplierIntelligenceDashboard />}
       </>
     }
   />

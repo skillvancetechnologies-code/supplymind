@@ -1,4 +1,4 @@
-export const USE_MOCK = true
+export const USE_MOCK = false
 
 /* Pavan Render URL */
 export const BASE_URL =
@@ -18,6 +18,17 @@ export const SUPPLIER_DETAIL_API =
 
 export const DISRUPTION_API =
 `${BASE_URL}/api/analytics/disruption-risks`
+
+
+export const INVENTORY_DETAIL_API =
+  `${BASE_URL}/api/analytics/inventory-detail`;
+
+
+  export const SUPPLIER_SCORECARD_API =
+  `${BASE_URL}/api/analytics/supplier-scorecard`
+
+export const SUPPLIER_PEERS_API =
+  `${BASE_URL}/api/analytics/supplier-peers`
 
 
 /* Karthi Render URL */
