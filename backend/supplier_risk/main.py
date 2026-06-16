@@ -981,6 +981,107 @@ def risk_prediction(supplier_id: str):
             detail=str(e)
         )
 # ---------------------------------------------------
+# SUPPLIER RISK TREND VISUALIZATION ENDPOINT
+# ---------------------------------------------------
+
+@app.get("/api/supplier-risk-trends/{supplier_id}")
+def supplier_risk_trends(supplier_id: str):
+
+    start_time = time.time()
+
+    try:
+
+        result = compute_supplier_features(supplier_id)
+
+        if result is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Supplier not found"
+            )
+
+        features, otif_slope_3m, current_otif = result
+
+        scaled = scaler.transform(features)
+
+        current_score = round(
+            model.predict_proba(scaled)[0][1] * 100,
+            1
+        )
+
+        # Get trend and velocity
+        trend, velocity = calculate_risk_trend(supplier_id)
+
+        # Generate historical risk data
+        history = generate_risk_history(supplier_id)
+
+        # Severity classification
+        severity = classify_severity(
+            current_score,
+            velocity
+        )
+
+        # Estimate days until High Risk
+        days_until_high_risk = None
+
+        if (
+            trend == "Increasing Risk"
+            and current_score < 70
+            and abs(velocity) > 0
+        ):
+
+            days_until_high_risk = round(
+                (70 - current_score) / abs(velocity),
+                1
+            )
+
+        latency_ms = round(
+            (time.time() - start_time) * 1000,
+            2
+        )
+
+        logging.info(
+            f"TrendEndpoint "
+            f"supplier_id={supplier_id}, "
+            f"current_score={current_score}, "
+            f"trend={trend}, "
+            f"severity={severity}, "
+            f"latency_ms={latency_ms}"
+        )
+
+        return {
+
+            "supplier_id": supplier_id,
+
+            "last_30_days": history,
+
+            "trend": trend,
+
+            "severity": severity,
+
+            "current_score": current_score,
+
+            "velocity": round(velocity, 2),
+
+            "days_until_high_risk": days_until_high_risk,
+
+            "latency_ms": latency_ms
+
+        }
+
+    except HTTPException as e:
+
+        raise e
+
+    except Exception as e:
+
+        logging.error(str(e))
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+                
+# ---------------------------------------------------
 # RUN API
 # ---------------------------------------------------
 
