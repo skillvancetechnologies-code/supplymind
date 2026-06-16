@@ -695,7 +695,7 @@ def calculate_risk_trend(supplier_id):
 
     supplier_df = supplier_df.sort_values("month")
 
-    # Use available history (last 6 months)
+    # Use the available history (last 6 months)
     history = supplier_df.tail(6)
 
     X = np.arange(len(history)).reshape(-1, 1)
@@ -706,16 +706,62 @@ def calculate_risk_trend(supplier_id):
 
     velocity = float(lr.coef_[0])
 
+    # Trend classification
     if velocity < -1:
         trend = "Increasing Risk"
-
     elif velocity > 1:
         trend = "Decreasing Risk"
-
     else:
         trend = "Stable"
 
     return trend, velocity
+
+
+# ---------------------------------------------------
+# RISK HISTORY FUNCTION
+# ---------------------------------------------------
+
+def generate_risk_history(supplier_id):
+
+    supplier_df = df[df["supplier_id"] == supplier_id].copy()
+
+    if supplier_df.empty:
+        return []
+
+    supplier_df = supplier_df.sort_values("month")
+
+    history = []
+
+    for _, row in supplier_df.iterrows():
+
+        # Approximate risk score using OTIF
+        risk_score = round(max(0, min(100, 100 - row["otif_percentage"])), 1)
+
+        history.append({
+            "date": str(row["month"]),
+            "risk_score": risk_score
+        })
+
+    return history
+
+
+# ---------------------------------------------------
+# SEVERITY CLASSIFICATION
+# ---------------------------------------------------
+
+def classify_severity(current_score, velocity):
+
+    if current_score >= 80 and velocity < -1:
+        return "CRITICAL"
+
+    elif velocity < -1:
+        return "WARNING"
+
+    elif abs(velocity) <= 1:
+        return "STABLE"
+
+    else:
+        return "IMPROVING"
 
 # ---------------------------------------------------
 # RISK TIER FUNCTION
