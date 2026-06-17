@@ -45,6 +45,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 df_sup = pd.read_csv('suppliers.csv')
 df_perf = pd.read_csv('supplier_performance.csv')
@@ -84,6 +85,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 df_sup = pd.read_csv('suppliers.csv')
 df_perf = pd.read_csv('supplier_performance.csv')
@@ -183,6 +185,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 df_sup = pd.read_csv('suppliers.csv')
 df_perf = pd.read_csv('supplier_performance.csv')
@@ -275,6 +278,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 df_sup = pd.read_csv('suppliers.csv')
 df_perf = pd.read_csv('supplier_performance.csv')
@@ -372,6 +376,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 # Reuse X and y from the previous cell, which are already prepared as NumPy arrays
 # X, y
@@ -553,6 +558,7 @@ print(worst.to_string(index=False))
 import joblib
 import lightgbm as lgb
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 # Initialize and fit the scaler on the entire dataset
 scaler_final = StandardScaler()
@@ -586,6 +592,7 @@ from fastapi import HTTPException
 from sklearn.linear_model import LinearRegression
 import logging
 import time
+from drift_monitor import check_auc, check_psi
 # ---------------------------------------------------
 # LOAD MODEL + SCALER
 # ---------------------------------------------------
@@ -1141,6 +1148,7 @@ best_model.fit(X, y)
 import joblib
 import lightgbm as lgb
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 # Initialize and fit the scaler on the entire dataset
 scaler_final = StandardScaler()
@@ -1180,6 +1188,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 df_sup = pd.read_csv('suppliers.csv')
 df_perf = pd.read_csv('supplier_performance.csv')
@@ -1280,6 +1289,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 # Define the Optuna objective function for the cleaned feature set
 def objective_cleaned(trial):
@@ -1356,6 +1366,7 @@ best_cv_auc_cleaned = trial_cleaned.value
 import joblib
 import lightgbm as lgb
 from sklearn.preprocessing import StandardScaler
+from drift_monitor import check_auc, check_psi
 
 # Initialize and fit the scaler on the entire X_cleaned dataset
 scaler_final_cleaned = StandardScaler()
