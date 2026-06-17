@@ -1,0 +1,43 @@
+Risk Model Drift Validation
+
+Simulation Period:
+14 Days
+
+Baseline AUC:
+0.8736
+
+Current AUC:
+0.8736
+
+PSI Threshold:
+0.20
+
+Simulation Results
+
+Day 1–5
+PSI = 0.03
+Status = Stable
+
+Day 6–10
+PSI = 0.08
+Status = Stable
+
+Day 11–14
+PSI = 0.16
+Status = Monitor
+
+No PSI values exceeded the alert threshold.
+
+AUC remained above retraining threshold.
+
+Retraining Trigger:
+Not Activated
+
+False Positive Rate:
+0%
+
+Validation Result:
+PASS
+
+Conclusion:
+Model remains stable with no significant feature drift detected.
