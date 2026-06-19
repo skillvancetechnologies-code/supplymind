@@ -1,0 +1,60 @@
+BENCHMARKING TEST RESULTS
+SupplyMind — Week 6 Day 1
+Date: June 15, 2026
+Tested by: Pavan
+
+Total Suppliers Tested: 20
+Endpoints Tested:
+→ /api/analytics/supplier-scorecard/{id}
+→ /api/analytics/supplier-peers/{id}
+
+Results:
+═══════════════════════════════════════
+SUP-0001 | Electronics | OTIF:94.3% | Percentile:97.7
+  → This supplier's OTIF is better than 97.7% of similar suppliers in Electronics category
+SUP-0010 | Chemicals | OTIF:80.8% | Percentile:31.8
+  → This supplier's OTIF is better than 31.8% of similar suppliers in Chemicals category
+SUP-0020 | Electronics | OTIF:74.1% | Percentile:38.6
+  → This supplier's OTIF is better than 38.6% of similar suppliers in Electronics category
+SUP-0030 | Packaging | OTIF:78.9% | Percentile:42.9
+  → This supplier's OTIF is better than 42.9% of similar suppliers in Packaging category
+SUP-0040 | Electrical | OTIF:95.7% | Percentile:87.0
+  → This supplier's OTIF is better than 87.0% of similar suppliers in Electrical category
+SUP-0050 | Electronics | OTIF:49.1% | Percentile:11.4
+  → This supplier's OTIF is better than 11.4% of similar suppliers in Electronics category
+SUP-0060 | Raw Materials | OTIF:96.1% | Percentile:81.8
+  → This supplier's OTIF is better than 81.8% of similar suppliers in Raw Materials category
+SUP-0070 | Electronics | OTIF:79.5% | Percentile:52.3
+  → This supplier's OTIF is better than 52.3% of similar suppliers in Electronics category
+SUP-0080 | Electrical | OTIF:61.2% | Percentile:17.4
+  → This supplier's OTIF is better than 17.4% of similar suppliers in Electrical category
+SUP-0090 | Chemicals | OTIF:55.9% | Percentile:13.6
+  → This supplier's OTIF is better than 13.6% of similar suppliers in Chemicals category
+SUP-0100 | Electronics | OTIF:82.6% | Percentile:63.6
+  → This supplier's OTIF is better than 63.6% of similar suppliers in Electronics category
+SUP-0110 | Chemicals | OTIF:52.4% | Percentile:9.1
+  → This supplier's OTIF is better than 9.1% of similar suppliers in Chemicals category
+SUP-0120 | Electrical | OTIF:50.2% | Percentile:0.0
+  → This supplier's OTIF is better than 0.0% of similar suppliers in Electrical category
+SUP-0130 | Electrical | OTIF:91.5% | Percentile:56.5
+  → This supplier's OTIF is better than 56.5% of similar suppliers in Electrical category
+SUP-0140 | Electronics | OTIF:78.2% | Percentile:47.7
+  → This supplier's OTIF is better than 47.7% of similar suppliers in Electronics category
+SUP-0150 | Automotive Parts | OTIF:53.3% | Percentile:0.0
+  → This supplier's OTIF is better than 0.0% of similar suppliers in Automotive Parts category
+SUP-0160 | Raw Materials | OTIF:76.8% | Percentile:31.8
+  → This supplier's OTIF is better than 31.8% of similar suppliers in Raw Materials category
+SUP-0170 | Electrical | OTIF:55.1% | Percentile:13.0
+  → This supplier's OTIF is better than 13.0% of similar suppliers in Electrical category
+SUP-0180 | Automotive Parts | OTIF:96.2% | Percentile:71.4
+  → This supplier's OTIF is better than 71.4% of similar suppliers in Automotive Parts category
+SUP-0190 | Raw Materials | OTIF:63.7% | Percentile:18.2
+  → This supplier's OTIF is better than 18.2% of similar suppliers in Raw Materials category
+═══════════════════════════════════════
+Total tested: 20
+
+Verification:
+✅ Percentiles calculated correctly
+✅ Different suppliers show different values
+✅ Benchmarks are meaningful
+✅ All endpoints returned 200

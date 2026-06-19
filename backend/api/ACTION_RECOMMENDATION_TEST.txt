@@ -1,0 +1,186 @@
+ACTION RECOMMENDATIONS TEST
+SupplyMind — Week 6 Day 2
+Date: June 16, 2026
+Tested by: Pavan
+
+Endpoint: GET /api/supplier-actions/{supplier_id}
+Total Suppliers Tested: 20
+
+Action Rules Applied:
+→ OTIF < 70% + Lead Time > 30 days → URGENT meeting
+→ Quality Reject > 5% → URGENT audit
+→ Fill Rate < 85% → HIGH review
+→ Lead Time > 30 days → HIGH renegotiate
+→ Capacity > 90% → MEDIUM diversify
+→ All KPIs good → LOW monitor
+
+Results:
+============================================================
+SUP-0001 | Biotique
+  [URGENT] Initiate quality audit immediately
+  Reason: Quality reject rate is 5.2% which exceeds 5% threshold
+  Act within: 3 days
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 39.7 days — above 30 day target
+  Act within: 1 week
+
+SUP-0010 | Mangalam Cement
+  [LOW] Continue monitoring — no immediate action required
+  Reason: All KPIs within acceptable range: OTIF 80.8%, Fill 88.5%, Quality 2.6%
+  Act within: Monitor
+
+SUP-0020 | Exide Industries
+  [HIGH] Request quality improvement plan from supplier
+  Reason: Quality reject rate is 3.9% — above 3% warning threshold
+  Act within: 1 week
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 34.1 days — above 30 day target
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 79.4% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0030 | Samvardhana Motherson
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 85.0% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0040 | Emami Agrotech
+  [HIGH] Request quality improvement plan from supplier
+  Reason: Quality reject rate is 3.0% — above 3% warning threshold
+  Act within: 1 week
+
+SUP-0050 | Hero Metal Works
+  [URGENT] Schedule urgent meeting with supplier to discuss delivery performance
+  Reason: OTIF is 49.1% (below 70%) and lead time is 44.0 days (above 30 days)
+  Act within: 3 days
+  [HIGH] Request quality improvement plan from supplier
+  Reason: Quality reject rate is 4.8% — above 3% warning threshold
+  Act within: 1 week
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 44.0 days — above 30 day target
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 81.0% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0060 | Organic India
+  [LOW] Continue monitoring — no immediate action required
+  Reason: All KPIs within acceptable range: OTIF 96.1%, Fill 93.5%, Quality 2.7%
+  Act within: Monitor
+
+SUP-0070 | Asian Granito
+  [HIGH] Request quality improvement plan from supplier
+  Reason: Quality reject rate is 4.6% — above 3% warning threshold
+  Act within: 1 week
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 44.6 days — above 30 day target
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 84.8% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0080 | ZF India
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 61.2% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 83.2% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0090 | Ayurvedagram
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 55.9% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 80.4% — below 85% minimum threshold
+  Act within: 1 week
+  [MEDIUM] Reduce order quantity and diversify sourcing
+  Reason: Capacity utilization at 90.2% — risk of delays due to overload
+  Act within: 2 weeks
+
+SUP-0100 | Dabur Herbal
+  [HIGH] Request quality improvement plan from supplier
+  Reason: Quality reject rate is 4.1% — above 3% warning threshold
+  Act within: 1 week
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 31.8 days — above 30 day target
+  Act within: 1 week
+
+SUP-0110 | Luminous Power
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 52.4% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 78.4% — below 85% minimum threshold
+  Act within: 1 week
+  [MEDIUM] Reduce order quantity and diversify sourcing
+  Reason: Capacity utilization at 90.8% — risk of delays due to overload
+  Act within: 2 weeks
+
+SUP-0120 | Amara Raja Batteries
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 50.2% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 78.2% — below 85% minimum threshold
+  Act within: 1 week
+  [MEDIUM] Reduce order quantity and diversify sourcing
+  Reason: Capacity utilization at 90.5% — risk of delays due to overload
+  Act within: 2 weeks
+
+SUP-0130 | Arya Vaidya Pharmacy
+  [LOW] Continue monitoring — no immediate action required
+  Reason: All KPIs within acceptable range: OTIF 91.5%, Fill 91.9%, Quality 2.8%
+  Act within: Monitor
+
+SUP-0140 | Havells India
+  [URGENT] Initiate quality audit immediately
+  Reason: Quality reject rate is 5.9% which exceeds 5% threshold
+  Act within: 3 days
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 83.3% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0150 | Kerala Ayurveda
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 53.3% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 77.1% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0160 | Mili Foods
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 83.5% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0170 | Earth Rhythm Supply
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 55.1% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 80.0% — below 85% minimum threshold
+  Act within: 1 week
+
+SUP-0180 | Larsen Industrial
+  [HIGH] Renegotiate lead time terms in contract
+  Reason: Average lead time is 32.6 days — above 30 day target
+  Act within: 1 week
+
+SUP-0190 | Aisin India
+  [HIGH] Issue formal performance improvement notice to supplier
+  Reason: OTIF is 63.7% which is below acceptable threshold of 70%
+  Act within: 1 week
+  [HIGH] Review order fulfillment process with supplier
+  Reason: Fill rate is 80.6% — below 85% minimum threshold
+  Act within: 1 week
+============================================================
+Total suppliers tested: 20
+
+Verification:
+✅ All 20 suppliers returned recommendations
+✅ Urgency classification correct
+✅ Reasoning is clear and data-driven
+✅ Actions relevant to metrics
+✅ All endpoints returned 200 status

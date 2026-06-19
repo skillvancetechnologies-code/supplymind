@@ -1,0 +1,65 @@
+ANALYTICS API PERFORMANCE BASELINE
+SupplyMind — Week 5 Day 1
+Date: June 9, 2026
+Tested by: Pavan
+Base URL: https://supplymind-zmk0.onrender.com
+
+════════════════════════════════════════
+ENDPOINTS TESTED
+════════════════════════════════════════
+
+1. /api/analytics/supplier-details
+   Success Rate: 5/5 (100%)
+   Min: 1741.11ms | Max: 2589.5ms | Avg: 2115.91ms | Median: 2019.27ms
+   Rows Returned: 1
+   Errors: 0
+
+2. /api/analytics/supplier-risks
+   Success Rate: 5/5 (100%)
+   Min: 966.4ms | Max: 1229.51ms | Avg: 1072.41ms | Median: 1061.0ms
+   Rows Returned: 200
+   Errors: 0
+
+3. /api/analytics/inventory-summary
+   Success Rate: 5/5 (100%)
+   Min: 1636.53ms | Max: 1846.18ms | Avg: 1713.78ms | Median: 1702.87ms
+   Rows Returned: 1
+   Errors: 0
+
+4. /api/analytics/forecast-accuracy
+   Success Rate: 5/5 (100%)
+   Min: 1402.47ms | Max: 2059.01ms | Avg: 1628.87ms | Median: 1565.73ms
+   Rows Returned: 50
+   Errors: 0
+
+5. /api/analytics/disruption-risks
+   Success Rate: 5/5 (100%)
+   Min: 829.35ms | Max: 973.36ms | Avg: 892.13ms | Median: 865.61ms
+   Rows Returned: 2
+   Errors: 0
+
+════════════════════════════════════════
+LATENCY SUMMARY
+════════════════════════════════════════
+Min Latency:    918.24ms
+Max Latency:    3502.94ms
+Average:        1703.84ms
+Median:         1751.5ms
+P95:            2251.52ms
+P99:            2454.0ms
+
+════════════════════════════════════════
+DATA INTEGRITY CHECK
+════════════════════════════════════════
+Row counts match source tables: YES
+KPI cross-check vs SQL: PASS
+Null/Zero anomaly count: 2
+  (total_inventory_value was 0 — fixed)
+  (stockout_risk_value — to be fixed)
+
+════════════════════════════════════════
+ERROR SUMMARY
+════════════════════════════════════════
+Total Errors: 0
+Total Timeouts: 0
+Success Rate: 100%

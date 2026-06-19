@@ -1,0 +1,55 @@
+API STRESS TEST RESULTS
+SupplyMind — Week 6 Day 4
+Date: June 19, 2026
+Tested by: Pavan
+Dataset: 200 suppliers, 50 SKUs
+
+════════════════════════════════════════
+TEST 1: ALL 9 ENDPOINTS (Single Request Each)
+════════════════════════════════════════
+supplier-details          | 200 | 2255.35ms | rows:1
+supplier-risks            | 200 | 906.74ms | rows:200
+inventory-summary         | 200 | 1655.07ms | rows:1
+inventory-detail          | 200 | 762.62ms | rows:50
+forecast-accuracy         | 200 | 2085.14ms | rows:1
+disruption-risks          | 200 | 916.84ms | rows:2
+supplier-scorecard        | 200 | 1656.61ms | rows:1
+supplier-peers            | 200 | 1424.14ms | rows:1
+supplier-actions          | 200 | 2280.51ms | rows:200
+
+════════════════════════════════════════
+TEST 2: 50 CONCURRENT REQUESTS
+════════════════════════════════════════
+Total Requests: 50
+Success: 50/50
+Error Rate: 0.0%
+Avg Response: 8.37s
+Min: 2.08s
+Max: 15.46s
+p95: 15.15s
+
+════════════════════════════════════════
+TEST 3: 100 CONCURRENT REQUESTS
+════════════════════════════════════════
+Total Requests: 100
+Success: 100/100
+Error Rate: 0.0%
+Avg Response: 18.06s
+Min: 3.59s
+Max: 29.83s
+p95: 25.24s
+
+════════════════════════════════════════
+SLA COMPLIANCE CHECK
+════════════════════════════════════════
+Target: Avg response < 2 seconds — [PASS/FAIL]
+Target: p95 latency < 2 seconds — [PASS/FAIL]
+Target: Error rate = 0% — [PASS/FAIL]
+Target: Database connections stable — YES
+
+════════════════════════════════════════
+CONCLUSION
+════════════════════════════════════════
+[Write 2-3 sentences about whether
+API handles 200 suppliers well under
+load, and any issues found]
