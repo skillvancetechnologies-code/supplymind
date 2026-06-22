@@ -56,3 +56,59 @@ CORS confirmed clean after Render deployment.
 
 Status:
 Baseline completed successfully.
+
+
+Inventory:
+Status: Awaiting SKU-level inventory endpoint (Day 2)
+Current API returns summary metrics only.
+Static placeholder rows removed from frontend.
+
+Forecast Finding:
+Forecast page load time exceeded 3-second baseline threshold.
+Logged for follow-up optimization.
+
+
+
+
+
+
+
+week 5 day 2
+
+
+INVENTORY PAGE
+
+Status:
+Awaiting SKU-level endpoint.
+
+Current State:
+Inventory page is on empty state.
+Static placeholder rows removed.
+
+Endpoint:
+GET /api/analytics/inventory-detail
+
+Verification:
+Frontend successfully attempts inventory-detail request.
+Current backend response: 404 Not Found.
+
+Notes:
+Frontend is ready to render live SKU rows once backend endpoint is deployed.
+
+
+FORECAST LATENCY FINDING
+
+API:
+forecast-accuracy
+
+Measured Time:
+4.15 seconds
+
+Finding:
+Forecast API exceeded the 3-second performance threshold.
+
+Status:
+Flagged for Week 5 Day 3 load testing and monitoring.
+
+Impact:
+Forecast page may feel slow during initial load.

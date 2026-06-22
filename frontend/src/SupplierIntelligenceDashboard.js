@@ -26,9 +26,14 @@ const [sortBy, setSortBy] = useState("Risk");
           ? data
           : data.supplier_risks || data.suppliers || data.data || [];
 
-      const fixed = list.slice(0, 50).map((s) => ({
+      const fixed = list.map((s) => ({
         supplier_id: s.supplier_id,
-        supplier_name: s.supplier_name || s.name || s.supplier_id,
+        supplier_name:
+  s.supplier_name ||
+  s.supplier ||
+  s.name ||
+  s.company_name ||
+  s.supplier_id,
         risk_score: Number(s.risk_score || 0),
         otif: Number(s.current_otif || s.otif || 0),
         lead_time: Number(s.avg_lead_time_days || s.lead_time || 0),
@@ -165,7 +170,9 @@ useEffect(() => {
         >
           <p>Average OTIF</p>
           <h2 style={{ color: "#1A6B3A" }}>
-            92%
+            {Math.round(
+  suppliers.reduce((sum, s) => sum + s.otif, 0) / suppliers.length
+)}%
           </h2>
         </div>
 
@@ -179,7 +186,9 @@ useEffect(() => {
         >
           <p>Average Lead Time</p>
           <h2 style={{ color: "#1B2A4A" }}>
-            6 Days
+           {Math.round(
+  suppliers.reduce((sum, s) => sum + s.lead_time, 0) / suppliers.length
+)} Days
           </h2>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import SupplierActions from '../components/SupplierActions'
 
 import {
   LineChart,
@@ -23,6 +24,7 @@ const SupplierDetail = () => {
   const [supplierData, setSupplierData] = useState(null)
   const [riskData, setRiskData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('overview')
 
   const fallbackSupplier = supplierDetails?.[supplier_id]
 
@@ -40,7 +42,7 @@ const SupplierDetail = () => {
     fetch(`${SUPPLIER_DETAIL_API}?supplier_id=${supplier_id}`)
       .then(r => r.json())
      .then(data => {
-  console.log('Pavan Supplier Detail API response:', data)
+  console.log(' Supplier Detail API response:', data)
 
   let selectedSupplier = null
 
@@ -73,7 +75,7 @@ const SupplierDetail = () => {
     fetch(`${SUPPLIER_RISK_API}?supplier_id=${supplier_id}`)
       .then(r => r.json())
       .then(data => {
-        console.log('Dhanush API response:', data)
+        console.log(' API response:', data)
 
         if (data && !data.error && !data.detail) {
           setRiskData({
@@ -97,6 +99,7 @@ const SupplierDetail = () => {
       </div>
     )
   }
+  console.log('Trend Data:', supplier.trend || supplier.performance_trend)
 
   return (
     <div style={{ padding: '40px', background: '#F4F6F9', minHeight: '100vh' }}>
@@ -116,6 +119,37 @@ const SupplierDetail = () => {
       </button>
 
       <h2>{supplier.name || supplier.supplier_name || supplier.supplier_id}</h2>
+      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+  <button
+    onClick={() => setActiveTab('overview')}
+    style={{
+      padding: '10px 16px',
+      borderRadius: '8px',
+      border: 'none',
+      cursor: 'pointer',
+      background: activeTab === 'overview' ? '#1B2A4A' : 'white',
+      color: activeTab === 'overview' ? 'white' : '#1B2A4A'
+    }}
+  >
+    Overview
+  </button>
+
+  <button
+    onClick={() => setActiveTab('actions')}
+    style={{
+      padding: '10px 16px',
+      borderRadius: '8px',
+      border: 'none',
+      cursor: 'pointer',
+      background: activeTab === 'actions' ? '#1B2A4A' : 'white',
+      color: activeTab === 'actions' ? 'white' : '#1B2A4A'
+    }}
+  >
+    Recommended Actions
+  </button>
+</div>
+{activeTab === 'overview' && (
+  <>
 
       <div style={{ background: 'white', padding: '20px', marginTop: '20px', borderRadius: '8px' }}>
         <h3>Supplier Info Card</h3>
@@ -178,12 +212,19 @@ const SupplierDetail = () => {
         <h3>Performance Trend</h3>
 
         {(supplier.trend || supplier.performance_trend || []).length > 0 ? (
-          <ResponsiveContainer width="100%" height="90%">
-            <LineChart data={supplier.trend || supplier.performance_trend}>
+          <ResponsiveContainer width="100%" height="95%">
+            <LineChart
+  data={[...(supplier.trend || supplier.performance_trend)].reverse()}
+>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="otif" strokeWidth={2} />
+              <Line
+  type="monotone"
+  dataKey="otif"
+  stroke="#2563eb"
+  strokeWidth={2}
+/>
             </LineChart>
           </ResponsiveContainer>
         ) : (
@@ -203,8 +244,15 @@ const SupplierDetail = () => {
         ) : (
           <p>No supplied SKU data available from backend.</p>
         )}
-      </div>
-    </div>
+            </div>
+
+    </>
+  )}
+
+  {activeTab === 'actions' && (
+    <SupplierActions supplierId={supplier_id} />
+  )}
+</div>
   )
 }
 
