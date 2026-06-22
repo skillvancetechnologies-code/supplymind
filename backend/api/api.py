@@ -1089,6 +1089,7 @@ def all_supplier_actions():
 
             if otif < 70 and lead_time > 30:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Schedule urgent meeting to discuss delivery",
                     "reason": f"OTIF {round(otif,1)}% and lead time {round(lead_time,1)} days",
                     "urgency": "URGENT",
@@ -1096,6 +1097,7 @@ def all_supplier_actions():
                 })
             elif otif < 70:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Issue performance improvement notice",
                     "reason": f"OTIF {round(otif,1)}% below 70% threshold",
                     "urgency": "HIGH",
@@ -1103,6 +1105,7 @@ def all_supplier_actions():
                 })
             elif otif < peer_avg - 10:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Schedule performance review meeting",
                     "reason": f"OTIF {round(otif,1)}% is below peer average {round(peer_avg,1)}%",
                     "urgency": "MEDIUM",
@@ -1111,6 +1114,7 @@ def all_supplier_actions():
 
             if quality > 5:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Initiate quality audit immediately",
                     "reason": f"Quality reject rate {round(quality,1)}% exceeds 5%",
                     "urgency": "URGENT",
@@ -1118,6 +1122,7 @@ def all_supplier_actions():
                 })
             elif quality > 3:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Request quality improvement plan",
                     "reason": f"Quality reject rate {round(quality,1)}% above 3%",
                     "urgency": "HIGH",
@@ -1126,6 +1131,7 @@ def all_supplier_actions():
 
             if lead_time > 30:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Renegotiate lead time in contract",
                     "reason": f"Lead time {round(lead_time,1)} days above 30 day target",
                     "urgency": "HIGH",
@@ -1134,6 +1140,7 @@ def all_supplier_actions():
 
             if fill < 85:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Review order fulfillment process",
                     "reason": f"Fill rate {round(fill,1)}% below 85% minimum",
                     "urgency": "HIGH",
@@ -1142,6 +1149,7 @@ def all_supplier_actions():
 
             if capacity > 90:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Reduce order quantity and diversify sourcing",
                     "reason": f"Capacity utilization {round(capacity,1)}% — risk of delays",
                     "urgency": "MEDIUM",
@@ -1150,6 +1158,7 @@ def all_supplier_actions():
 
             if not actions:
                 actions.append({
+                    "action_id": f"{sid}_{len(actions)}",
                     "action": "Continue monitoring — no action required",
                     "reason": f"All KPIs within range: OTIF {round(otif,1)}%, Fill {round(fill,1)}%",
                     "urgency": "LOW",
@@ -1173,6 +1182,47 @@ def all_supplier_actions():
         latency = round((time.time()-start)*1000, 2)
         log_request("supplier-actions-all", latency,
                    0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+# Mark action as complete
+@app.put("/api/supplier-actions/{action_id}/complete")
+def complete_action(action_id: str):
+    start = time.time()
+    try:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-actions-complete",
+                   latency, 1, "200")
+        return {
+            "action_id": action_id,
+            "status": "completed",
+            "message": f"Action {action_id} marked as complete",
+            "completed_at": str(date.today())
+        }
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-actions-complete",
+                   latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+
+# Snooze action
+@app.put("/api/supplier-actions/{action_id}/snooze")
+def snooze_action(action_id: str, days: int = 7):
+    start = time.time()
+    try:
+        from datetime import timedelta
+        snooze_until = date.today() + timedelta(days=days)
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-actions-snooze",
+                   latency, 1, "200")
+        return {
+            "action_id": action_id,
+            "status": "snoozed",
+            "message": f"Action {action_id} snoozed for {days} days",
+            "snooze_until": str(snooze_until)
+        }
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-actions-snooze",
+                   latency, 0, f"ERROR:{str(e)}")
         return {"error": str(e)}
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
