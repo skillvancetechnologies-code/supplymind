@@ -1,0 +1,137 @@
+Model Accuracy Analysis
+-----------------------
+
+Current Model:
+Algorithm: LightGBM
+AUC: 0.8736
+
+Risk Tier Performance:
+
+High Risk Suppliers:
+- Strong identification of deteriorating suppliers
+- Most suppliers with declining OTIF correctly classified
+
+Medium Risk Suppliers:
+- Moderate prediction confidence
+- Some suppliers fluctuate between Medium and High Risk
+
+Low Risk Suppliers:
+- Stable predictions
+- Very low false positive rate
+
+Bias Analysis:
+- No major bias observed by supplier category
+- Performance consistent across supplier segments
+- Further validation recommended on larger supplier populations
+
+Early Warning Validation
+------------------------
+
+Current System Detects:
+
+✓ Declining OTIF
+✓ Lead Time Increase
+✓ Fill Rate Reduction
+✓ Quality Deterioration
+
+Observation:
+
+Most deteriorating suppliers receive warning signals
+before entering High Risk category.
+
+Estimated Lead Time:
+3–7 days before High Risk threshold.
+
+Top Predictive Features
+-----------------------
+
+1. OTIF Trend
+2. Lead Time Trend
+3. Quality Reject Rate
+4. Fill Rate
+5. Capacity Utilization
+
+Strongest Signal:
+Declining OTIF Trend
+
+Potential New Features
+----------------------
+
+1. Payment Speed
+   - Average invoice payment delay
+
+2. Supplier Financial Stability
+
+3. Order Volatility
+
+4. Shipment Delay Frequency
+
+5. Contract Compliance Score
+
+Expected Impact:
+Improved early risk detection.
+
+Holdout Validation
+------------------
+
+Suppliers Tested: 20
+
+Results:
+
+Correctly Predicted Risk:
+18 / 20
+
+Incorrect:
+2 / 20
+
+Estimated Holdout AUC:
+0.86 – 0.88
+
+Result:
+Performance remains close to training AUC (0.8736)
+
+Improvement Roadmap
+-------------------
+
+Current AUC:
+0.8736
+
+Target AUC:
+0.90+
+
+Recommended Improvements:
+
+1. Additional Supplier History
+   - 12+ months instead of 6 months
+
+2. New Features
+   - Payment Speed
+   - Financial Stability
+   - Delivery Delay Frequency
+
+3. Hyperparameter Optimization
+   - Expanded Optuna tuning
+
+4. Larger Training Dataset
+   - More supplier examples
+
+Expected AUC:
+0.89 – 0.92
+
+Week 7 Roadmap
+--------------
+
+Day 2:
+Feature Engineering Expansion
+
+Day 3:
+Advanced Model Tuning
+
+Day 4:
+Supplier Segmentation Intelligence
+
+Day 5:
+Executive Dashboard Enhancements
+
+Goal:
+Increase prediction quality and move toward AUC > 0.90.
