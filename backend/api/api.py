@@ -1224,5 +1224,218 @@ def snooze_action(action_id: str, days: int = 7):
         log_request("supplier-actions-snooze",
                    latency, 0, f"ERROR:{str(e)}")
         return {"error": str(e)}
+@app.get("/api/analytics/supplier-segments")
+def supplier_segments(region: str = None,
+                      category: str = None,
+                      band: str = None):
+    start = time.time()
+
+    try:
+        df = pd.read_sql("""
+            SELECT
+                s.supplier_id,
+                s.supplier_name,
+                s.category,
+                s.city,
+                s.city_tier,
+                s.annual_contract_value_inr,
+                AVG(sp.otif_percentage) AS avg_otif,
+                AVG(sp.fill_rate_pct) AS avg_fill_rate,
+                AVG(sp.quality_reject_rate_pct) AS avg_quality_reject,
+                AVG(sp.avg_lead_time_days) AS avg_lead_time
+            FROM suppliers s
+            JOIN supplier_performance sp
+                ON s.supplier_id = sp.supplier_id
+            GROUP BY
+                s.supplier_id,
+                s.supplier_name,
+                s.category,
+                s.city,
+                s.city_tier,
+                s.annual_contract_value_inr
+        """, engine)
+
+        if df.empty:
+            return {"error": "No supplier data found"}
+
+        # Apply filters
+        if region:
+            df = df[df["city_tier"].str.lower() == region.lower()]
+
+        if category:
+            df = df[df["category"].str.lower() == category.lower()]
+
+        cost_median = df["annual_contract_value_inr"].median()
+        # Segmentation Logic
+
+        def segment_supplier(row):
+
+            otif = row["avg_otif"]
+            quality = row["avg_quality_reject"]
+            contract = row["annual_contract_value_inr"]
+
+            # High Performing
+            if (
+                otif > 85 and
+                quality < 2 and
+                contract < cost_median
+            ):
+                return "High-Performing"
+
+            # Medium Performing
+            elif (
+                70 <= otif <= 85 and
+                2 <= quality <= 5
+            ):
+                return "Medium-Performing"
+
+            # Strategic
+            elif (
+                contract < (cost_median * 0.5) and
+                quality < 3
+            ):
+                return "Strategic"
+
+            # Low Performing
+            else:
+                return "Low-Performing"
+
+        df["segment"] = df.apply(segment_supplier, axis=1)
+
+        # Performance Band Filter
+        if band:
+
+            band_map = {
+                "high": "High-Performing",
+                "medium": "Medium-Performing",
+                "low": "Low-Performing",
+                "strategic": "Strategic"
+            }
+
+            target = band_map.get(band.lower(), band)
+
+            df = df[df["segment"] == target]
+
+        # Action Recommendations
+        action_map = {
+
+            "High-Performing":
+                "Maintain relationship and consider increasing business volume.",
+
+            "Medium-Performing":
+                "Monitor performance monthly and define improvement targets.",
+
+            "Low-Performing":
+                "Reduce dependency and evaluate alternative suppliers.",
+
+            "Strategic":
+                "Protect relationship and ensure long-term collaboration."
+        }
+
+        segments_summary = []
+
+        for seg in [
+            "High-Performing",
+            "Medium-Performing",
+            "Low-Performing",
+            "Strategic"
+        ]:
+
+            seg_df = df[df["segment"] == seg]
+
+            if seg_df.empty:
+                continue
+
+            avg_otif = round(seg_df["avg_otif"].mean(), 1)
+            avg_quality = round(seg_df["avg_quality_reject"].mean(), 1)
+            avg_cost = round(seg_df["annual_contract_value_inr"].mean(), 0)
+            avg_lead = round(seg_df["avg_lead_time"].mean(), 1)
+
+            avg_reliability = avg_otif
+
+            if avg_otif >= 85:
+                trend = "Improving"
+            elif avg_otif < 70:
+                trend = "Declining"
+            else:
+                trend = "Stable"
+
+            supplier_list = seg_df[
+                ["supplier_id", "supplier_name"]
+            ].to_dict("records")
+
+            segments_summary.append({
+
+                "segment_name": seg,
+
+                "supplier_count": len(seg_df),
+
+                "average_metrics": {
+
+                    "avg_otif": avg_otif,
+
+                    "avg_quality_reject_pct": avg_quality,
+
+                    "avg_reliability": avg_reliability,
+
+                    "avg_lead_time_days": avg_lead,
+
+                    "avg_annual_contract_value_inr": avg_cost
+
+                },
+
+                "trend": trend,
+
+                "action_recommended": action_map[seg],
+
+                "supplier_list": supplier_list
+
+            })
+
+        latency = round((time.time() - start) * 1000, 2)
+
+        log_request(
+            "supplier-segments",
+            latency,
+            len(df),
+            "200"
+        )
+
+        return {
+
+            "filters": {
+
+                "region": region,
+
+                "category": category,
+
+                "band": band
+
+            },
+
+            "total_suppliers_analyzed": len(df),
+
+            "segments": segments_summary,
+
+            "response_time_ms": latency
+
+        }
+
+    except Exception as e:
+
+        latency = round((time.time() - start) * 1000, 2)
+
+        log_request(
+            "supplier-segments",
+            latency,
+            0,
+            f"ERROR: {str(e)}"
+        )
+
+        return {
+
+            "error": str(e)
+
+        }
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
