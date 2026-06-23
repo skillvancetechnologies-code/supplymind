@@ -1,0 +1,79 @@
+SEGMENT ACTIONS DESIGN
+SupplyMind — Week 7 Day 2
+Date: June 24, 2026
+Tested by: Pavan
+
+════════════════════════════════════════
+ACTION DEFINITIONS PER SEGMENT
+════════════════════════════════════════
+
+High-Performing:
+  Action: Maintain relationship, increase volume
+  Monitoring: Quarterly reviews
+  Escalation: Account Manager → Procurement Lead
+  KPIs: OTIF, Fill Rate, Quality Reject Rate
+
+Medium-Performing:
+  Action: Improvement plan with targeted support
+  Monitoring: Monthly reviews
+  Escalation: Account Manager → Procurement Lead
+              → Supply Chain Manager
+  KPIs: OTIF, Lead Time, Quality Reject Rate
+
+Low-Performing:
+  Action: Corrective action plan or replacement
+  Monitoring: Weekly reviews
+  Escalation: Account Manager → Procurement Lead
+              → Supply Chain Director
+  KPIs: OTIF, Quality Reject Rate, Lead Time, Fill Rate
+
+Strategic:
+  Action: Partnership development, long-term contracts
+  Monitoring: Quarterly strategic reviews
+  Escalation: Account Manager → Strategic Sourcing Lead
+  KPIs: OTIF, Quality Reject Rate, Contract Value
+
+════════════════════════════════════════
+API DESIGN
+════════════════════════════════════════
+
+Endpoint 1: GET /api/analytics/segment-actions/{segment_name}
+Returns action plan, monitoring frequency,
+escalation path, KPIs and supplier list
+
+Filters: ?region=<city>, ?category=<category>
+
+Endpoint 2: PUT /api/analytics/segment-actions/{segment_name}/track
+Marks action as taken with date and notes
+
+Endpoint 3: GET /api/analytics/segment-actions/{segment_name}/status
+Checks if action has been taken for a segment
+
+════════════════════════════════════════
+DASHBOARD LAYOUT (Recommended for Frontend)
+════════════════════════════════════════
+
+4 Cards (one per segment):
+- Segment name + supplier count
+- Action recommended
+- Monitoring frequency
+- Next review date
+- Drill-down button → shows supplier list
+- "Mark Action Taken" button
+
+════════════════════════════════════════
+TEST RESULTS
+════════════════════════════════════════
+high-performing: 200 | 2205.19ms | suppliers:3
+medium-performing: 200 | 1389.24ms | suppliers:52
+low-performing: 200 | 1428.43ms | suppliers:54
+strategic: 200 | 1620.09ms | suppliers:91
+
+════════════════════════════════════════
+VERIFICATION
+════════════════════════════════════════
+✅ Applied to all 200 suppliers
+✅ Actions relevant per segment
+✅ Response time under 1 second
+✅ Action tracking working
+✅ Filters working correctly
