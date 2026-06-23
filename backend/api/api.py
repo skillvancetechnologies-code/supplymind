@@ -1437,5 +1437,146 @@ def supplier_segments(region: str = None,
             "error": str(e)
 
         }
+@app.get("/api/analytics/segment-actions/{segment_name}")
+def segment_actions(segment_name: str, region: str = None, category: str = None):
+    start = time.time()
+    try:
+        # Define segment action plans
+        segment_definitions = {
+            "high-performing": {
+                "action": "Maintain relationship, consider increasing order volume",
+                "monitoring_frequency": "Quarterly",
+                "escalation_path": "Account Manager → Procurement Lead",
+                "kpis_to_track": ["OTIF", "Fill Rate", "Quality Reject Rate"],
+                "next_review_days": 90
+            },
+            "medium-performing": {
+                "action": "Create improvement plan with targeted support and training",
+                "monitoring_frequency": "Monthly",
+                "escalation_path": "Account Manager → Procurement Lead → Supply Chain Manager",
+                "kpis_to_track": ["OTIF", "Lead Time", "Quality Reject Rate"],
+                "next_review_days": 30
+            },
+            "low-performing": {
+                "action": "Initiate corrective action plan or begin sourcing alternatives",
+                "monitoring_frequency": "Weekly",
+                "escalation_path": "Account Manager → Procurement Lead → Supply Chain Director",
+                "kpis_to_track": ["OTIF", "Quality Reject Rate", "Lead Time", "Fill Rate"],
+                "next_review_days": 7
+            },
+            "strategic": {
+                "action": "Develop long-term partnership and explore extended contract terms",
+                "monitoring_frequency": "Quarterly",
+                "escalation_path": "Account Manager → Strategic Sourcing Lead",
+                "kpis_to_track": ["OTIF", "Quality Reject Rate", "Contract Value"],
+                "next_review_days": 90
+            }
+        }
+
+        seg_key = segment_name.lower()
+        if seg_key not in segment_definitions:
+            return {"error": f"Invalid segment name: {segment_name}"}
+
+        plan = segment_definitions[seg_key]
+
+        # Get suppliers in this segment (reuse segmentation logic)
+        df = pd.read_sql("""
+            SELECT
+                s.supplier_id,
+                s.supplier_name,
+                s.category,
+                s.city,
+                s.annual_contract_value_inr,
+                AVG(sp.otif_percentage) as avg_otif,
+                AVG(sp.quality_reject_rate_pct) as avg_quality_reject
+            FROM suppliers s
+            JOIN supplier_performance sp
+                ON s.supplier_id = sp.supplier_id
+            GROUP BY s.supplier_id, s.supplier_name,
+                     s.category, s.city,
+                     s.annual_contract_value_inr
+        """, engine)
+
+        if region:
+            df = df[df['city'].str.lower() == region.lower()]
+        if category:
+            df = df[df['category'].str.lower() == category.lower()]
+
+        cost_median = df['annual_contract_value_inr'].median()
+
+        def segment_supplier(row):
+            otif = row['avg_otif']
+            quality_reject = row['avg_quality_reject']
+            contract_value = row['annual_contract_value_inr']
+            if otif > 85 and quality_reject < 2 and contract_value < cost_median:
+                return "high-performing"
+            elif otif < 70 or quality_reject > 5:
+                if contract_value < cost_median * 0.5 and quality_reject < 3:
+                    return "strategic"
+                return "low-performing"
+            elif 70 <= otif <= 85:
+                return "medium-performing"
+            else:
+                return "strategic"
+
+        df['segment'] = df.apply(segment_supplier, axis=1)
+        seg_df = df[df['segment'] == seg_key]
+
+        from datetime import timedelta
+        next_review = date.today() + timedelta(days=plan["next_review_days"])
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("segment-actions", latency, len(seg_df), "200")
+
+        return {
+            "segment_name": segment_name,
+            "action_recommended": plan["action"],
+            "monitoring_frequency": plan["monitoring_frequency"],
+            "escalation_path": plan["escalation_path"],
+            "kpis_to_track": plan["kpis_to_track"],
+            "next_review_date": str(next_review),
+            "supplier_count": len(seg_df),
+            "supplier_list": seg_df['supplier_id'].tolist()
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("segment-actions", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+# In-memory tracking (simple version for now)
+action_tracking = {}
+
+@app.put("/api/analytics/segment-actions/{segment_name}/track")
+def track_segment_action(segment_name: str, taken: bool = True, notes: str = ""):
+    start = time.time()
+    try:
+        action_tracking[segment_name] = {
+            "taken": taken,
+            "date_taken": str(date.today()),
+            "notes": notes
+        }
+        latency = round((time.time()-start)*1000, 2)
+        log_request("segment-actions-track", latency, 1, "200")
+        return {
+            "segment_name": segment_name,
+            "status": "tracked",
+            "taken": taken,
+            "date_taken": str(date.today()),
+            "notes": notes
+        }
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("segment-actions-track", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+
+
+@app.get("/api/analytics/segment-actions/{segment_name}/status")
+def get_segment_action_status(segment_name: str):
+    status = action_tracking.get(segment_name, {
+        "taken": False,
+        "date_taken": None,
+        "notes": "No action recorded yet"
+    })
+    return {"segment_name": segment_name, **status}
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
