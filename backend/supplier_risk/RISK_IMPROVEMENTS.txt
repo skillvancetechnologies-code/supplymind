@@ -1,0 +1,177 @@
+Current Model Performance
+=========================
+
+Model: LightGBM
+Current AUC: 0.8736
+
+Status:
+- Production Ready
+- Stable Performance
+- No Leakage Detected
+- Drift Monitoring Enabled
+
+Goal:
+Increase AUC from 0.8736 to 0.90+
+
+Feature Importance Analysis
+===========================
+
+Top Predictive Features:
+
+1. OTIF Trend (Highest Importance)
+2. Current OTIF
+3. Lead Time Trend
+4. Fill Rate
+5. Quality Reject Rate
+6. Capacity Utilization
+7. Orders Fulfilled On Time
+8. Average Lead Time
+9. Invoice Payment Timeliness
+10. Order Fulfillment Consistency
+
+Low Importance Features
+=======================
+
+Potential Features To Drop:
+
+- Invoice Count
+- Monthly Order Volume
+- Static Supplier Attributes
+
+Reason:
+Low contribution to prediction accuracy.
+Removing them may simplify model maintenance.
+
+Feature Engineering Experiments
+===============================
+
+Feature 1: Payment Speed
+Definition:
+Average days between invoice submission and payment.
+
+Expected Impact:
++0.01 to +0.02 AUC
+
+Business Logic:
+Suppliers paid late often show operational instability.
+Feature 3: Payment Consistency
+
+Definition:
+Variance in payment timing.
+
+Expected Impact:
++0.01 AUC
+
+Business Logic:
+Unstable payment patterns often precede risk events.
+
+Testing Summary
+===============
+
+Baseline AUC:
+0.8736
+
+Add Payment Speed:
+Estimated AUC = 0.885
+
+Add Payment Consistency:
+Estimated AUC = 0.889
+
+Add Supplier Tenure:
+Estimated AUC = 0.892
+
+Combined Feature Set:
+Projected AUC = 0.895 - 0.905
+Model Tuning Opportunities
+==========================
+
+Current Model:
+LightGBM + Optuna
+
+Options Evaluated:
+
+1. Threshold Adjustment
+Benefit:
+Reduce false positives
+
+Expected Gain:
+Minimal AUC increase
+Better classification precision
+
+-------------------------
+
+2. Additional Optuna Search
+
+Benefit:
+Improve split selection
+
+Expected Gain:
++0.005 to +0.01 AUC
+
+-------------------------
+
+3. Ensemble Models
+
+Combine:
+LightGBM + Random Forest
+
+Expected Gain:
++0.01 to +0.02 AUC
+
+Projected AUC:
+0.89 - 0.91
+
+Data Gaps Identified
+====================
+
+Missing High Value Data:
+
+1. Supplier Financial Stability
+
+2. Credit Rating
+
+3. Supplier Satisfaction Scores
+
+4. Delivery Exception Frequency
+
+5. External Supplier Risk Data
+
+Potential Benefit:
+Improved early warning accuracy.
+
+Improvement Roadmap
+===================
+
+Week 7 Day 3:
+- Add Payment Speed Feature
+- Add Supplier Tenure Feature
+
+Week 7 Day 4:
+- Retrain Model
+- Run Optuna Optimization
+
+Week 7 Day 5:
+- Ensemble Testing
+- Compare Against Current Baseline
+
+Future:
+- Integrate Financial Stability Data
+- Add External Credit Signals
+
+Projected Accuracy
+==================
+
+Current:
+0.8736
+
+Feature Engineering:
+0.89
+
+Additional Tuning:
+0.895
+
+Ensemble Model:
+0.90 - 0.91
+
+Expected Final Target:
+0.90+
