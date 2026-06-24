@@ -29,7 +29,6 @@ def log_request(endpoint, latency_ms, row_count, status):
 import os
 engine = create_engine(
     os.environ.get("DATABASE_URL")
-)
 supplier_df=pd.read_sql("SELECT * FROM suppliers",engine)
 
 # FastAPI app
@@ -1269,37 +1268,33 @@ def supplier_segments(region: str = None,
         # Segmentation Logic
 
         def segment_supplier(row):
-
-            otif = row["avg_otif"]
-            quality = row["avg_quality_reject"]
-            contract = row["annual_contract_value_inr"]
-
-            # High Performing
-            if (
-                otif > 85 and
+            otif=row["avg_otif"]
+            quality=row["avg_quality_reject"]
+            contract=row["annual_contract_value_inr"]
+            #High Performing
+            if(
+                otif > 85 and 
                 quality < 2 and
                 contract < cost_median
             ):
                 return "High-Performing"
-
-            # Medium Performing
-            elif (
-                70 <= otif <= 85 and
-                2 <= quality <= 5
-            ):
-                return "Medium-Performing"
-
-            # Strategic
-            elif (
-                contract < (cost_median * 0.5) and
-                quality < 3
+            #Strategic(move this BEFORE Medium)
+            elif(
+                contract < (cost_median * 0.5)
+                and
+                quality < 3 
+                
             ):
                 return "Strategic"
-
-            # Low Performing
+            #Medium Performing
+            elif(
+                70<=otif <= 85 and
+                2<=quality <= 5 
+            ):
+                return "Medium-Performing"
+            #low Performing
             else:
                 return "Low-Performing"
-
         df["segment"] = df.apply(segment_supplier, axis=1)
 
         # Performance Band Filter
@@ -1578,5 +1573,152 @@ def get_segment_action_status(segment_name: str):
         "notes": "No action recorded yet"
     })
     return {"segment_name": segment_name, **status}
+@app.get("/api/analytics/supplier-relationships")
+def supplier_relationships():
+    start = time.time()
+    try:
+        # Get SKU to supplier mapping
+        df = pd.read_sql("""
+            SELECT
+                sk.sku_id,
+                sk.sku_name,
+                sk.category,
+                sk.primary_supplier_id,
+                sk.secondary_supplier_id,
+                sk.is_single_source,
+                s1.annual_contract_value_inr,
+                s1.supplier_name as primary_supplier_name,
+                s2.supplier_name as secondary_supplier_name
+            FROM skus sk
+            LEFT JOIN suppliers s1
+                ON sk.primary_supplier_id = s1.supplier_id
+            LEFT JOIN suppliers s2
+                ON sk.secondary_supplier_id = s2.supplier_id
+        """, engine)
+
+        single_source = df[df['is_single_source'] == True]
+        multi_source = df[df['is_single_source'] == False]
+
+        # Critical path suppliers — single source AND high value
+        value_threshold = df['annual_contract_value_inr'].median()
+        critical_suppliers = single_source[
+            single_source['annual_contract_value_inr'] > value_threshold
+        ]
+
+        # Build supplier criticality summary
+        supplier_criticality = df.groupby(
+            'primary_supplier_id'
+        ).agg(
+            sku_count=('sku_id', 'count'),
+            single_source_count=('is_single_source', 'sum'),
+            total_value=('annual_contract_value_inr', 'sum')
+        ).reset_index()
+
+        supplier_criticality['criticality_level'] = supplier_criticality.apply(
+            lambda r: 'Critical' if r['single_source_count'] > 0 and r['total_value'] > value_threshold
+            else 'High' if r['single_source_count'] > 0
+            else 'Medium' if r['sku_count'] > 3
+            else 'Low',
+            axis=1
+        )
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-relationships", latency, len(df), "200")
+
+        return {
+            "total_skus": len(df),
+            "single_source_skus": len(single_source),
+            "multi_source_skus": len(multi_source),
+            "critical_path_suppliers": critical_suppliers[
+                ['sku_id', 'sku_name', 'primary_supplier_id',
+                 'primary_supplier_name', 'annual_contract_value_inr']
+            ].to_dict(orient='records')[:10],
+            "supplier_criticality": supplier_criticality[
+                ['primary_supplier_id', 'sku_count',
+                 'single_source_count', 'criticality_level']
+            ].to_dict(orient='records')
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-relationships", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+@app.get("/api/analytics/diversification-recommendations")
+def diversification_recommendations():
+    start = time.time()
+    try:
+        df = pd.read_sql("""
+            SELECT
+                sk.sku_id,
+                sk.sku_name,
+                sk.primary_supplier_id,
+                sk.secondary_supplier_id,
+                sk.is_single_source
+            FROM skus sk
+        """, engine)
+
+        recommendations = []
+
+        for _, row in df.iterrows():
+
+            # Calculate backup supplier count
+            if (
+                pd.notna(row["secondary_supplier_id"])
+                and row["secondary_supplier_id"] != "NONE"
+            ):
+                backup_count = 1
+            else:
+                backup_count = 0
+
+            # High Risk - Single Source
+            if row["is_single_source"] == 1 and backup_count == 0:
+                recommendations.append({
+                    "sku_id": row["sku_id"],
+                    "sku_name": row["sku_name"],
+                    "primary_supplier_id": row["primary_supplier_id"],
+                    "current_backup_count": backup_count,
+                    "risk_level": "HIGH",
+                    "recommendation": "Single-source critical SKU — find backup supplier urgently"
+                })
+
+            # Medium Risk - Less than 2 backup options
+            elif backup_count < 2:
+                recommendations.append({
+                    "sku_id": row["sku_id"],
+                    "sku_name": row["sku_name"],
+                    "primary_supplier_id": row["primary_supplier_id"],
+                    "current_backup_count": backup_count,
+                    "risk_level": "MEDIUM",
+                    "recommendation": "Less than 2 backup options — recommend finding alternatives"
+                })
+
+        latency = round((time.time() - start) * 1000, 2)
+
+        log_request(
+            "diversification-recommendations",
+            latency,
+            len(recommendations),
+            "200"
+        )
+
+        return {
+            "total_skus": len(df),
+            "total_skus_at_risk": len(recommendations),
+            "recommendations": recommendations[:20]
+        }
+
+    except Exception as e:
+        latency = round((time.time() - start) * 1000, 2)
+
+        log_request(
+            "diversification-recommendations",
+            latency,
+            0,
+            f"ERROR:{str(e)}"
+        )
+
+        return {
+            "error": str(e)
+        }
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
