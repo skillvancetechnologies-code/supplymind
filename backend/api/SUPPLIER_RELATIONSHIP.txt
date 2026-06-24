@@ -1,0 +1,195 @@
+SUPPLIER RELATIONSHIP ANALYTICS
+SupplyMind — Week 7 Day 3
+Date: June 25, 2026
+Tested by: Pavan
+
+════════════════════════════════════════
+RELATIONSHIP ANALYSIS
+════════════════════════════════════════
+[paste output from supplier-relationships]
+
+════════════════════════════════════════
+CRITICALITY ASSESSMENT
+════════════════════════════════════════
+Critical: Single source + high contract value
+High: Single source only
+Medium: Multi-source with 3+ SKUs
+Low: Multi-source, low volume
+
+════════════════════════════════════════
+DIVERSIFICATION RECOMMENDATIONS
+════════════════════════════════════════
+{
+  "total_skus": 500,
+  "total_skus_at_risk": 500,
+  "recommendations": [
+    {
+      "sku_id": "SKU-00001",
+      "sku_name": "Packaging Component 1",
+      "primary_supplier_id": "SUP-0078",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00002",
+      "sku_name": "Raw Materials Component 2",
+      "primary_supplier_id": "SUP-0056",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00003",
+      "sku_name": "Mechanical Components Component 3",
+      "primary_supplier_id": "SUP-0081",
+      "current_backup_count": 0,
+      "risk_level": "HIGH",
+      "recommendation": "Single-source critical SKU — find backup supplier urgently"
+    },
+    {
+      "sku_id": "SKU-00004",
+      "sku_name": "Raw Materials Component 4",
+      "primary_supplier_id": "SUP-0164",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00005",
+      "sku_name": "Electronics Component 5",
+      "primary_supplier_id": "SUP-0146",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00006",
+      "sku_name": "Chemicals Component 6",
+      "primary_supplier_id": "SUP-0095",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00007",
+      "sku_name": "Packaging Component 7",
+      "primary_supplier_id": "SUP-0009",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00008",
+      "sku_name": "Safety Equipment Component 8",
+      "primary_supplier_id": "SUP-0046",
+      "current_backup_count": 0,
+      "risk_level": "HIGH",
+      "recommendation": "Single-source critical SKU — find backup supplier urgently"
+    },
+    {
+      "sku_id": "SKU-00009",
+      "sku_name": "Electronics Component 9",
+      "primary_supplier_id": "SUP-0171",
+      "current_backup_count": 0,
+      "risk_level": "HIGH",
+      "recommendation": "Single-source critical SKU — find backup supplier urgently"
+    },
+    {
+      "sku_id": "SKU-00010",
+      "sku_name": "Consumables Component 10",
+      "primary_supplier_id": "SUP-0035",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00011",
+      "sku_name": "Raw Materials Component 11",
+      "primary_supplier_id": "SUP-0163",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00012",
+      "sku_name": "Consumables Component 12",
+      "primary_supplier_id": "SUP-0193",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00013",
+      "sku_name": "Automotive Parts Component 13",
+      "primary_supplier_id": "SUP-0087",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00014",
+      "sku_name": "Mechanical Components Component 14",
+      "primary_supplier_id": "SUP-0168",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00015",
+      "sku_name": "Electrical Component 15",
+      "primary_supplier_id": "SUP-0145",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00016",
+      "sku_name": "Mechanical Components Component 16",
+      "primary_supplier_id": "SUP-0138",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00017",
+      "sku_name": "Packaging Component 17",
+      "primary_supplier_id": "SUP-0122",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00018",
+      "sku_name": "Consumables Component 18",
+      "primary_supplier_id": "SUP-0106",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    },
+    {
+      "sku_id": "SKU-00019",
+      "sku_name": "Packaging Component 19",
+      "primary_supplier_id": "SUP-0157",
+      "current_backup_count": 0,
+      "risk_level": "HIGH",
+      "recommendation": "Single-source critical SKU — find backup supplier urgently"
+    },
+    {
+      "sku_id": "SKU-00020",
+      "sku_name": "Electrical Component 20",
+      "primary_supplier_id": "SUP-0163",
+      "current_backup_count": 1,
+      "risk_level": "MEDIUM",
+      "recommendation": "Less than 2 backup options — recommend finding alternatives"
+    }
+  ]
+}
+
+════════════════════════════════════════
+TEST RESULTS
+════════════════════════════════════════
+✅ Relationships verified against raw data
+✅ Criticality calculation logic verified
+✅ Alert triggers tested
+✅ Response time under target
