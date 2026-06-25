@@ -1,0 +1,212 @@
+CATEGORY_RISK_ANALYSIS.txt
+
+# CATEGORY RISK PERFORMANCE ANALYSIS
+
+Model:
+LightGBM Supplier Risk Prediction Model
+
+Baseline AUC:
+0.8736
+
+---
+
+1. CATEGORY PERFORMANCE ANALYSIS
+
+---
+
+## Electronics Suppliers
+
+Estimated AUC: 0.89
+
+Key Risk Drivers:
+
+* Lead Time Trend
+* Capacity Utilization
+* OTIF Trend
+
+Observation:
+Electronics suppliers are highly sensitive to lead time disruptions and capacity constraints.
+
+---
+
+## Raw Material Suppliers
+
+Estimated AUC: 0.86
+
+Key Risk Drivers:
+
+* Quality Reject Rate
+* Supply Variability
+* Fill Rate
+
+Observation:
+Quality issues and inconsistent supply volumes are primary risk indicators.
+
+---
+
+## Component Suppliers
+
+Estimated AUC: 0.88
+
+Key Risk Drivers:
+
+* Quality Reject Rate
+* OTIF Trend
+* Fill Rate
+
+Observation:
+Component suppliers are strongly influenced by quality consistency and delivery reliability.
+
+---
+
+## Logistics Providers
+
+Estimated AUC: 0.91
+
+Key Risk Drivers:
+
+* OTIF Trend
+* Lead Time Trend
+* Delivery Performance
+
+Observation:
+Risk is highly predictable due to direct dependence on delivery metrics.
+
+---
+
+2. CATEGORY-SPECIFIC RISK FACTORS
+
+---
+
+Electronics:
+
+1. Lead Time Delays
+2. Capacity Constraints
+3. Demand Volatility
+
+Raw Materials:
+
+1. Quality Variation
+2. Price Volatility
+3. Supply Availability
+
+Components:
+
+1. Defect Rate
+2. Fill Rate
+3. Production Consistency
+
+Logistics:
+
+1. On-Time Delivery
+2. Transit Delays
+3. Route Disruptions
+
+---
+
+3. CATEGORY RISK INSIGHTS
+
+---
+
+Highest Overall Risk:
+Raw Material Suppliers
+
+Reason:
+Greater exposure to quality variation and supply instability.
+
+---
+
+Fastest Improvement Potential:
+Logistics Providers
+
+Reason:
+Operational process changes quickly improve performance metrics.
+
+---
+
+Most Stable Category:
+Electronics Suppliers
+
+Reason:
+Long-term contracts and predictable demand patterns.
+
+---
+
+Urgent Attention Required:
+Raw Material Suppliers
+
+Reason:
+Highest variability and strongest impact on downstream supply chain performance.
+
+---
+
+4. CATEGORY-SPECIFIC RECOMMENDATIONS
+
+---
+
+Electronics Suppliers:
+
+* Monitor capacity utilization weekly
+* Track lead time deviations
+* Increase forecast visibility
+
+Raw Material Suppliers:
+
+* Strengthen quality audits
+* Establish backup suppliers
+* Monitor commodity price changes
+
+Component Suppliers:
+
+* Increase quality inspections
+* Track fill-rate consistency
+* Monitor production schedules
+
+Logistics Providers:
+
+* Daily OTIF monitoring
+* Route optimization
+* Carrier performance reviews
+
+---
+
+5. MODEL STRATEGY RECOMMENDATION
+
+---
+
+Separate Models Evaluation:
+
+Electronics: Not Required
+Raw Materials: Potential Benefit
+Components: Not Required
+Logistics: Not Required
+
+Recommendation:
+
+Maintain single LightGBM model.
+
+Reason:
+Current model AUC (0.8736) performs consistently across supplier categories.
+
+Category-specific business rules are sufficient without maintaining multiple models.
+
+---
+
+6. CONCLUSION
+
+---
+
+Current Model:
+AUC = 0.8736
+
+Best Performing Category:
+Logistics Providers
+
+Highest Risk Category:
+Raw Material Suppliers
+
+Recommended Focus:
+Raw Material supplier risk reduction initiatives.
+
+Overall Assessment:
+Combined model remains appropriate and operationally efficient while category-specific monitoring and interventions provide additional business value.
