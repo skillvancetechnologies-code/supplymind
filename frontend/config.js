@@ -20,6 +20,32 @@ export const DISRUPTION_API =
 `${BASE_URL}/api/analytics/disruption-risks`
 
 
+export const INVENTORY_DETAIL_API =
+  `${BASE_URL}/api/analytics/inventory-detail`;
+
+
+  export const SUPPLIER_SCORECARD_API =
+  `${BASE_URL}/api/analytics/supplier-scorecard`
+
+export const SUPPLIER_PEERS_API =
+  `${BASE_URL}/api/analytics/supplier-peers`
+
+
+  export const SUPPLIER_RELATIONSHIPS_API =
+  `${BASE_URL}/api/analytics/supplier-relationships`
+
+
+  export const SUPPLIER_ACTIONS_API =
+  `${BASE_URL}/api/supplier-actions`
+
+export const SUPPLIER_ACTION_STATUS_API =
+
+  `${BASE_URL}/api/supplier-actions`
+
+  
+
+
+
 /* Karthi Render URL */
 export const RESPONSE_PLAN_API =
 'https://supplymind-response-engine.onrender.com/api/response-plan'

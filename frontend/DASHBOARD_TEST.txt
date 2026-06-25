@@ -1,0 +1,39 @@
+Week 6 Day 1 — Supplier Intelligence Dashboard Test
+
+Developer: Kamatham Prem Sannith
+
+Status: Complete
+
+Tested Items:
+1. Supplier Intelligence Dashboard page opened successfully.
+2. KPI cards displayed:
+   - Suppliers At Risk
+   - Average OTIF
+   - Average Lead Time
+3. 50 suppliers rendered successfully.
+4. Supplier search working.
+5. Risk filter working: Low, Medium, High.
+6. Region filter working: North, South, East, West.
+7. Sorting working:
+   - Risk
+   - OTIF
+   - Lead Time
+8. Supplier card click working.
+9. Detail scorecard updates after selecting supplier.
+10. Scorecard shows:
+   - Supplier ID
+   - Supplier Name
+   - Risk Score
+   - OTIF
+   - Lead Time
+   - Region
+   - Benchmark Percentile
+   - Risk Prediction
+   - Last 7 Day Trend
+11. No UI crash found.
+12. Dashboard load time target: under 3 seconds.
+
+Notes:
+Supplier Intelligence Dashboard is ready for review.
+Mock 50 supplier data is currently used.
+Live API integration can be added after backend confirmation.
