@@ -6,7 +6,1207 @@ Tested by: Pavan
 ════════════════════════════════════════
 RELATIONSHIP ANALYSIS
 ════════════════════════════════════════
-[paste output from supplier-relationships]
+{
+  "total_skus": 500,
+  "single_source_skus": 145,
+  "multi_source_skus": 355,
+  "critical_path_suppliers": [
+    {
+      "sku_id": "SKU-00008",
+      "sku_name": "Safety Equipment Component 8",
+      "primary_supplier_id": "SUP-0046",
+      "primary_supplier_name": "Anand Automotive",
+      "annual_contract_value_inr": 20052028
+    },
+    {
+      "sku_id": "SKU-00009",
+      "sku_name": "Electronics Component 9",
+      "primary_supplier_id": "SUP-0171",
+      "primary_supplier_name": "Kottakkal Arya",
+      "annual_contract_value_inr": 15493757
+    },
+    {
+      "sku_id": "SKU-00024",
+      "sku_name": "Raw Materials Component 24",
+      "primary_supplier_id": "SUP-0031",
+      "primary_supplier_name": "Rex Remedies",
+      "annual_contract_value_inr": 20896096
+    },
+    {
+      "sku_id": "SKU-00034",
+      "sku_name": "Chemicals Component 34",
+      "primary_supplier_id": "SUP-0188",
+      "primary_supplier_name": "Euro Ceramic",
+      "annual_contract_value_inr": 25432004
+    },
+    {
+      "sku_id": "SKU-00049",
+      "sku_name": "Electrical Component 49",
+      "primary_supplier_id": "SUP-0167",
+      "primary_supplier_name": "Praakritik",
+      "annual_contract_value_inr": 42117551
+    },
+    {
+      "sku_id": "SKU-00050",
+      "sku_name": "Packaging Component 50",
+      "primary_supplier_id": "SUP-0086",
+      "primary_supplier_name": "Liberty Shoes Supply",
+      "annual_contract_value_inr": 30039454
+    },
+    {
+      "sku_id": "SKU-00052",
+      "sku_name": "Automotive Parts Component 52",
+      "primary_supplier_id": "SUP-0050",
+      "primary_supplier_name": "Hero Metal Works",
+      "annual_contract_value_inr": 17952235
+    },
+    {
+      "sku_id": "SKU-00064",
+      "sku_name": "Mechanical Components Component 64",
+      "primary_supplier_id": "SUP-0047",
+      "primary_supplier_name": "Ramkrishna Forgings",
+      "annual_contract_value_inr": 27304139
+    },
+    {
+      "sku_id": "SKU-00078",
+      "sku_name": "Mechanical Components Component 78",
+      "primary_supplier_id": "SUP-0037",
+      "primary_supplier_name": "NCL Industries",
+      "annual_contract_value_inr": 500000000
+    },
+    {
+      "sku_id": "SKU-00083",
+      "sku_name": "Consumables Component 83",
+      "primary_supplier_id": "SUP-0122",
+      "primary_supplier_name": "Lavanya Tiles",
+      "annual_contract_value_inr": 15078357
+    }
+  ],
+  "supplier_criticality": [
+    {
+      "primary_supplier_id": "SUP-0001",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0002",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0003",
+      "sku_count": 5,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0004",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0007",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0008",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0009",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0010",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0011",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0012",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0013",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0015",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0016",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0017",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0018",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0019",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0020",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0021",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0022",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0023",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0024",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0025",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0026",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0027",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0028",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0029",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0030",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0031",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0032",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0033",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0034",
+      "sku_count": 5,
+      "single_source_count": 3,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0035",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0036",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0037",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0038",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0041",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0042",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0043",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0044",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0045",
+      "sku_count": 5,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0046",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0047",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0048",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0049",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0050",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0051",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0053",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0054",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0055",
+      "sku_count": 7,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0056",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0058",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0059",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0060",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0061",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0062",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0063",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0064",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0065",
+      "sku_count": 6,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0066",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0067",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0068",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0069",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0070",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0071",
+      "sku_count": 4,
+      "single_source_count": 3,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0073",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0074",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0075",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0076",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0077",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0078",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0079",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0080",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0081",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0082",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0083",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0084",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0085",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0086",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0087",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0088",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0090",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0091",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0092",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0094",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0095",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0096",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0097",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0098",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0100",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0101",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0102",
+      "sku_count": 6,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0103",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0104",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0105",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0106",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0107",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0108",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0109",
+      "sku_count": 3,
+      "single_source_count": 3,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0110",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0111",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0112",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0113",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0114",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0115",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0116",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0117",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0118",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0119",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0120",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0121",
+      "sku_count": 2,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0122",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0123",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0124",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0125",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0126",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0127",
+      "sku_count": 6,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0128",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0129",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0130",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0131",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0132",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0133",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0134",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0135",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0136",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0137",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0138",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0139",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0140",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0141",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0142",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0144",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0145",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0146",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0147",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0148",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0149",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0150",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0151",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0152",
+      "sku_count": 5,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0153",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0154",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0155",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0156",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0157",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0158",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0159",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0160",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0161",
+      "sku_count": 4,
+      "single_source_count": 3,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0162",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0163",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0164",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0165",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0166",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0167",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0168",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0169",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0170",
+      "sku_count": 5,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0171",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0172",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0173",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0174",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0175",
+      "sku_count": 3,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0176",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0177",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0178",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0179",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0180",
+      "sku_count": 2,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0181",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0182",
+      "sku_count": 1,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0183",
+      "sku_count": 3,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0184",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0185",
+      "sku_count": 4,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0187",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0188",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0189",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0190",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0191",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0192",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0193",
+      "sku_count": 4,
+      "single_source_count": 0,
+      "criticality_level": "Medium"
+    },
+    {
+      "primary_supplier_id": "SUP-0194",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "High"
+    },
+    {
+      "primary_supplier_id": "SUP-0195",
+      "sku_count": 3,
+      "single_source_count": 2,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0196",
+      "sku_count": 4,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0197",
+      "sku_count": 6,
+      "single_source_count": 3,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0198",
+      "sku_count": 1,
+      "single_source_count": 1,
+      "criticality_level": "Critical"
+    },
+    {
+      "primary_supplier_id": "SUP-0199",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    },
+    {
+      "primary_supplier_id": "SUP-0200",
+      "sku_count": 2,
+      "single_source_count": 0,
+      "criticality_level": "Low"
+    }
+  ]
+}
 
 ════════════════════════════════════════
 CRITICALITY ASSESSMENT
