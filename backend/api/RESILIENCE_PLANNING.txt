@@ -1,0 +1,76 @@
+SUPPLY CHAIN RESILIENCE PLANNING
+SupplyMind — Week 7 Day 4
+Date: June 26, 2026
+Tested by: Pavan
+
+════════════════════════════════════════
+SCENARIO ANALYSIS
+════════════════════════════════════════
+
+Scenario 1: Critical Supplier Failure
+  Probability: 5%
+  Impact: 72 SKUs at risk of stockout
+  Recovery: 2-4 weeks
+  Severity: HIGH
+
+Scenario 2: Logistics Provider Failure
+  Probability: 3%
+  Impact: Delivery delays across shipments
+  Recovery: 1-2 weeks
+  Severity: MEDIUM
+
+Scenario 3: Multiple Supplier Failure
+  Probability: 1%
+  Impact: Severe disruption across categories
+  Recovery: 1-3 months
+  Severity: CRITICAL
+
+════════════════════════════════════════
+BACKUP STRATEGY ANALYSIS
+════════════════════════════════════════
+Total SKUs analyzed: 500
+Critical with no backup: 0
+
+Top 5 lowest resilience scores:
+  SKU-00008: Score 4/10, Backup: True
+  SKU-00009: Score 4/10, Backup: True
+  SKU-00024: Score 4/10, Backup: True
+  SKU-00034: Score 4/10, Backup: True
+  SKU-00049: Score 4/10, Backup: True
+
+Resilience Score Logic (1-10):
+- Start at 10
+- Single source: -5
+- No backup: -3
+- Backup capacity >90%: -1
+- High contract value: -1
+
+════════════════════════════════════════
+RESILIENCE RECOMMENDATIONS
+════════════════════════════════════════
+1. Single-source critical SKUs with no
+   backup: Add backup supplier immediately
+2. Multi-source SKUs: Verify backup can
+   scale to handle full volume
+3. Low backup capacity (<20% available):
+   Negotiate capacity reservation
+4. High switching cost (30%+): Negotiate
+   volume discounts with backup supplier
+
+════════════════════════════════════════
+DASHBOARD DESIGN
+════════════════════════════════════════
+- Scatter plot: Criticality vs Backup Availability
+- Risk exposure heatmap by category
+- Resilience score distribution (1-10)
+- Alert panel: Critical suppliers with
+  no backup (urgent action needed)
+
+════════════════════════════════════════
+TEST RESULTS
+════════════════════════════════════════
+✅ 200 suppliers mapped via SKU relationships
+✅ Backup availability confirmed
+✅ Resilience scores assigned (1-10)
+✅ 0 critical SKUs flagged with no backup
+✅ Recommendations generated correctly
