@@ -1,0 +1,1142 @@
+{
+  "SKU-00064": {
+    "category": "Mechanical Components",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 6.75,
+        "rmse": 13.09,
+        "direction_accuracy": 79.3,
+        "ci_coverage": 87.6,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 6.24,
+        "rmse": 10.07,
+        "direction_accuracy": 85.9,
+        "ci_coverage": 86.1,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 7.05,
+        "rmse": 11.98,
+        "direction_accuracy": 80.4,
+        "ci_coverage": 84.1,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.96,
+        "rmse": 13.18,
+        "direction_accuracy": 79.3,
+        "ci_coverage": 85.7,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00278": {
+    "category": "Consumables",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 5.14,
+        "rmse": 10.68,
+        "direction_accuracy": 87.7,
+        "ci_coverage": 90.4,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 4.52,
+        "rmse": 9.15,
+        "direction_accuracy": 87.7,
+        "ci_coverage": 90.1,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.22,
+        "rmse": 11.61,
+        "direction_accuracy": 80.3,
+        "ci_coverage": 93.9,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 5.17,
+        "rmse": 10.41,
+        "direction_accuracy": 85.8,
+        "ci_coverage": 92.9,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00216": {
+    "category": "Electrical",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.0,
+        "rmse": 12.2,
+        "direction_accuracy": 85.3,
+        "ci_coverage": 89.0,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 7.43,
+        "rmse": 12.91,
+        "direction_accuracy": 79.5,
+        "ci_coverage": 88.3,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 7.72,
+        "rmse": 13.17,
+        "direction_accuracy": 82.1,
+        "ci_coverage": 89.9,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 9.08,
+        "rmse": 17.29,
+        "direction_accuracy": 80.0,
+        "ci_coverage": 91.6,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00477": {
+    "category": "Electrical",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.86,
+        "rmse": 16.65,
+        "direction_accuracy": 75.0,
+        "ci_coverage": 88.1,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 8.36,
+        "rmse": 14.34,
+        "direction_accuracy": 83.0,
+        "ci_coverage": 89.3,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.95,
+        "rmse": 11.85,
+        "direction_accuracy": 78.2,
+        "ci_coverage": 86.5,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 8.15,
+        "rmse": 15.7,
+        "direction_accuracy": 79.8,
+        "ci_coverage": 87.1,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00269": {
+    "category": "Automotive Parts",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.64,
+        "rmse": 13.22,
+        "direction_accuracy": 79.4,
+        "ci_coverage": 90.0,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 9.0,
+        "rmse": 15.39,
+        "direction_accuracy": 71.2,
+        "ci_coverage": 89.5,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 7.88,
+        "rmse": 12.79,
+        "direction_accuracy": 83.2,
+        "ci_coverage": 88.0,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 7.97,
+        "rmse": 14.43,
+        "direction_accuracy": 83.5,
+        "ci_coverage": 92.6,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00247": {
+    "category": "Automotive Parts",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.78,
+        "rmse": 12.49,
+        "direction_accuracy": 77.7,
+        "ci_coverage": 96.1,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 6.99,
+        "rmse": 12.12,
+        "direction_accuracy": 80.6,
+        "ci_coverage": 94.4,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 5.54,
+        "rmse": 10.11,
+        "direction_accuracy": 82.6,
+        "ci_coverage": 93.9,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 7.28,
+        "rmse": 13.47,
+        "direction_accuracy": 83.9,
+        "ci_coverage": 93.1,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00361": {
+    "category": "Consumables",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 10.57,
+        "rmse": 17.72,
+        "direction_accuracy": 69.2,
+        "ci_coverage": 88.5,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 10.28,
+        "rmse": 19.18,
+        "direction_accuracy": 79.4,
+        "ci_coverage": 89.6,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 9.71,
+        "rmse": 20.06,
+        "direction_accuracy": 70.3,
+        "ci_coverage": 85.2,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 10.88,
+        "rmse": 17.73,
+        "direction_accuracy": 66.8,
+        "ci_coverage": 87.0,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00474": {
+    "category": "Electronics",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 9.31,
+        "rmse": 18.45,
+        "direction_accuracy": 80.0,
+        "ci_coverage": 82.3,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 10.32,
+        "rmse": 17.89,
+        "direction_accuracy": 68.5,
+        "ci_coverage": 81.0,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 10.24,
+        "rmse": 19.15,
+        "direction_accuracy": 70.5,
+        "ci_coverage": 78.9,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 13.34,
+        "rmse": 24.01,
+        "direction_accuracy": 72.9,
+        "ci_coverage": 70.9,
+        "classification": "Poor"
+      }
+    ]
+  },
+  "SKU-00377": {
+    "category": "Packaging",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.15,
+        "rmse": 15.44,
+        "direction_accuracy": 81.4,
+        "ci_coverage": 83.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 8.0,
+        "rmse": 15.33,
+        "direction_accuracy": 81.8,
+        "ci_coverage": 82.4,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 9.51,
+        "rmse": 15.55,
+        "direction_accuracy": 78.3,
+        "ci_coverage": 87.4,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 8.8,
+        "rmse": 14.66,
+        "direction_accuracy": 72.5,
+        "ci_coverage": 83.8,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00463": {
+    "category": "Packaging",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 9.95,
+        "rmse": 16.4,
+        "direction_accuracy": 75.0,
+        "ci_coverage": 82.4,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 9.22,
+        "rmse": 18.12,
+        "direction_accuracy": 74.1,
+        "ci_coverage": 83.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 10.76,
+        "rmse": 19.38,
+        "direction_accuracy": 74.1,
+        "ci_coverage": 81.1,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 10.66,
+        "rmse": 18.07,
+        "direction_accuracy": 72.9,
+        "ci_coverage": 81.6,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00383": {
+    "category": "Raw Materials",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 9.78,
+        "rmse": 19.86,
+        "direction_accuracy": 74.0,
+        "ci_coverage": 82.2,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 7.61,
+        "rmse": 15.36,
+        "direction_accuracy": 75.9,
+        "ci_coverage": 85.7,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 9.64,
+        "rmse": 16.22,
+        "direction_accuracy": 75.1,
+        "ci_coverage": 84.9,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 7.85,
+        "rmse": 12.8,
+        "direction_accuracy": 80.7,
+        "ci_coverage": 82.4,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00343": {
+    "category": "Safety Equipment",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 11.34,
+        "rmse": 23.57,
+        "direction_accuracy": 63.8,
+        "ci_coverage": 80.2,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 11.87,
+        "rmse": 19.92,
+        "direction_accuracy": 72.0,
+        "ci_coverage": 81.4,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 13.16,
+        "rmse": 24.62,
+        "direction_accuracy": 61.9,
+        "ci_coverage": 80.0,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 17.96,
+        "rmse": 32.33,
+        "direction_accuracy": 66.0,
+        "ci_coverage": 68.0,
+        "classification": "Poor"
+      }
+    ]
+  },
+  "SKU-00129": {
+    "category": "Chemicals",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.8,
+        "rmse": 15.11,
+        "direction_accuracy": 82.2,
+        "ci_coverage": 88.2,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 7.58,
+        "rmse": 13.06,
+        "direction_accuracy": 79.4,
+        "ci_coverage": 90.1,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 8.72,
+        "rmse": 16.49,
+        "direction_accuracy": 77.1,
+        "ci_coverage": 87.4,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 9.41,
+        "rmse": 18.43,
+        "direction_accuracy": 78.5,
+        "ci_coverage": 86.2,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00495": {
+    "category": "Raw Materials",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.94,
+        "rmse": 14.63,
+        "direction_accuracy": 77.2,
+        "ci_coverage": 86.2,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 10.63,
+        "rmse": 17.4,
+        "direction_accuracy": 76.0,
+        "ci_coverage": 87.6,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 8.92,
+        "rmse": 18.2,
+        "direction_accuracy": 72.7,
+        "ci_coverage": 87.1,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 9.22,
+        "rmse": 18.6,
+        "direction_accuracy": 73.8,
+        "ci_coverage": 82.4,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00218": {
+    "category": "Electrical",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.96,
+        "rmse": 15.68,
+        "direction_accuracy": 74.9,
+        "ci_coverage": 89.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 11.42,
+        "rmse": 18.93,
+        "direction_accuracy": 75.7,
+        "ci_coverage": 85.2,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 10.72,
+        "rmse": 20.4,
+        "direction_accuracy": 69.3,
+        "ci_coverage": 85.6,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 10.11,
+        "rmse": 17.51,
+        "direction_accuracy": 73.9,
+        "ci_coverage": 87.3,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00244": {
+    "category": "Packaging",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 10.99,
+        "rmse": 17.6,
+        "direction_accuracy": 67.9,
+        "ci_coverage": 85.1,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 11.44,
+        "rmse": 22.55,
+        "direction_accuracy": 69.5,
+        "ci_coverage": 85.1,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 10.89,
+        "rmse": 17.83,
+        "direction_accuracy": 66.7,
+        "ci_coverage": 83.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 11.98,
+        "rmse": 24.16,
+        "direction_accuracy": 67.7,
+        "ci_coverage": 87.1,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00115": {
+    "category": "Electrical",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 6.9,
+        "rmse": 14.01,
+        "direction_accuracy": 78.8,
+        "ci_coverage": 88.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 5.07,
+        "rmse": 8.38,
+        "direction_accuracy": 85.1,
+        "ci_coverage": 85.9,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.51,
+        "rmse": 12.44,
+        "direction_accuracy": 85.8,
+        "ci_coverage": 87.2,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.45,
+        "rmse": 13.46,
+        "direction_accuracy": 80.8,
+        "ci_coverage": 90.3,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00310": {
+    "category": "Raw Materials",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.74,
+        "rmse": 15.49,
+        "direction_accuracy": 76.5,
+        "ci_coverage": 88.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 8.88,
+        "rmse": 17.71,
+        "direction_accuracy": 81.1,
+        "ci_coverage": 84.8,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 9.03,
+        "rmse": 15.45,
+        "direction_accuracy": 73.1,
+        "ci_coverage": 88.4,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 8.03,
+        "rmse": 16.05,
+        "direction_accuracy": 81.7,
+        "ci_coverage": 85.1,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00391": {
+    "category": "Mechanical Components",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.45,
+        "rmse": 14.69,
+        "direction_accuracy": 76.6,
+        "ci_coverage": 84.5,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 7.29,
+        "rmse": 13.63,
+        "direction_accuracy": 77.2,
+        "ci_coverage": 84.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.58,
+        "rmse": 11.11,
+        "direction_accuracy": 79.3,
+        "ci_coverage": 84.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.9,
+        "rmse": 12.54,
+        "direction_accuracy": 80.2,
+        "ci_coverage": 79.6,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00112": {
+    "category": "Electrical",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 6.17,
+        "rmse": 10.65,
+        "direction_accuracy": 82.4,
+        "ci_coverage": 91.3,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 5.15,
+        "rmse": 9.63,
+        "direction_accuracy": 85.3,
+        "ci_coverage": 93.6,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.83,
+        "rmse": 12.17,
+        "direction_accuracy": 85.8,
+        "ci_coverage": 92.3,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.55,
+        "rmse": 11.51,
+        "direction_accuracy": 80.2,
+        "ci_coverage": 90.4,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00451": {
+    "category": "Electronics",
+    "pattern": "seasonal",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 9.44,
+        "rmse": 16.5,
+        "direction_accuracy": 79.7,
+        "ci_coverage": 82.1,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 9.42,
+        "rmse": 18.27,
+        "direction_accuracy": 70.9,
+        "ci_coverage": 85.4,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 9.85,
+        "rmse": 18.45,
+        "direction_accuracy": 80.3,
+        "ci_coverage": 81.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 9.01,
+        "rmse": 17.03,
+        "direction_accuracy": 74.9,
+        "ci_coverage": 82.6,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00151": {
+    "category": "Consumables",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 6.83,
+        "rmse": 13.65,
+        "direction_accuracy": 84.9,
+        "ci_coverage": 91.9,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 5.68,
+        "rmse": 10.89,
+        "direction_accuracy": 86.3,
+        "ci_coverage": 90.1,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 7.23,
+        "rmse": 14.0,
+        "direction_accuracy": 83.6,
+        "ci_coverage": 91.9,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 5.53,
+        "rmse": 9.52,
+        "direction_accuracy": 85.8,
+        "ci_coverage": 88.0,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00350": {
+    "category": "Chemicals",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 11.29,
+        "rmse": 21.99,
+        "direction_accuracy": 70.7,
+        "ci_coverage": 76.9,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 10.47,
+        "rmse": 16.78,
+        "direction_accuracy": 69.6,
+        "ci_coverage": 79.5,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 11.84,
+        "rmse": 21.45,
+        "direction_accuracy": 73.8,
+        "ci_coverage": 75.9,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 12.39,
+        "rmse": 20.14,
+        "direction_accuracy": 71.5,
+        "ci_coverage": 78.2,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00026": {
+    "category": "Electronics",
+    "pattern": "poor",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 18.49,
+        "rmse": 35.09,
+        "direction_accuracy": 55,
+        "ci_coverage": 69.3,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 21.13,
+        "rmse": 41.41,
+        "direction_accuracy": 55,
+        "ci_coverage": 62.9,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 23.09,
+        "rmse": 47.3,
+        "direction_accuracy": 55,
+        "ci_coverage": 58.3,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 24.34,
+        "rmse": 41.95,
+        "direction_accuracy": 55,
+        "ci_coverage": 52.3,
+        "classification": "Poor"
+      }
+    ]
+  },
+  "SKU-00179": {
+    "category": "Chemicals",
+    "pattern": "cyclical",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 10.14,
+        "rmse": 17.67,
+        "direction_accuracy": 76.4,
+        "ci_coverage": 80.7,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 10.46,
+        "rmse": 17.46,
+        "direction_accuracy": 76.2,
+        "ci_coverage": 83.0,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 11.57,
+        "rmse": 18.89,
+        "direction_accuracy": 71.2,
+        "ci_coverage": 83.6,
+        "classification": "Fair"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 11.42,
+        "rmse": 19.46,
+        "direction_accuracy": 71.4,
+        "ci_coverage": 81.4,
+        "classification": "Fair"
+      }
+    ]
+  },
+  "SKU-00351": {
+    "category": "Automotive Parts",
+    "pattern": "poor",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 19.29,
+        "rmse": 34.52,
+        "direction_accuracy": 61.3,
+        "ci_coverage": 69.8,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 19.96,
+        "rmse": 40.46,
+        "direction_accuracy": 55,
+        "ci_coverage": 65.9,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 22.02,
+        "rmse": 41.24,
+        "direction_accuracy": 55,
+        "ci_coverage": 62.1,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 23.43,
+        "rmse": 42.6,
+        "direction_accuracy": 55,
+        "ci_coverage": 55.1,
+        "classification": "Poor"
+      }
+    ]
+  },
+  "SKU-00453": {
+    "category": "Automotive Parts",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 5.7,
+        "rmse": 9.49,
+        "direction_accuracy": 84.3,
+        "ci_coverage": 91.2,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 5.23,
+        "rmse": 9.85,
+        "direction_accuracy": 89.4,
+        "ci_coverage": 91.1,
+        "classification": "Excellent"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.57,
+        "rmse": 12.04,
+        "direction_accuracy": 86.5,
+        "ci_coverage": 89.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 5.8,
+        "rmse": 10.23,
+        "direction_accuracy": 83.1,
+        "ci_coverage": 90.5,
+        "classification": "Excellent"
+      }
+    ]
+  },
+  "SKU-00201": {
+    "category": "Safety Equipment",
+    "pattern": "poor",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 14.68,
+        "rmse": 23.63,
+        "direction_accuracy": 61.1,
+        "ci_coverage": 68.0,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 18.64,
+        "rmse": 35.88,
+        "direction_accuracy": 55,
+        "ci_coverage": 65.3,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 19.97,
+        "rmse": 41.43,
+        "direction_accuracy": 55.3,
+        "ci_coverage": 63.4,
+        "classification": "Poor"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 20.62,
+        "rmse": 34.29,
+        "direction_accuracy": 55,
+        "ci_coverage": 55.5,
+        "classification": "Poor"
+      }
+    ]
+  },
+  "SKU-00062": {
+    "category": "Chemicals",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 7.83,
+        "rmse": 14.91,
+        "direction_accuracy": 77.3,
+        "ci_coverage": 85.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 6.25,
+        "rmse": 13.01,
+        "direction_accuracy": 86.7,
+        "ci_coverage": 89.7,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 6.01,
+        "rmse": 11.66,
+        "direction_accuracy": 81.1,
+        "ci_coverage": 86.7,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.88,
+        "rmse": 11.27,
+        "direction_accuracy": 80.5,
+        "ci_coverage": 89.2,
+        "classification": "Good"
+      }
+    ]
+  },
+  "SKU-00193": {
+    "category": "Packaging",
+    "pattern": "consistent",
+    "weeks": [
+      {
+        "week": "2026-05-19",
+        "mape": 8.22,
+        "rmse": 13.65,
+        "direction_accuracy": 73.8,
+        "ci_coverage": 87.4,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-05-26",
+        "mape": 8.07,
+        "rmse": 14.64,
+        "direction_accuracy": 80.3,
+        "ci_coverage": 85.9,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-02",
+        "mape": 7.41,
+        "rmse": 15.01,
+        "direction_accuracy": 77.9,
+        "ci_coverage": 85.8,
+        "classification": "Good"
+      },
+      {
+        "week": "2026-06-09",
+        "mape": 6.46,
+        "rmse": 12.39,
+        "direction_accuracy": 80.6,
+        "ci_coverage": 89.5,
+        "classification": "Good"
+      }
+    ]
+  }
+}

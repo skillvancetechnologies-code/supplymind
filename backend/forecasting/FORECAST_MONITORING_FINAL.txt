@@ -1,0 +1,176 @@
+======================================================================
+  SUPPLYMIND — FORECAST PERFORMANCE MONITORING (FINAL)
+  Week 6 Day 3 | Final Validation Report
+  Generated: 2026-06-17
+  Scope: 30 SKUs | 4 weeks historical | Dual alert system
+======================================================================
+
+── SECTION 1: PERFORMANCE DASHBOARD FINAL VALIDATION ────────
+
+  1a. All 30 SKUs showing correct MAPE
+  ----------------------------------------------------------
+  SKU-00278      MAPE=  5.17%  RMSE= 10.41  DirAcc= 85.8%  CI= 92.9%  [Excellent]
+  SKU-00151      MAPE=  5.53%  RMSE=  9.52  DirAcc= 85.8%  CI= 88.0%  [Good]
+  SKU-00453      MAPE=   5.8%  RMSE= 10.23  DirAcc= 83.1%  CI= 90.5%  [Excellent]
+  SKU-00115      MAPE=  6.45%  RMSE= 13.46  DirAcc= 80.8%  CI= 90.3%  [Excellent]
+  SKU-00193      MAPE=  6.46%  RMSE= 12.39  DirAcc= 80.6%  CI= 89.5%  [Good]
+  SKU-00112      MAPE=  6.55%  RMSE= 11.51  DirAcc= 80.2%  CI= 90.4%  [Excellent]
+  SKU-00062      MAPE=  6.88%  RMSE= 11.27  DirAcc= 80.5%  CI= 89.2%  [Good]
+  SKU-00391      MAPE=   6.9%  RMSE= 12.54  DirAcc= 80.2%  CI= 79.6%  [Fair]
+  SKU-00064      MAPE=  6.96%  RMSE= 13.18  DirAcc= 79.3%  CI= 85.7%  [Good]
+  SKU-00247      MAPE=  7.28%  RMSE= 13.47  DirAcc= 83.9%  CI= 93.1%  [Excellent]
+  SKU-00383      MAPE=  7.85%  RMSE=  12.8  DirAcc= 80.7%  CI= 82.4%  [Fair]
+  SKU-00269      MAPE=  7.97%  RMSE= 14.43  DirAcc= 83.5%  CI= 92.6%  [Excellent]
+  SKU-00310      MAPE=  8.03%  RMSE= 16.05  DirAcc= 81.7%  CI= 85.1%  [Good]
+  SKU-00477      MAPE=  8.15%  RMSE=  15.7  DirAcc= 79.8%  CI= 87.1%  [Good]
+  SKU-00377      MAPE=   8.8%  RMSE= 14.66  DirAcc= 72.5%  CI= 83.8%  [Fair]
+  SKU-00451      MAPE=  9.01%  RMSE= 17.03  DirAcc= 74.9%  CI= 82.6%  [Fair]
+  SKU-00216      MAPE=  9.08%  RMSE= 17.29  DirAcc= 80.0%  CI= 91.6%  [Good]
+  SKU-00495      MAPE=  9.22%  RMSE=  18.6  DirAcc= 73.8%  CI= 82.4%  [Fair]
+  SKU-00129      MAPE=  9.41%  RMSE= 18.43  DirAcc= 78.5%  CI= 86.2%  [Good]
+  SKU-00218      MAPE= 10.11%  RMSE= 17.51  DirAcc= 73.9%  CI= 87.3%  [Good]
+  SKU-00463      MAPE= 10.66%  RMSE= 18.07  DirAcc= 72.9%  CI= 81.6%  [Fair]
+  SKU-00361      MAPE= 10.88%  RMSE= 17.73  DirAcc= 66.8%  CI= 87.0%  [Good]
+  SKU-00179      MAPE= 11.42%  RMSE= 19.46  DirAcc= 71.4%  CI= 81.4%  [Fair]
+  SKU-00244      MAPE= 11.98%  RMSE= 24.16  DirAcc= 67.7%  CI= 87.1%  [Fair]
+  SKU-00350      MAPE= 12.39%  RMSE= 20.14  DirAcc= 71.5%  CI= 78.2%  [Fair]
+  SKU-00474      MAPE= 13.34%  RMSE= 24.01  DirAcc= 72.9%  CI= 70.9%  [Poor]
+  SKU-00343      MAPE= 17.96%  RMSE= 32.33  DirAcc= 66.0%  CI= 68.0%  [Poor]
+  SKU-00201      MAPE= 20.62%  RMSE= 34.29  DirAcc=   55%  CI= 55.5%  [Poor]
+  SKU-00351      MAPE= 23.43%  RMSE=  42.6  DirAcc=   55%  CI= 55.1%  [Poor]
+  SKU-00026      MAPE= 24.34%  RMSE= 41.95  DirAcc=   55%  CI= 52.3%  [Poor]
+
+  Verified: 30/30 SKUs have valid, computed MAPE values. ✅ PASS
+
+  1b. Classifications accurate (Excellent/Good/Fair/Poor)
+  ----------------------------------------------------------
+  Re-ran classify(mape, ci) against stored data for all 120
+  data points (30 SKUs x 4 weeks).
+  Mismatches found    : 1  (SKU-00269, week 2026-05-19,
+                            CI=90.0% exactly — boundary case)
+  Root cause          : CI coverage of exactly 90.0% was
+                        classified Excellent but rule requires
+                        CI > 90 (strictly greater than).
+  Resolution          : Corrected to 'Good'. Classification
+                        function confirmed to use strict
+                        inequality consistently.
+  Mismatches after fix: 0 / 120  ✅ PASS
+
+  Current week classification distribution:
+    Excellent     6 SKUs  (20.0%)
+    Good         10 SKUs  (33.3%)
+    Fair          9 SKUs  (30.0%)
+    Poor          5 SKUs  (16.7%)
+
+  1c. Alerts working for SKUs that deteriorated >2% WoW
+  ----------------------------------------------------------
+  Alerts triggered: 2
+    ⚠️  SKU-00343: 13.16% → 17.96%  (+4.8 pts)  [Poor]
+    ⚠️  SKU-00474: 10.24% → 13.34%  (+3.1 pts)  [Poor]
+  Verified against accuracy_monitor.get_deterioration_alerts()
+  Logic confirmed: threshold=2.0, comparing weeks[-1] vs weeks[-2]
+  ✅ PASS — both expected alerts fired, no false positives/negatives
+
+── SECTION 2: HISTORICAL ACCURACY TRACKING ──────────────────
+
+  2a. 4 weeks of historical MAPE data stored
+  ----------------------------------------------------------
+  Storage file   : accuracy_history.json
+  Structure      : {sku_id: {category, pattern, weeks: [...]}})
+  Weeks stored   : 2026-05-19, 2026-05-26, 2026-06-02, 2026-06-09
+  Total records  : 30 SKUs x 4 weeks = 120 weekly score entries
+  Verified       : every SKU has exactly 4 week entries  ✅ PASS
+
+  2b. Trend: Is accuracy improving?
+  ----------------------------------------------------------
+    2026-05-19  : avg MAPE = 9.34%
+    2026-05-26  : avg MAPE = 9.42%
+    2026-06-02  : avg MAPE = 9.94%
+    2026-06-09  : avg MAPE = 10.29%
+  Net change over 4 weeks: +0.95 points
+  Verdict: Accuracy is SLIGHTLY DECLINING (not improving).
+  Avg MAPE rose from 9.34% to 10.29% — still under the 11%
+  baseline target, but the trend is upward (worse) rather than
+  flat. Root cause is concentrated in 2 SKUs (00343, 00474)
+  that spiked in week 4 — see Section 1c. Excluding those two,
+  the remaining 28 SKUs show a flat-to-improving trend.
+
+  2c. SKUs consistently accurate (Excellent/Good all 4 weeks)
+  ----------------------------------------------------------
+  Count: 13 / 30 SKUs
+    SKU-00062
+    SKU-00112
+    SKU-00115
+    SKU-00129
+    SKU-00151
+    SKU-00193
+    SKU-00216
+    SKU-00247
+    SKU-00269
+    SKU-00278
+    SKU-00361
+    SKU-00453
+    SKU-00477
+
+  2d. SKUs that need attention (Poor in 3+ of 4 weeks)
+  ----------------------------------------------------------
+    SKU-00026 (Electronics) — Poor in 4/4 weeks. Recommend model retrain review.
+    SKU-00351 (Automotive Parts) — Poor in 4/4 weeks. Recommend model retrain review.
+    SKU-00201 (Safety Equipment) — Poor in 4/4 weeks. Recommend model retrain review.
+
+── SECTION 3: ACCURACY ALERTS ────────────────────────────────
+
+  3a. Alert when SKU MAPE > 15% (Poor)
+  ----------------------------------------------------------
+  Threshold: MAPE > 15.0%
+  Alerts triggered: 4
+    🔴 SKU-00343 (Safety Equipment): MAPE=17.96%  CI=68.0%  [Poor]
+    🔴 SKU-00201 (Safety Equipment): MAPE=20.62%  CI=55.5%  [Poor]
+    🔴 SKU-00351 (Automotive Parts): MAPE=23.43%  CI=55.1%  [Poor]
+    🔴 SKU-00026 (Electronics): MAPE=24.34%  CI=52.3%  [Poor]
+  Endpoint: GET /api/accuracy/alerts/final
+  ✅ PASS — all 4 Poor-MAPE SKUs correctly flagged
+
+  3b. Alert when SKU degrades >2% week-over-week
+  ----------------------------------------------------------
+  Threshold: MAPE increase > 2.0 points vs prior week
+  Alerts triggered: 2
+    🟡 SKU-00474: +3.1 pts WoW
+    🟡 SKU-00343: +4.8 pts WoW
+  ✅ PASS — both deterioration cases correctly flagged
+
+  3c. Email distribution list on alerts
+  ----------------------------------------------------------
+  Endpoint: POST /api/accuracy/alerts/notify
+  Distribution list configured (3 recipients):
+    - rahul@skillvancetechnologies.com
+    - pavan@skillvancetechnologies.com
+    - ml-lead@skillvancetechnologies.com
+  Status: EMAIL_ENABLED=False (SMTP creds not yet provisioned)
+  Endpoint tested in preview mode — returns formatted email body
+  without sending, confirming message content is correct:
+
+    Total alerts: 6  |  Affected SKUs: 5
+    POOR ACCURACY (MAPE > 15.0%): 4 SKUs listed
+    DETERIORATING (MAPE +2.0% WoW): 2 SKUs listed
+
+  ⚠️ PARTIAL — logic complete and tested in preview mode.
+  Actual email send requires SMTP credentials to be added to
+  accuracy_alerts_final.py (SMTP_USER / SMTP_PASS) before going live.
+
+======================================================================
+  FINAL VALIDATION SUMMARY
+======================================================================
+  ✅ All 30 SKUs showing correct MAPE
+  ✅ Classifications accurate (1 boundary bug found + fixed)
+  ✅ Deterioration alerts (>2% WoW) — 2/2 correctly triggered
+  ✅ 4 weeks of historical MAPE data stored and queryable
+  ⚠️  Trend is slightly declining (9.34% → 10.29%), driven by
+      2 outlier SKUs — flagged for review, not a system fault
+  ✅ 13/30 SKUs consistently Excellent/Good across all 4 weeks
+  ✅ 3/30 SKUs consistently Poor — escalated for retrain review
+  ✅ Poor-MAPE alert (>15%) — 4/4 correctly triggered
+  ⚠️  Email distribution — logic complete, SMTP creds pending
+
+  OVERALL STATUS: ✅ PASS (with 1 minor follow-up — SMTP creds)
+======================================================================
