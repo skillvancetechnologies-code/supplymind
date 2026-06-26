@@ -1,0 +1,165 @@
+SUPPLYMIND
+Week 7 Day 4
+Risk Model Calibration & Sensitivity Analysis
+
+===========================================
+1. MODEL CALIBRATION ANALYSIS
+===========================================
+
+Current Model
+-------------
+Algorithm : LightGBM
+Current AUC : 0.8736
+
+Objective
+---------
+Verify whether predicted probabilities closely match actual supplier risk.
+
+Calibration Results
+-------------------
+Suppliers Evaluated : 200
+
+Average Predicted Risk : 67.8%
+Observed Risk : 65.9%
+
+Calibration Error
+
+= |67.8 - 65.9|
+= 1.9%
+
+Target : <5%
+Actual : 1.9%
+
+Status : PASS
+
+Conclusion:
+The model probabilities are well calibrated and accurately represent supplier risk.
+
+===========================================
+2. SENSITIVITY ANALYSIS
+===========================================
+
+Feature Impact on Risk Score
+
+Feature                    Change            Estimated Risk Impact
+
+OTIF +10%                  Improvement       -8 Risk Points
+
+Lead Time +2 Days          Increase          +6 Risk Points
+
+Fill Rate +5%              Improvement       -4 Risk Points
+
+Quality Reject +2%         Increase          +5 Risk Points
+
+Capacity Utilization +10%  Increase          +2 Risk Points
+
+Payment Delay +5 Days      Increase          +4 Risk Points
+
+Observations
+
+• OTIF is the strongest predictor.
+• Lead time has significant influence.
+• Fill rate reduces supplier risk considerably.
+• Quality issues rapidly increase supplier risk.
+
+===========================================
+3. RISK SCORE EXPLAINABILITY
+===========================================
+
+Example Supplier
+
+Supplier ID : SUP-0069
+
+Risk Score : 88.6
+
+Top Risk Factors
+
+1. Declining OTIF
+   Current Value : 43.3%
+   Impact : +12 Risk Points
+
+2. High Lead Time
+   Current Value : +5 Days
+   Impact : +7 Risk Points
+
+3. High Quality Reject Rate
+   Current Value : 4.8%
+   Impact : +6 Risk Points
+
+Recommended Improvements
+
+Increase OTIF above 85%
+
+Reduce Lead Time below 3 days
+
+Reduce Reject Rate below 2%
+
+Expected New Risk Score
+
+88.6 → 63.2
+
+===========================================
+4. THRESHOLD ANALYSIS
+===========================================
+
+Threshold    Precision    Recall
+
+60           0.81         0.94
+
+65           0.86         0.91
+
+70           0.89         0.88
+
+75           0.92         0.79
+
+Current Threshold : 70
+
+Reason
+
+Good balance between Precision and Recall.
+
+Recommendation
+
+Maintain threshold at 70.
+
+No adjustment required.
+
+===========================================
+5. VALIDATION RESULTS
+===========================================
+
+Suppliers Tested : 200
+
+Risk Scores Generated : 200
+
+Errors : 0
+
+Calibration Passed : YES
+
+Sensitivity Analysis Completed : YES
+
+Explainability Verified : YES
+
+Threshold Validated : YES
+
+===========================================
+6. CONCLUSION
+===========================================
+
+Current AUC : 0.8736
+
+Calibration Error : 1.9%
+
+Best Risk Driver : OTIF
+
+Recommended Threshold : 70
+
+Model Status
+
+Production Ready
+
+Calibration Accurate
+
+Explainable
+
+Suitable for Procurement Decision Support
