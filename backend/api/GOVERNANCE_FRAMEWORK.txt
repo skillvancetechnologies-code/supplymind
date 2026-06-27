@@ -1,0 +1,201 @@
+SUPPLY CHAIN GOVERNANCE FRAMEWORK
+SupplyMind — Week 7 Day 5
+Date: June 27, 2026
+Tested by: Pavan
+
+════════════════════════════════════════
+GOVERNANCE DEFINITION
+════════════════════════════════════════
+
+Supplier Monitoring:
+  All 200 suppliers tracked continuously
+  via /api/analytics/governance-status
+
+Escalation Levels:
+  RED: Critical supplier at high risk
+       (OTIF<70% or Quality>5% AND
+       single-source + high value)
+  YELLOW: Supplier degrading
+          (OTIF<85% or Quality>2%)
+  GREEN: Healthy, no action needed
+
+Governance Approval:
+  Changes to resilience strategy
+  require PM approval before execution
+
+════════════════════════════════════════
+ESCALATION FRAMEWORK
+════════════════════════════════════════
+
+RED Alert:
+  → PM notified immediately
+  → Action required within 1 hour
+  → If unresolved >24 hours,
+    escalate to executive
+
+YELLOW Alert:
+  → Logged for weekly review
+  → Action plan required within 7 days
+
+GREEN Status:
+  → No action, continue monitoring
+
+════════════════════════════════════════
+DASHBOARD DESIGN
+════════════════════════════════════════
+- Health summary: % RED/YELLOW/GREEN
+- Critical alerts panel (RED suppliers)
+- Resilience trend chart over time
+- Active escalations requiring action
+- Supply chain risk trend graph
+
+════════════════════════════════════════
+GOVERNANCE PROCEDURES
+════════════════════════════════════════
+Daily: Monitor all 200 suppliers
+       via governance-status endpoint
+Weekly: Review escalations and
+        actions taken
+Monthly: Supply chain health report
+         to PM
+Quarterly: Resilience improvement
+           strategy for next quarter
+
+════════════════════════════════════════
+TEST RESULTS
+════════════════════════════════════════
+{
+  "total_suppliers": 200,
+  "health_summary": {
+    "red_pct": 8.5,
+    "yellow_pct": 86.5,
+    "green_pct": 5,
+    "red_count": 17,
+    "yellow_count": 173,
+    "green_count": 10
+  },
+  "critical_alerts": [
+    {
+      "supplier_id": "SUP-0161",
+      "supplier_name": "Just Herbs",
+      "avg_otif": 47.45875,
+      "avg_quality_reject": 3.4925
+    },
+    {
+      "supplier_id": "SUP-0036",
+      "supplier_name": "Ecotyl",
+      "avg_otif": 56.3716666666667,
+      "avg_quality_reject": 2.065
+    },
+    {
+      "supplier_id": "SUP-0122",
+      "supplier_name": "Lavanya Tiles",
+      "avg_otif": 53.3266666666667,
+      "avg_quality_reject": 4.14625
+    },
+    {
+      "supplier_id": "SUP-0001",
+      "supplier_name": "Biotique",
+      "avg_otif": 94.3154166666667,
+      "avg_quality_reject": 5.18416666666667
+    },
+    {
+      "supplier_id": "SUP-0065",
+      "supplier_name": "Dabur India Supply",
+      "avg_otif": 61.4120833333333,
+      "avg_quality_reject": 2.45416666666667
+    },
+    {
+      "supplier_id": "SUP-0067",
+      "supplier_name": "mCaffeine Supply",
+      "avg_otif": 60.4083333333333,
+      "avg_quality_reject": 1.9125
+    },
+    {
+      "supplier_id": "SUP-0152",
+      "supplier_name": "Organic Tattva",
+      "avg_otif": 50.275,
+      "avg_quality_reject": 4.865
+    },
+    {
+      "supplier_id": "SUP-0121",
+      "supplier_name": "Nirogam",
+      "avg_otif": 58.73875,
+      "avg_quality_reject": 2.84166666666667
+    },
+    {
+      "supplier_id": "SUP-0003",
+      "supplier_name": "Suminter India Organics",
+      "avg_otif": 87.6304166666667,
+      "avg_quality_reject": 6.85916666666667
+    },
+    {
+      "supplier_id": "SUP-0047",
+      "supplier_name": "Ramkrishna Forgings",
+      "avg_otif": 59.395,
+      "avg_quality_reject": 2.88291666666667
+    },
+    {
+      "supplier_id": "SUP-0050",
+      "supplier_name": "Hero Metal Works",
+      "avg_otif": 49.1166666666667,
+      "avg_quality_reject": 4.80875
+    },
+    {
+      "supplier_id": "SUP-0059",
+      "supplier_name": "Orientbell Tiles",
+      "avg_otif": 63.3991666666667,
+      "avg_quality_reject": 2.78875
+    },
+    {
+      "supplier_id": "SUP-0170",
+      "supplier_name": "Earth Rhythm Supply",
+      "avg_otif": 55.13875,
+      "avg_quality_reject": 2.30791666666667
+    },
+    {
+      "supplier_id": "SUP-0109",
+      "supplier_name": "Sherwin Williams India",
+      "avg_otif": 88.9716666666667,
+      "avg_quality_reject": 6.35
+    },
+    {
+      "supplier_id": "SUP-0004",
+      "supplier_name": "Pilgrim Supply",
+      "avg_otif": 49.91875,
+      "avg_quality_reject": 2.24583333333333
+    },
+    {
+      "supplier_id": "SUP-0090",
+      "supplier_name": "Ayurvedagram",
+      "avg_otif": 55.9183333333333,
+      "avg_quality_reject": 2.29583333333333
+    },
+    {
+      "supplier_id": "SUP-0150",
+      "supplier_name": "Kerala Ayurveda",
+      "avg_otif": 53.29375,
+      "avg_quality_reject": 2.2175
+    }
+  ],
+  "escalation_required": true
+}
+
+#Test Escalation Trigger(Simulate Critical Alert)
+
+Total suppliers: 200
+RED: 17
+YELLOW: 173
+GREEN: 10
+
+Testing escalation for: SUP-0161
+{'supplier_id': 'SUP-0161', 'escalation_level': 'RED', 'pm_notified': True, 'action_deadline': '2026-06-27 16:49:38.494080', 'message': 'Escalation triggered for SUP-0161 at RED level'}
+
+
+✅ Governance status endpoint working
+✅ RED/YELLOW/GREEN classification verified
+✅ Escalation trigger tested successfully
+✅ PM notification flag confirmed for RED
+✅ Action deadline calculated correctly
+   (1 hour for RED, 7 days for YELLOW)
+✅ Dashboard data structure verified
