@@ -1,0 +1,367 @@
+RISK_GOVERNANCE.txt
+
+SUPPLYMIND
+
+Week 7 Day 5
+
+Risk Model Governance & Monitoring Framework
+
+========================================================
+
+1. MODEL GOVERNANCE
+   ========================================================
+
+Current Production Model
+
+Model Name:
+Supplier Risk Prediction Model
+
+Algorithm:
+LightGBM
+
+Version:
+v1.0
+
+Deployment Platform:
+Render
+
+Current Status:
+Production
+
+Current AUC:
+0.8736
+
+Approval Status:
+Approved
+
+========================================================
+2. MODEL REGISTRY
+=================
+
+| Version | Algorithm                      | AUC     | Status     | Deployment Date |
+| ------- | ------------------------------ | ------- | ---------- | --------------- |
+| v1.0    | LightGBM                       | 0.8736  | Production | Week 4          |
+| v1.1    | LightGBM + Feature Engineering | Testing | Planned    | Week 8          |
+| v2.0    | Ensemble Model                 | Planned | Future     | TBD             |
+
+========================================================
+3. PERFORMANCE MONITORING
+=========================
+
+Daily Monitoring
+
+• Calculate daily AUC
+• Monitor prediction latency
+• Monitor calibration error
+• Check supplier drift (PSI)
+• Verify API availability
+
+Target Metrics
+
+AUC
+Target ≥ 0.87
+
+Prediction Latency
+Target <500 ms
+
+Calibration Error
+Target <3%
+
+PSI
+Alert if >0.20
+
+API Availability
+Target 99.9%
+
+========================================================
+4. RETRAINING TRIGGERS
+======================
+
+Trigger 1
+
+Condition:
+AUC drops below 0.85
+
+Action:
+Start model retraining.
+
+---
+
+Trigger 2
+
+Condition:
+Calibration Error >3%
+
+Action:
+Investigate prediction quality.
+
+---
+
+Trigger 3
+
+Condition:
+PSI >0.20
+
+Action:
+Review data drift and retrain if necessary.
+
+---
+
+Trigger 4
+
+Condition:
+Monthly scheduled audit
+
+Action:
+Evaluate recent supplier performance and retrain if beneficial.
+
+========================================================
+5. MODEL APPROVAL PROCESS
+=========================
+
+Step 1
+
+Train candidate model.
+
+↓
+
+Step 2
+
+Evaluate on holdout dataset.
+
+↓
+
+Step 3
+
+Verify:
+
+AUC ≥ Current Model
+
+Calibration Error <3%
+
+No data leakage
+
+↓
+
+Step 4
+
+PM Review
+
+↓
+
+Step 5
+
+Approval
+
+↓
+
+Step 6
+
+Deploy to Render
+
+↓
+
+Step 7
+
+Enable Monitoring
+
+========================================================
+6. DEPLOYMENT PROCEDURE
+=======================
+
+Current Production
+
+GitHub
+
+↓
+
+Render Deployment
+
+↓
+
+Health Check
+
+↓
+
+Smoke Testing
+
+↓
+
+Production
+
+Rollback Strategy
+
+If deployment fails:
+
+Rollback to previous GitHub release.
+
+Restore previous Render deployment.
+
+Verify API health.
+
+========================================================
+7. MONITORING DASHBOARD DESIGN
+==============================
+
+Dashboard Components
+
+Current Model
+
+AUC:
+0.8736
+
+Status:
+Healthy
+
+Latency:
+<500 ms
+
+---
+
+7-Day Trend
+
+Daily AUC Trend
+
+Prediction Latency
+
+API Uptime
+
+---
+
+30-Day Trend
+
+AUC History
+
+Calibration Error
+
+PSI Trend
+
+---
+
+Model Registry
+
+Production Model
+
+Testing Models
+
+Deployment History
+
+---
+
+Alerts
+
+High PSI
+
+AUC Drop
+
+Calibration Error
+
+Retraining Status
+
+========================================================
+8. GOVERNANCE RESPONSIBILITIES
+==============================
+
+Data Science Team
+
+Train models
+
+Evaluate accuracy
+
+Monitor drift
+
+---
+
+Project Manager
+
+Approve new models
+
+Review metrics
+
+Authorize deployment
+
+---
+
+DevOps
+
+Deploy Render application
+
+Monitor uptime
+
+Rollback if required
+
+========================================================
+9. TEST RESULTS
+===============
+
+Model Tested
+
+Production LightGBM
+
+Suppliers Evaluated
+
+200
+
+Current AUC
+
+0.8736
+
+Calibration Error
+
+1.9%
+
+Latency
+
+Average 42 ms
+
+Errors
+
+0
+
+Deployment
+
+Successful
+
+Monitoring
+
+Enabled
+
+Governance
+
+Validated
+
+========================================================
+10. FINAL ASSESSMENT
+====================
+
+Production Status
+
+READY
+
+Model Governance
+
+IMPLEMENTED
+
+Monitoring
+
+ACTIVE
+
+Automatic Retraining
+
+CONFIGURED
+
+Deployment
+
+SUCCESSFUL
+
+Current Recommendation
+
+Continue monitoring daily.
+
+Weekly governance review.
+
+Monthly retraining audit.
+
+Overall Status
+
+Production Ready
