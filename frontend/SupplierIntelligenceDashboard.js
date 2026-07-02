@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import SupplierScatterPlot from "../components/SupplierScatterPlot";
-import RiskHeatmap from "../components/RiskHeatmap";
-import TrendSparklines from "../components/TrendSparklines";
-import SupplierNetworkGraph from "../components/SupplierNetworkGraph";
+import SupplierScatterPlot from "./SupplierScatterPlot";
+import RiskHeatmap from "./RiskHeatmap";
+import TrendSparklines from "./TrendSparklines";
+import SupplierNetworkGraph from "./SupplierNetworkGraph";
 import {
   SUPPLIER_API,
   SUPPLIER_SCORECARD_API,
@@ -143,16 +143,37 @@ useEffect(() => {
   })
 
   return (
-    <div
-      style={{
-        padding: "30px",
-        background: "#F4F6F9",
-        minHeight: "100vh"
-      }}
-    >
-      <h2 style={{ color: "#1B2A4A" }}>
-        Supplier Intelligence Dashboard
-      </h2>
+   <div
+  style={{
+    padding: "34px",
+    minHeight: "100vh",
+    color: "#E5E7EB",
+   
+  }}
+>   
+    
+     <h1
+  style={{
+    fontSize: "42px",
+    fontWeight: 900,
+    margin: 0,
+    color: "#F8FAFC",
+    textShadow:
+      "0 0 12px rgba(96,165,250,.55),0 0 35px rgba(37,99,235,.35)",
+  }}
+>
+  Supplier Intelligence Dashboard
+</h1>
+<p
+  style={{
+    color: "#94A3B8",
+    marginTop: "10px",
+    marginBottom: "28px",
+    fontSize: "15px",
+  }}
+>
+  Live supplier intelligence, benchmarking and risk analytics
+</p>
 
       {/* KPI CARDS */}
 
@@ -166,14 +187,28 @@ useEffect(() => {
       >
         <div
           style={{
-            background: "white",
+           background:"rgba(15,23,42,.88)",
+border:"1px solid rgba(148,163,184,.18)",
+borderRadius:"22px",
+boxShadow:"0 24px 60px rgba(0,0,0,.34)",
             padding: "20px",
-            borderRadius: "10px",
+            
             flex: 1
           }}
         >
-          <p>Suppliers At Risk</p>
-          <h2 style={{ color: "#C53030" }}>
+          <p  style={{
+    color: "#94A3B8",
+    fontSize: "14px",
+    marginBottom: "8px",
+  }}>Suppliers At Risk</p>
+         <h2
+  style={{
+    color: "#EF4444",
+    fontSize: "36px",
+    fontWeight: 900,
+    margin: 0,
+  }}
+>
             {
               suppliers.filter(
                 (s) => s.risk_score >= 70
@@ -184,14 +219,28 @@ useEffect(() => {
 
         <div
           style={{
-            background: "white",
+           background:"rgba(15,23,42,.88)",
+border:"1px solid rgba(148,163,184,.18)",
+borderRadius:"22px",
+boxShadow:"0 24px 60px rgba(0,0,0,.34)",
             padding: "20px",
-            borderRadius: "10px",
+           
             flex: 1
           }}
         >
-          <p>Average OTIF</p>
-          <h2 style={{ color: "#1A6B3A" }}>
+          <p style={{
+    color: "#94A3B8",
+    fontSize: "14px",
+    marginBottom: "8px",
+  }}>Average OTIF</p>
+         <h2
+  style={{
+    color: "#22C55E",
+    fontSize: "36px",
+    fontWeight: 900,
+    margin: 0,
+  }}
+>
            {suppliers.length
   ? Math.round(suppliers.reduce((sum, s) => sum + s.otif, 0) / suppliers.length)
   : 0}%
@@ -200,14 +249,27 @@ useEffect(() => {
 
         <div
           style={{
-            background: "white",
+            background: "rgba(15,23,42,.88)",
+border: "1px solid rgba(148,163,184,.18)",
+boxShadow: "0 24px 60px rgba(0,0,0,.34)",
             padding: "20px",
             borderRadius: "10px",
             flex: 1
           }}
         >
-          <p>Average Lead Time</p>
-          <h2 style={{ color: "#1B2A4A" }}>
+          <p style={{
+    color: "#94A3B8",
+    fontSize: "14px",
+    marginBottom: "8px",
+  }}>Average Lead Time</p>
+       <h2
+  style={{
+    color: "#F8FAFC",
+    fontSize: "36px",
+    fontWeight: 900,
+    margin: 0,
+  }}
+>
           {suppliers.length
   ? Math.round(suppliers.reduce((sum, s) => sum + s.lead_time, 0) / suppliers.length)
   : 0} Days
@@ -228,12 +290,21 @@ useEffect(() => {
 
         <div
           style={{
-            background: "white",
+            background: "rgba(15,23,42,.88)",
+border: "1px solid rgba(148,163,184,.18)",
+boxShadow: "0 24px 60px rgba(0,0,0,.34)",
             padding: "20px",
             borderRadius: "10px"
           }}
         >
-          <h3>Filters</h3>
+         <h3
+  style={{
+    color:"#F8FAFC",
+    marginBottom:"20px"
+  }}
+>
+Filters
+</h3>
 
           <input
             type="text"
@@ -242,11 +313,16 @@ useEffect(() => {
             onChange={(e) =>
               setSearch(e.target.value)
             }
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginBottom: "15px"
-            }}
+           style={{
+  width:"100%",
+  padding:"12px",
+  marginBottom:"12px",
+  background:"#111827",
+  color:"#F8FAFC",
+  border:"1px solid rgba(148,163,184,.25)",
+  borderRadius:"10px",
+  outline:"none"
+}}
           />
 
           <select
@@ -254,10 +330,16 @@ useEffect(() => {
             onChange={(e) =>
               setRiskFilter(e.target.value)
             }
-            style={{
-              width: "100%",
-              padding: "10px"
-            }}
+           style={{
+  width:"100%",
+  padding:"12px",
+  marginBottom:"12px",
+  background:"#111827",
+  color:"#F8FAFC",
+  border:"1px solid rgba(148,163,184,.25)",
+  borderRadius:"10px",
+  outline:"none"
+}}
           >
             <option>All</option>
             <option>Low</option>
@@ -267,11 +349,16 @@ useEffect(() => {
           <select
   value={regionFilter}
   onChange={(e) => setRegionFilter(e.target.value)}
-  style={{
-    width:'100%',
-    padding:'10px',
-    marginTop:'10px'
-  }}
+ style={{
+  width:"100%",
+  padding:"12px",
+  marginBottom:"12px",
+  background:"#111827",
+  color:"#F8FAFC",
+  border:"1px solid rgba(148,163,184,.25)",
+  borderRadius:"10px",
+  outline:"none"
+}}
 >
   <option>All</option>
   <option>North</option>
@@ -282,11 +369,16 @@ useEffect(() => {
 <select
   value={sortBy}
   onChange={(e) => setSortBy(e.target.value)}
-  style={{
-    width:'100%',
-    padding:'10px',
-    marginTop:'10px'
-  }}
+ style={{
+  width:"100%",
+  padding:"12px",
+  marginBottom:"12px",
+  background:"#111827",
+  color:"#F8FAFC",
+  border:"1px solid rgba(148,163,184,.25)",
+  borderRadius:"10px",
+  outline:"none"
+}}
 >
   <option>Risk</option>
   <option>OTIF</option>
@@ -311,16 +403,29 @@ useEffect(() => {
                 setSelectedSupplier(supplier)
               }
               style={{
-                background: "white",
+               background:"rgba(15,23,42,.88)",
+
                 padding: "18px",
                 borderRadius: "10px",
                 cursor: "pointer",
-                border: "1px solid #E2E8F0"
+               border:"1px solid rgba(148,163,184,.18)",
+               transition:"all .25s ease",
+boxShadow:"0 18px 45px rgba(0,0,0,.25)"
               }}
             >
-              <h4>{supplier.supplier_name}</h4>
+              <h4
+style={{
+color:"#F8FAFC",
+marginBottom:"6px"
+}}
+>{supplier.supplier_name}</h4>
 
-              <p>{supplier.supplier_id}</p>
+             <p
+style={{
+color:"#60A5FA",
+fontWeight:700
+}}
+>{supplier.supplier_id}</p>
 
               <p
                 style={{
@@ -335,9 +440,15 @@ useEffect(() => {
                 )}
               </p>
 
-              <p>OTIF: {supplier.otif}%</p>
+              <p
+              style={{
+color:"#CBD5E1"
+}}>OTIF: {supplier.otif}%</p>
 
-              <p>
+              <p
+              style={{
+color:"#CBD5E1"
+}}>
                 Lead Time: {supplier.lead_time} Days
               </p>
             </div>
@@ -348,63 +459,120 @@ useEffect(() => {
 
         <div
           style={{
-            background: "white",
+           background: "rgba(15,23,42,.88)",
+border: "1px solid rgba(148,163,184,.18)",
+boxShadow: "0 24px 60px rgba(0,0,0,.34)",
             padding: "20px",
             borderRadius: "10px"
           }}
         >
           {selectedSupplier && (
             <>
-              <h3>Supplier Scorecard</h3>
+            <h3 style={{ color: "#F8FAFC" }}>Supplier Scorecard</h3>
 
-              <p>
+             <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>ID:</b>{" "}
                 {selectedSupplier.supplier_id}
               </p>
 
-              <p>
+             <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>Name:</b>{" "}
                 {selectedSupplier.supplier_name}
               </p>
 
-              <p>
+             <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>Risk Score:</b>{" "}
                 {selectedSupplier.risk_score}
               </p>
 
-              <p>
+             <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>OTIF:</b>{" "}
                 {selectedSupplier.otif}%
               </p>
 
-              <p>
+              <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>Lead Time:</b>{" "}
                 {selectedSupplier.lead_time} Days
               </p>
 
-              <p>
+              <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
                 <b>Region:</b>{" "}
                 {selectedSupplier.region}
               </p>
-              <p>
+              <p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
   <b>Benchmark Percentile:</b>{" "}
 {scorecard?.benchmarks?.otif_percentile || "-"}%
 </p>
 
-<p>
+<p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
 <b>Benchmark Summary:</b> {scorecard?.benchmark_summary || "-"}
 </p>
-<p>
+<p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
   <b>Total Peers:</b>{" "}
   {peers?.total_peers || "-"}
 </p>
 
-<p>
+<p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
   <b>Peer Group:</b>{" "}
   {peers?.peer_group || "-"}
 </p>
 
-<p>
+<p
+  style={{
+    color: "#CBD5E1",
+    marginBottom: "10px",
+  }}
+>
  <b>Peer Rank:</b>{" "}
 {peers?.this_supplier_rank || "-"}
 </p>
@@ -414,7 +582,7 @@ useEffect(() => {
                   width: "100%",
                   marginTop: "10px",
                   padding: "10px",
-                  background: "#1B2A4A",
+                 background:"linear-gradient(135deg,#2563EB,#1D4ED8)",
                   color: "white",
                   border: "none",
                   borderRadius: "6px"
@@ -428,7 +596,7 @@ useEffect(() => {
                   width: "100%",
                   marginTop: "10px",
                   padding: "10px",
-                  background: "#1A6B3A",
+                 background:"linear-gradient(135deg,#059669,#10B981)",
                   color: "white",
                   border: "none",
                   borderRadius: "6px"

@@ -43,7 +43,10 @@ const criticality =
         Nodes = Suppliers, Edges = Dependency links, Color = Risk level
       </p>
 
-      <svg width="100%" height="500">
+  <div style={{ width: "100%", overflowX: "auto" }}>
+
+  <svg width="900" height="500">
+
         {nodes.slice(0, -1).map((node, index) => (
           <line
             key={`line-${node.supplier_id}-${nodes[index + 1]?.supplier_id}-${index}`}
@@ -78,6 +81,7 @@ const criticality =
           </g>
         ))}
       </svg>
+    </div>
 
       <div style={{ display: "flex", gap: "16px" }}>
         <span>🟢 Low Risk</span>

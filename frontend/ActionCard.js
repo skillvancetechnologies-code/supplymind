@@ -18,7 +18,7 @@ function ActionCard({ action, onDone, onSnooze }) {
         <span className="supplier-id">{action.supplier_id}</span>
       </div>
 
-      <h3>{action.action_description}</h3>
+     <h3>{action.action || action.action_description}</h3>
 
       <p className="reason">
         <strong>Reason:</strong> {action.reason}

@@ -92,7 +92,7 @@ function ActionList() {
   if (loading) return <p>Loading recommended actions...</p>;
 
   return (
-    <div className="page">
+   <div className="actions-page">
       <h2>Recommended Supplier Actions</h2>
       <p>Pending supplier actions sorted by urgency.</p>
 
