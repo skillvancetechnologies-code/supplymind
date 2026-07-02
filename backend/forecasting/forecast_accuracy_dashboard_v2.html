@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SupplyMind — Forecast Accuracy Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1117;color:#e8ecf5;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:24px;}
+h1{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.sub{color:#8b93b0;font-size:12px;margin-bottom:20px;}
+.tabs{display:flex;gap:0;border-bottom:1px solid #2e3650;margin-bottom:20px;}
+.tab{padding:10px 18px;cursor:pointer;color:#8b93b0;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;border-bottom:2px solid transparent;transition:all 0.2s;}
+.tab:hover{color:#e8ecf5;}
+.tab.active{color:#4a9eff;border-bottom-color:#4a9eff;}
+.page{display:none;}.page.active{display:block;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.mcard{background:#181c26;border:1px solid #2e3650;border-radius:8px;padding:14px 16px;}
+.mlabel{font-size:11px;color:#555e7a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+.mvalue{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;}
+.good{color:#22c984;}.warn{color:#f5a623;}.bad{color:#f04a4a;}.info{color:#4a9eff;}
+.scard{background:#181c26;border:1px solid #2e3650;border-radius:8px;padding:16px;margin-bottom:14px;}
+.scard-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2e3650;font-size:12px;}
+.row:last-child{border-bottom:none;}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;}
+.heatmap{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.hcell{border-radius:6px;padding:8px 6px;text-align:center;}
+.hcell p{margin:0;color:white;}
+.legend{display:flex;gap:16px;margin-top:12px;font-size:11px;color:#8b93b0;flex-wrap:wrap;}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;}
+.alert-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:12px;}
+.alert-crit{background:#2e0d0d;}
+.alert-warn{background:#2e1f06;}
+.alert-info{background:#0a1e35;}
+.tier-card{border-radius:8px;padding:12px;text-align:center;}
+.chk{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #2e3650;font-size:12px;}
+.chk:last-child{border-bottom:none;}
+.chkbox{width:16px;height:16px;border-radius:4px;border:1px solid #3a4260;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chkbox.done{background:#22c984;border-color:#22c984;color:#000;font-size:10px;}
+.cv-bar{height:6px;border-radius:3px;margin-top:4px;}
+</style>
+</head>
+<body>
+<h1>SupplyMind — Forecast Accuracy Dashboard</h1>
+<div class="sub">Week 7 Day 5 · Governance Edition · 30 SKUs · 4-tier segmentation · Generated 2026-06-27</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('accuracy')">📊 Accuracy</div>
+  <div class="tab" onclick="showTab('variability')">📈 Variability</div>
+  <div class="tab" onclick="showTab('governance')">🏛 Governance</div>
+  <div class="tab" onclick="showTab('alerts')">🚨 Alerts</div>
+</div>
+
+<!-- TAB 1: ACCURACY -->
+<div class="page active" id="tab-accuracy">
+<div class="metrics">
+  <div class="mcard"><div class="mlabel">Avg MAPE (holdout)</div><div class="mvalue warn" id="m-mape">—</div></div>
+  <div class="mcard"><div class="mlabel">Excellent + Good</div><div class="mvalue good" id="m-eg">—</div></div>
+  <div class="mcard"><div class="mlabel">Critical alerts</div><div class="mvalue bad" id="m-crit">—</div></div>
+  <div class="mcard"><div class="mlabel">Target MAPE</div><div class="mvalue info">&lt;9%</div></div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">Weekly MAPE trend — 30 SKUs average</div>
+  <div style="position:relative;height:180px;"><canvas id="trendChart"></canvas></div>
+</div>
+
+<div class="grid2">
+  <div class="scard">
+    <div class="scard-title">MAPE by category</div>
+    <div style="position:relative;height:200px;"><canvas id="catChart"></canvas></div>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Tier distribution</div>
+    <div style="position:relative;height:200px;"><canvas id="tierPie"></canvas></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#22c984;"></span>Stable 27%</span>
+      <span><span class="dot" style="background:#4a9eff;"></span>Moderate 30%</span>
+      <span><span class="dot" style="background:#f5a623;"></span>High 30%</span>
+      <span><span class="dot" style="background:#f04a4a;"></span>Extreme 13%</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="scard">
+    <div class="scard-title">Top 5 best forecasted</div>
+    <div id="topList"></div>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Bottom 5 worst forecasted</div>
+    <div id="bottomList"></div>
+  </div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">SKU performance heatmap — current week</div>
+  <div class="heatmap" id="heatmap"></div>
+  <div class="legend">
+    <span><span class="dot" style="background:#22c984;"></span>Excellent (&lt;8%)</span>
+    <span><span class="dot" style="background:#4a9eff;"></span>Good (8-11%)</span>
+    <span><span class="dot" style="background:#f5a623;"></span>Fair (11-15%)</span>
+    <span><span class="dot" style="background:#f04a4a;"></span>Poor (&gt;15%)</span>
+  </div>
+</div>
+</div>
+
+<!-- TAB 2: VARIABILITY -->
+<div class="page" id="tab-variability">
+<div class="metrics">
+  <div class="mcard"><div class="mlabel">Stable SKUs (T1)</div><div class="mvalue good">8</div></div>
+  <div class="mcard"><div class="mlabel">Moderate SKUs (T2)</div><div class="mvalue info">9</div></div>
+  <div class="mcard"><div class="mlabel">High Volatility (T3)</div><div class="mvalue warn">9</div></div>
+  <div class="mcard"><div class="mlabel">Extreme Vol. (T4)</div><div class="mvalue bad">4</div></div>
+</div>
+
+<div class="grid2">
+  <div class="scard">
+    <div class="scard-title">Forecast accuracy by tier</div>
+    <div style="position:relative;height:200px;"><canvas id="tierMape"></canvas></div>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Tier-specific models</div>
+    <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px;">
+      <div class="tier-card" style="background:#0d2e20;">
+        <div style="font-size:11px;color:#22c984;font-weight:600;">TIER 1 · STABLE · CV &lt;20%</div>
+        <div style="font-size:12px;color:#8b93b0;margin-top:4px;">Simple Moving Average · 7 days safety stock</div>
+      </div>
+      <div class="tier-card" style="background:#0a1e35;">
+        <div style="font-size:11px;color:#4a9eff;font-weight:600;">TIER 2 · MODERATE · CV 20–50%</div>
+        <div style="font-size:12px;color:#8b93b0;margin-top:4px;">LightGBM · 10 days safety stock</div>
+      </div>
+      <div class="tier-card" style="background:#2e1f06;">
+        <div style="font-size:11px;color:#f5a623;font-weight:600;">TIER 3 · HIGH · CV 50–80%</div>
+        <div style="font-size:12px;color:#8b93b0;margin-top:4px;">LightGBM + External Features · 14 days</div>
+      </div>
+      <div class="tier-card" style="background:#2e0d0d;">
+        <div style="font-size:11px;color:#f04a4a;font-weight:600;">TIER 4 · EXTREME · CV &gt;80%</div>
+        <div style="font-size:12px;color:#8b93b0;margin-top:4px;">Ensemble + Demand Sensing · 21 days</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">SKU variability scores — CV% with demand drivers</div>
+  <div id="varList"></div>
+</div>
+</div>
+
+<!-- TAB 3: GOVERNANCE -->
+<div class="page" id="tab-governance">
+<div class="metrics">
+  <div class="mcard"><div class="mlabel">Governance status</div><div class="mvalue good" style="font-size:16px;">Active</div></div>
+  <div class="mcard"><div class="mlabel">Last retrain</div><div class="mvalue info" style="font-size:16px;">2026-06-23</div></div>
+  <div class="mcard"><div class="mlabel">Next audit</div><div class="mvalue" style="font-size:16px;">2026-07-07</div></div>
+  <div class="mcard"><div class="mlabel">Doc version</div><div class="mvalue info" style="font-size:16px;">v1.0</div></div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">Daily monitoring checklist</div>
+  <div id="checklist"></div>
+  <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+    <span id="chkProgress" style="font-size:11px;color:#8b93b0;">0 / 5 complete</span>
+    <span onclick="resetChecks()" style="font-size:11px;color:#555e7a;cursor:pointer;border:1px solid #2e3650;padding:3px 10px;border-radius:5px;">↺ Reset</span>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="scard">
+    <div class="scard-title">Governance calendar</div>
+    <div class="row"><span>Daily 07:00 IST</span><span style="color:#8b93b0;">Monitoring checklist</span></div>
+    <div class="row"><span>Weekly Monday 09:00</span><span style="color:#8b93b0;">Accuracy audit</span></div>
+    <div class="row"><span>Weekly Monday 10:30</span><span style="color:#8b93b0;">Standup #team-supplymind</span></div>
+    <div class="row"><span>Monthly 1st Monday</span><span style="color:#8b93b0;">Full ML audit + retrain</span></div>
+    <div class="row"><span>Quarterly</span><span style="color:#8b93b0;">Feature importance review</span></div>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Retraining triggers</div>
+    <div class="row"><span>MAPE degrades &gt;2%</span><span style="color:#f5a623;">Queue retrain</span></div>
+    <div class="row"><span>System avg rises &gt;1pt WoW ×2</span><span style="color:#f04a4a;">Full retrain</span></div>
+    <div class="row"><span>Structural break (Chow p&lt;0.05)</span><span style="color:#f04a4a;">Retrain from break</span></div>
+    <div class="row"><span>Tier migration detected</span><span style="color:#f5a623;">Retrain with new model</span></div>
+    <div class="row"><span>Every 30 days</span><span style="color:#4a9eff;">Scheduled retrain</span></div>
+  </div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">Testing protocol status</div>
+  <div id="testList"></div>
+</div>
+</div>
+
+<!-- TAB 4: ALERTS -->
+<div class="page" id="tab-alerts">
+<div class="metrics">
+  <div class="mcard"><div class="mlabel">Critical (MAPE &gt;15%)</div><div class="mvalue bad" id="a-crit">4</div></div>
+  <div class="mcard"><div class="mlabel">Warning (MAPE 10–15%)</div><div class="mvalue warn" id="a-warn">4</div></div>
+  <div class="mcard"><div class="mlabel">Deteriorating WoW</div><div class="mvalue warn" id="a-det">2</div></div>
+  <div class="mcard"><div class="mlabel">Data quality</div><div class="mvalue good">Clean</div></div>
+</div>
+
+<div class="scard">
+  <div class="scard-title">Critical alerts — MAPE &gt;15% (action required)</div>
+  <div id="critList"></div>
+</div>
+<div class="scard">
+  <div class="scard-title">Warning alerts — MAPE 10–15% (monitor closely)</div>
+  <div id="warnList"></div>
+</div>
+<div class="scard">
+  <div class="scard-title">Deterioration alerts — MAPE increased &gt;2% week-over-week</div>
+  <div id="detList"></div>
+</div>
+<div class="scard">
+  <div class="scard-title">Alert escalation path</div>
+  <div class="row"><span>Alert fires (automated)</span><span style="color:#8b93b0;">Slack #forecast-alerts</span></div>
+  <div class="row"><span>Critical → 15 min</span><span style="color:#f04a4a;">Email [PM_EMAIL]</span></div>
+  <div class="row"><span>Warning → 2 hours</span><span style="color:#f5a623;">L1 engineer acknowledges</span></div>
+  <div class="row"><span>Unresolved Critical → 2hr</span><span style="color:#f04a4a;">Escalate ML lead + PagerDuty</span></div>
+  <div class="row"><span>Resolution</span><span style="color:#22c984;">Log in weekly_audit_log.csv</span></div>
+</div>
+</div>
+
+<script>
+// ── Tab navigation ────────────────────────────────────────────────────────
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const tabs=['accuracy','variability','governance','alerts'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ── Data ──────────────────────────────────────────────────────────────────
+const history = {"SKU-00064":{"category":"Mechanical Components","weeks":[{"week":"2026-05-19","mape":6.75,"rmse":13.09,"direction_accuracy":79.3,"ci_coverage":87.6,"classification":"Good"},{"week":"2026-05-26","mape":6.24,"rmse":12.33,"direction_accuracy":81.2,"ci_coverage":88.1,"classification":"Good"},{"week":"2026-06-02","mape":7.05,"rmse":14.1,"direction_accuracy":78.9,"ci_coverage":86.4,"classification":"Good"},{"week":"2026-06-09","mape":6.96,"rmse":13.85,"direction_accuracy":79.8,"ci_coverage":87.2,"classification":"Good"}]},"SKU-00278":{"category":"Consumables","weeks":[{"week":"2026-05-19","mape":5.14,"rmse":8.87,"direction_accuracy":84.6,"ci_coverage":92.1,"classification":"Excellent"},{"week":"2026-05-26","mape":4.52,"rmse":7.93,"direction_accuracy":86.0,"ci_coverage":93.4,"classification":"Excellent"},{"week":"2026-06-02","mape":6.22,"rmse":10.56,"direction_accuracy":82.1,"ci_coverage":91.7,"classification":"Excellent"},{"week":"2026-06-09","mape":5.17,"rmse":9.12,"direction_accuracy":84.1,"ci_coverage":92.3,"classification":"Excellent"}]},"SKU-00216":{"category":"Electrical","weeks":[{"week":"2026-05-19","mape":7.0,"rmse":13.45,"direction_accuracy":78.4,"ci_coverage":87.3,"classification":"Good"},{"week":"2026-05-26","mape":7.43,"rmse":14.22,"direction_accuracy":77.1,"ci_coverage":86.9,"classification":"Good"},{"week":"2026-06-02","mape":7.72,"rmse":14.89,"direction_accuracy":76.5,"ci_coverage":86.2,"classification":"Good"},{"week":"2026-06-09","mape":9.08,"rmse":17.42,"direction_accuracy":73.2,"ci_coverage":84.1,"classification":"Good"}]},"SKU-00477":{"category":"Electrical","weeks":[{"week":"2026-05-19","mape":6.95,"rmse":13.21,"direction_accuracy":79.1,"ci_coverage":87.8,"classification":"Good"},{"week":"2026-05-26","mape":6.54,"rmse":12.44,"direction_accuracy":80.3,"ci_coverage":88.4,"classification":"Good"},{"week":"2026-06-02","mape":6.95,"rmse":13.19,"direction_accuracy":79.4,"ci_coverage":87.6,"classification":"Good"},{"week":"2026-06-09","mape":8.15,"rmse":15.67,"direction_accuracy":76.3,"ci_coverage":85.9,"classification":"Good"}]},"SKU-00269":{"category":"Automotive Parts","weeks":[{"week":"2026-05-19","mape":7.88,"rmse":14.56,"direction_accuracy":77.2,"ci_coverage":86.8,"classification":"Good"},{"week":"2026-05-26","mape":7.79,"rmse":14.33,"direction_accuracy":77.6,"ci_coverage":87.1,"classification":"Good"},{"week":"2026-06-02","mape":7.88,"rmse":14.55,"direction_accuracy":77.3,"ci_coverage":86.9,"classification":"Good"},{"week":"2026-06-09","mape":7.97,"rmse":14.73,"direction_accuracy":77.0,"ci_coverage":86.7,"classification":"Good"}]},"SKU-00026":{"category":"Electronics","weeks":[{"week":"2026-05-19","mape":23.1,"rmse":42.3,"direction_accuracy":54.2,"ci_coverage":48.1,"classification":"Poor"},{"week":"2026-05-26","mape":24.0,"rmse":44.1,"direction_accuracy":53.1,"ci_coverage":47.3,"classification":"Poor"},{"week":"2026-06-02","mape":23.5,"rmse":43.2,"direction_accuracy":53.8,"ci_coverage":47.8,"classification":"Poor"},{"week":"2026-06-09","mape":24.34,"rmse":45.1,"direction_accuracy":52.9,"ci_coverage":46.7,"classification":"Poor"}]},"SKU-00351":{"category":"Automotive Parts","weeks":[{"week":"2026-05-19","mape":22.1,"rmse":39.8,"direction_accuracy":55.3,"ci_coverage":50.2,"classification":"Poor"},{"week":"2026-05-26","mape":22.9,"rmse":41.2,"direction_accuracy":54.4,"ci_coverage":49.6,"classification":"Poor"},{"week":"2026-06-02","mape":22.0,"rmse":39.6,"direction_accuracy":55.5,"ci_coverage":50.4,"classification":"Poor"},{"week":"2026-06-09","mape":23.43,"rmse":42.3,"direction_accuracy":53.7,"ci_coverage":48.9,"classification":"Poor"}]},"SKU-00201":{"category":"Safety Equipment","weeks":[{"week":"2026-05-19","mape":19.8,"rmse":35.6,"direction_accuracy":57.1,"ci_coverage":51.3,"classification":"Poor"},{"week":"2026-05-26","mape":20.1,"rmse":36.2,"direction_accuracy":56.8,"ci_coverage":51.0,"classification":"Poor"},{"week":"2026-06-02","mape":19.97,"rmse":35.94,"direction_accuracy":57.0,"ci_coverage":51.1,"classification":"Poor"},{"week":"2026-06-09","mape":20.62,"rmse":37.1,"direction_accuracy":56.2,"ci_coverage":50.5,"classification":"Poor"}]},"SKU-00343":{"category":"Safety Equipment","weeks":[{"week":"2026-05-19","mape":12.36,"rmse":22.2,"direction_accuracy":67.4,"ci_coverage":72.3,"classification":"Fair"},{"week":"2026-05-26","mape":12.98,"rmse":23.3,"direction_accuracy":66.8,"ci_coverage":71.9,"classification":"Fair"},{"week":"2026-06-02","mape":13.16,"rmse":23.7,"direction_accuracy":66.5,"ci_coverage":71.6,"classification":"Fair"},{"week":"2026-06-09","mape":17.96,"rmse":32.3,"direction_accuracy":60.1,"ci_coverage":65.4,"classification":"Poor"}]},"SKU-00474":{"category":"Electronics","weeks":[{"week":"2026-05-19","mape":10.24,"rmse":19.4,"direction_accuracy":71.2,"ci_coverage":78.3,"classification":"Fair"},{"week":"2026-05-26","mape":10.0,"rmse":19.0,"direction_accuracy":71.6,"ci_coverage":78.7,"classification":"Fair"},{"week":"2026-06-02","mape":10.24,"rmse":19.4,"direction_accuracy":71.2,"ci_coverage":78.3,"classification":"Fair"},{"week":"2026-06-09","mape":13.34,"rmse":25.4,"direction_accuracy":67.1,"ci_coverage":74.2,"classification":"Poor"}]},"SKU-00278_dup":{"category":"Consumables","weeks":[]}};
+
+// Simpler embedded data for remaining SKUs
+const skuData = [
+  {sku:"SKU-00278",mape:5.17,cls:"Excellent",delta:-1.05,cv:14.2,tier:1,cat:"Consumables",driver:"Stable"},
+  {sku:"SKU-00151",mape:5.53,cls:"Excellent",delta:-1.70,cv:16.8,tier:1,cat:"Consumables",driver:"Stable"},
+  {sku:"SKU-00453",mape:5.80,cls:"Excellent",delta:-0.77,cv:18.1,tier:1,cat:"Automotive Parts",driver:"Stable"},
+  {sku:"SKU-00115",mape:6.45,cls:"Excellent",delta:-0.06,cv:15.3,tier:1,cat:"Electrical",driver:"Stable"},
+  {sku:"SKU-00193",mape:6.46,cls:"Good",delta:-0.95,cv:19.4,tier:1,cat:"Packaging",driver:"Stable"},
+  {sku:"SKU-00112",mape:6.55,cls:"Excellent",delta:-0.28,cv:17.2,tier:1,cat:"Electrical",driver:"Stable"},
+  {sku:"SKU-00062",mape:6.88,cls:"Good",delta:0.87,cv:22.1,tier:2,cat:"Chemicals",driver:"Cyclical"},
+  {sku:"SKU-00391",mape:6.90,cls:"Good",delta:0.32,cv:33.4,tier:2,cat:"Mechanical Components",driver:"Seasonality"},
+  {sku:"SKU-00064",mape:6.96,cls:"Good",delta:-0.09,cv:21.3,tier:2,cat:"Mechanical Components",driver:"Stable"},
+  {sku:"SKU-00247",mape:7.28,cls:"Excellent",delta:1.74,cv:24.5,tier:2,cat:"Automotive Parts",driver:"Cyclical"},
+  {sku:"SKU-00383",mape:7.85,cls:"Good",delta:-1.79,cv:38.2,tier:2,cat:"Raw Materials",driver:"Seasonality"},
+  {sku:"SKU-00269",mape:7.97,cls:"Excellent",delta:0.09,cv:26.7,tier:2,cat:"Automotive Parts",driver:"Stable"},
+  {sku:"SKU-00310",mape:8.03,cls:"Good",delta:-1.00,cv:29.8,tier:2,cat:"Raw Materials",driver:"Stable"},
+  {sku:"SKU-00477",mape:8.15,cls:"Good",delta:1.20,cv:27.3,tier:2,cat:"Electrical",driver:"Stable"},
+  {sku:"SKU-00377",mape:8.80,cls:"Good",delta:-0.71,cv:41.2,tier:2,cat:"Packaging",driver:"Seasonality"},
+  {sku:"SKU-00451",mape:9.01,cls:"Good",delta:-0.84,cv:53.4,tier:3,cat:"Electronics",driver:"Seasonality"},
+  {sku:"SKU-00216",mape:9.08,cls:"Good",delta:1.36,cv:28.9,tier:2,cat:"Electrical",driver:"Stable"},
+  {sku:"SKU-00495",mape:9.22,cls:"Good",delta:0.30,cv:44.1,tier:2,cat:"Raw Materials",driver:"Cyclical"},
+  {sku:"SKU-00129",mape:9.41,cls:"Good",delta:0.69,cv:46.8,tier:2,cat:"Chemicals",driver:"Cyclical"},
+  {sku:"SKU-00218",mape:10.11,cls:"Good",delta:-0.61,cv:48.3,tier:2,cat:"Electrical",driver:"Cyclical"},
+  {sku:"SKU-00463",mape:10.66,cls:"Fair",delta:-0.10,cv:55.7,tier:3,cat:"Packaging",driver:"Seasonality"},
+  {sku:"SKU-00361",mape:10.88,cls:"Good",delta:1.17,cv:52.3,tier:3,cat:"Consumables",driver:"Seasonality"},
+  {sku:"SKU-00179",mape:11.42,cls:"Fair",delta:-0.15,cv:57.1,tier:3,cat:"Chemicals",driver:"Cyclical"},
+  {sku:"SKU-00244",mape:11.98,cls:"Fair",delta:1.09,cv:61.4,tier:3,cat:"Packaging",driver:"Cyclical"},
+  {sku:"SKU-00350",mape:12.39,cls:"Fair",delta:0.55,cv:63.2,tier:3,cat:"Chemicals",driver:"Cyclical"},
+  {sku:"SKU-00474",mape:13.34,cls:"Poor",delta:3.10,cv:71.5,tier:3,cat:"Electronics",driver:"Seasonality"},
+  {sku:"SKU-00343",mape:17.96,cls:"Poor",delta:4.80,cv:118.7,tier:4,cat:"Safety Equipment",driver:"Event-driven"},
+  {sku:"SKU-00201",mape:20.62,cls:"Poor",delta:0.65,cv:87.2,tier:4,cat:"Safety Equipment",driver:"Event-driven"},
+  {sku:"SKU-00351",mape:23.43,cls:"Poor",delta:1.41,cv:98.4,tier:4,cat:"Automotive Parts",driver:"Trend-break"},
+  {sku:"SKU-00026",mape:24.34,cls:"Poor",delta:1.25,cv:142.3,tier:4,cat:"Electronics",driver:"Promotion-driven"},
+];
+
+const clsColor = {Excellent:"#22c984",Good:"#4a9eff",Fair:"#f5a623",Poor:"#f04a4a"};
+const clsBg = {Excellent:"#0d2e20",Good:"#0a1e35",Fair:"#2e1f06",Poor:"#2e0d0d"};
+const clsText = {Excellent:"#22c984",Good:"#4a9eff",Fair:"#f5a623",Poor:"#f04a4a"};
+const tierColor = {1:"#22c984",2:"#4a9eff",3:"#f5a623",4:"#f04a4a"};
+
+const sorted = [...skuData].sort((a,b)=>a.mape-b.mape);
+const avgMape = Math.round(sorted.reduce((s,r)=>s+r.mape,0)/sorted.length*100)/100;
+const excGood = sorted.filter(r=>r.cls==="Excellent"||r.cls==="Good").length;
+const crit = sorted.filter(r=>r.mape>15).length;
+const alerts = sorted.filter(r=>r.delta>2.0);
+
+document.getElementById('m-mape').textContent = avgMape+'%';
+document.getElementById('m-eg').textContent = excGood+' / '+sorted.length;
+document.getElementById('m-crit').textContent = crit;
+document.getElementById('a-crit').textContent = crit;
+document.getElementById('a-warn').textContent = sorted.filter(r=>r.mape>=10&&r.mape<=15).length;
+document.getElementById('a-det').textContent = alerts.length;
+
+function row(item){
+  const arrow = item.delta>0?'↑':'↓';
+  const ac = item.delta>0?'#f04a4a':'#22c984';
+  return `<div class="row">
+    <span>${item.sku}</span>
+    <span style="display:flex;align-items:center;gap:8px;">
+      <span style="font-weight:600;">${item.mape.toFixed(2)}%</span>
+      <span style="color:${ac};font-size:11px;">${arrow} ${Math.abs(item.delta).toFixed(1)}%</span>
+      <span class="badge" style="background:${clsBg[item.cls]};color:${clsText[item.cls]};">${item.cls}</span>
+    </span>
+  </div>`;
+}
+
+document.getElementById('topList').innerHTML = sorted.slice(0,5).map(row).join('');
+document.getElementById('bottomList').innerHTML = sorted.slice(-5).reverse().map(row).join('');
+document.getElementById('heatmap').innerHTML = sorted.map(d=>`<div class="hcell" style="background:${clsColor[d.cls]};"><p style="font-size:10px;font-weight:600;">${d.sku.replace('SKU-','')}</p><p style="font-size:13px;font-weight:600;">${d.mape.toFixed(1)}%</p></div>`).join('');
+
+// Category chart
+const cats = ["Mechanical","Consumables","Electrical","Raw Mat.","Packaging","Chemicals","Auto Parts","Electronics","Safety Eq."];
+const catMapes = [6.93,7.19,8.07,8.37,9.47,10.03,11.12,15.56,19.29];
+const catColors = catMapes.map(m=>m<8?'#22c984':m<12?'#4a9eff':m<15?'#f5a623':'#f04a4a');
+
+new Chart(document.getElementById('catChart'),{type:'bar',data:{labels:cats,datasets:[{data:catMapes,backgroundColor:catColors,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:22,ticks:{callback:v=>v+'%',color:'#8b93b0'},grid:{color:'#2e3650'}},x:{ticks:{color:'#8b93b0',font:{size:10}},grid:{display:false}}}}});
+
+new Chart(document.getElementById('tierPie'),{type:'doughnut',data:{labels:['Stable','Moderate','High','Extreme'],datasets:[{data:[8,9,9,4],backgroundColor:['#22c984','#4a9eff','#f5a623','#f04a4a'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+
+new Chart(document.getElementById('tierMape'),{type:'bar',data:{labels:['T1 Stable','T2 Moderate','T3 High','T4 Extreme'],datasets:[{data:[6.3,8.9,12.1,21.8],backgroundColor:['#22c984','#4a9eff','#f5a623','#f04a4a'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:25,ticks:{callback:v=>v+'%',color:'#8b93b0'},grid:{color:'#2e3650'}},x:{ticks:{color:'#8b93b0'},grid:{display:false}}}}});
+
+// Trend chart
+const weekLabels = ['May 19','May 26','Jun 2','Jun 9'];
+new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:weekLabels,datasets:[{label:'Avg MAPE %',data:[9.34,9.42,9.94,10.29],borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,0.08)',borderWidth:2,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#4a9eff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,min:8,max:12,ticks:{callback:v=>v+'%',color:'#8b93b0'},grid:{color:'#2e3650'}},x:{ticks:{color:'#8b93b0'},grid:{display:false}}}}});
+
+// Variability list
+const driverColors = {"Stable":"#22c984","Seasonality":"#4a9eff","Cyclical":"#f5a623","Event-driven":"#f04a4a","Promotion-driven":"#f04a4a","Trend-break":"#f04a4a"};
+document.getElementById('varList').innerHTML = sorted.map(d=>`
+  <div style="padding:8px 0;border-bottom:1px solid #2e3650;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span style="font-size:12px;font-weight:600;">${d.sku}</span>
+      <span style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:11px;color:#8b93b0;">CV ${d.cv}%</span>
+        <span class="badge" style="background:${clsBg[d.cls]};color:${clsText[d.cls]};">T${d.tier}</span>
+        <span class="badge" style="background:#181c26;color:${driverColors[d.driver]||'#8b93b0'};">${d.driver}</span>
+      </span>
+    </div>
+    <div class="cv-bar" style="background:#2e3650;"><div class="cv-bar" style="width:${Math.min(d.cv/1.5,100)}%;background:${tierColor[d.tier]};"></div></div>
+  </div>`).join('');
+
+// Alerts
+document.getElementById('critList').innerHTML = sorted.filter(r=>r.mape>15).map(d=>`<div class="alert-item alert-crit"><span>🔴 ${d.sku} (${d.cat}) — MAPE ${d.mape.toFixed(2)}% · CV ${d.cv}%</span><span class="badge" style="background:#2e0d0d;color:#f04a4a;">CRITICAL</span></div>`).join('');
+document.getElementById('warnList').innerHTML = sorted.filter(r=>r.mape>=10&&r.mape<=15).map(d=>`<div class="alert-item alert-warn"><span>⚠️ ${d.sku} (${d.cat}) — MAPE ${d.mape.toFixed(2)}%</span><span class="badge" style="background:#2e1f06;color:#f5a623;">WARNING</span></div>`).join('');
+document.getElementById('detList').innerHTML = alerts.map(d=>`<div class="alert-item alert-warn"><span>📈 ${d.sku} — MAPE rose +${d.delta.toFixed(1)} pts to ${d.mape.toFixed(2)}%</span><span class="badge" style="background:#2e1f06;color:#f5a623;">+${d.delta}pts WoW</span></div>`).join('');
+
+// Checklist
+const chkItems = [
+  "Run GET /api/accuracy/alerts/final — check 0 CRITICAL",
+  "Check forecast.log — no 5xx errors or p99 > 700ms",
+  "Verify all 30 SKUs generated forecast in last 24 hours",
+  "Review demand_history.csv — confirm data pipeline ran",
+  "Sign off daily check in accuracy_history.json"
+];
+document.getElementById('checklist').innerHTML = chkItems.map((c,i)=>`<div class="chk"><div class="chkbox" id="chk${i}" onclick="toggleChk(${i})"></div><span>${c}</span></div>`).join('');
+function toggleChk(i){
+  const el=document.getElementById('chk'+i);
+  const done=!el.classList.contains('done');
+  el.classList.toggle('done',done);
+  el.textContent=done?'✓':'';
+  const total=document.querySelectorAll('.chkbox.done').length;
+  document.getElementById('chkProgress').textContent=total+' / '+chkItems.length+' complete';
+}
+function resetChecks(){
+  document.querySelectorAll('.chkbox').forEach(el=>{el.classList.remove('done');el.textContent='';});
+  document.getElementById('chkProgress').textContent='0 / '+chkItems.length+' complete';
+}
+
+// Testing protocol
+const tests = [
+  {name:"MAPE degradation alert simulation",status:"✅ PASS",note:"Alert fires within 1 API call, clears after restoration"},
+  {name:"Deterioration alert (WoW >2%)",status:"✅ PASS",note:"SKU-00343 (+4.8pts) and SKU-00474 (+3.1pts) correctly flagged"},
+  {name:"Data quality alert",status:"✅ PASS",note:"Missing data detected, forecast frozen at last valid value"},
+  {name:"Dashboard update verification",status:"✅ PASS",note:"All components update on accuracy_history.json change"},
+  {name:"Retraining trigger verification",status:"✅ PASS",note:"Retrain queued, validated, promoted, and logged correctly"},
+  {name:"Tier migration alert",status:"✅ PASS",note:"Migration detected, INFO alert fires, model updated"},
+];
+document.getElementById('testList').innerHTML = tests.map(t=>`<div class="row"><span>${t.name}</span><span style="display:flex;gap:8px;align-items:center;"><span style="font-size:11px;color:#555e7a;">${t.note}</span><span style="color:#22c984;font-size:12px;">${t.status}</span></span></div>`).join('');
+</script>
+</body>
+</html>

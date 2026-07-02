@@ -1,0 +1,331 @@
+# FORECAST_GOVERNANCE.txt
+## SupplyMind — Demand Forecasting Governance Framework
+**Version:** 1.0 | **Owner:** Rahul K | **Date:** 2026-06-27
+**Role:** AI Demand Forecasting Governance Specialist
+
+---
+
+## 1. GOVERNANCE FRAMEWORK OVERVIEW
+
+### 1.1 Purpose
+This document defines the governance structure, monitoring procedures, alert configuration, and testing protocols for the SupplyMind demand forecasting system. The goal is to maintain forecast accuracy below 9% MAPE, ensure data quality, and provide proactive alerts to prevent stockouts and optimize inventory.
+
+### 1.2 Governance Structure
+
+| Role | Responsibility | Escalation Level |
+|------|---------------|-----------------|
+| Forecasting Engineer (Rahul K) | Daily monitoring, alert triage, model maintenance | L1 |
+| Backend Engineer (Pavan) | API issues, endpoint failures, data pipeline | L2 |
+| Project Manager ([PM_EMAIL]) | CRITICAL alert escalation, business decisions | L3 |
+| ML Lead | Model retrain approval, accuracy audits | L2 |
+
+### 1.3 Governance Principles
+- **Accuracy First:** MAPE < 9% is non-negotiable for procurement decisions.
+- **Proactive Alerting:** Detect issues before they impact inventory.
+- **Tier-Appropriate Handling:** Each SKU tier has its own model and monitoring rules.
+- **Documented Decisions:** All retraining events, alerts, and resolutions logged.
+
+---
+
+## 2. FORECAST ACCURACY & SKU SEGMENTATION STRATEGY
+
+### 2.1 Accuracy Target
+- **System-wide target:** Avg MAPE < 9% across all active SKUs
+- **Per-SKU baseline:** Established in FORECAST_BASELINE.txt (Week 5)
+- **Measurement:** 30-day rolling holdout validation, recalculated weekly
+
+### 2.2 SKU Segmentation — 4-Tier Model
+
+| Tier | Label | CV Range | Model | Safety Stock | MAPE Target |
+|------|-------|----------|-------|-------------|------------|
+| 1 | Stable | CV < 20% | Simple Moving Average | 7 days | < 7% |
+| 2 | Moderate | CV 20–50% | LightGBM | 10 days | < 9% |
+| 3 | High Volatility | CV 50–80% | LightGBM + External Features | 14 days | < 13% |
+| 4 | Extreme Volatility | CV > 80% | Ensemble + Demand Sensing | 21 days | < 18% |
+
+### 2.3 Current Tier Distribution (30 SKUs)
+- Tier 1 Stable: 8 SKUs (avg MAPE 6.3%)
+- Tier 2 Moderate: 9 SKUs (avg MAPE 8.9%)
+- Tier 3 High Volatility: 9 SKUs (avg MAPE 12.1%)
+- Tier 4 Extreme Volatility: 4 SKUs (avg MAPE 21.8%)
+
+### 2.4 Tier Migration Rules
+A SKU moves to a higher tier when its rolling CV increases by > 15% and sustains for 2+ consecutive weeks. A SKU moves to a lower tier when CV decreases by > 20% and sustains for 4+ consecutive weeks (stricter to prevent oscillation).
+
+---
+
+## 3. QUALITY MONITORING PROCEDURES
+
+### 3.1 Daily Monitoring Checklist
+Executed every day at 07:00 IST by the Forecasting Engineer:
+
+1. Run `GET /api/accuracy/alerts/final` — check alert count (target: 0 CRITICAL)
+2. Check `forecast.log` for any 5xx errors or latency spikes (p99 > 700ms)
+3. Verify all 30 SKUs generated a forecast in the last 24 hours
+4. Review `demand_history.csv` last row per SKU — confirm data pipeline ran
+5. Sign off in `accuracy_history.json` with daily_check: true
+
+### 3.2 Daily MAPE Calculation Per SKU
+```
+daily_mape = |actual_demand - predicted_demand| / actual_demand × 100
+rolling_mape_7d = mean(daily_mape for last 7 days)
+rolling_mape_30d = mean(daily_mape for last 30 days)
+```
+Computed automatically by `accuracy_monitor.py` and stored in `accuracy_history.json`.
+
+### 3.3 Data Quality Checks
+Run daily before MAPE calculation:
+
+| Check | Threshold | Action if Triggered |
+|-------|-----------|-------------------|
+| Missing demand values | Any NULL in quantity_demanded | Flag SKU, use last known value, alert L1 |
+| Zero demand values | quantity_demanded = 0 | Verify against warehouse — likely data gap |
+| Outlier detection | |z-score| > 3.0 per SKU | Flag as anomaly, do not use in MAPE calc |
+| Stale data | Last row > 25 hours old | Alert L1 immediately — pipeline failure |
+| Duplicate dates | Same sku_id + date appears twice | De-duplicate, keep latest, log warning |
+
+### 3.4 Weekly Accuracy Audit (Every Monday 09:00 IST)
+1. Run `python run_weekly_scoring.py --week YYYY-MM-DD`
+2. Review `GET /api/accuracy/dashboard` — check all 30 SKUs
+3. Identify any SKU that crossed a tier boundary
+4. Flag consistently Poor SKUs (3+ weeks) for ML lead review
+5. Update `FORECAST_BASELINE.txt` if avg MAPE improved by > 1pt
+6. Document findings in `weekly_audit_log.csv`
+
+### 3.5 Monthly Accuracy Audit (First Monday of Month)
+1. Compare current avg MAPE vs baseline from previous month
+2. Review feature importance — are lag features still most predictive?
+3. Check for structural breaks in any SKU (Chow test)
+4. Review seasonal period assignments — any SKU period changed?
+5. Present findings to PM and ML lead
+6. Approve or defer any model changes
+
+---
+
+## 4. ALERT SYSTEM CONFIGURATION
+
+### 4.1 Alert Levels & Thresholds
+
+#### CRITICAL — SKU MAPE > 15%
+- **Meaning:** Forecast unreliable, procurement decisions at risk
+- **Immediate action:** Increase safety stock to Tier 4 level (21 days)
+- **Notification:** Email [PM_EMAIL] + Slack #forecast-alerts within 15 minutes
+- **Resolution SLA:** Acknowledge within 15 min, resolve or mitigate within 2 hours
+- **Current SKUs in CRITICAL:** SKU-00026 (24.34%), SKU-00351 (23.43%), SKU-00201 (20.62%), SKU-00343 (17.96%)
+
+#### WARNING — SKU MAPE 10–15%
+- **Meaning:** Accuracy degrading, monitor closely
+- **Immediate action:** Review last 7 days of demand for anomalies
+- **Notification:** Slack #forecast-alerts only
+- **Resolution SLA:** Acknowledge within 2 hours, resolve within 1 business day
+- **Current SKUs in WARNING:** SKU-00474 (13.34%), SKU-00350 (12.39%), SKU-00244 (11.98%), SKU-00179 (11.42%)
+
+#### INFO — New Demand Pattern Detected
+- **Meaning:** ACF peak period changed, or trend slope reversed direction
+- **Immediate action:** Re-run seasonal decomposition for affected SKU
+- **Notification:** Slack #forecast-alerts (informational)
+- **Resolution SLA:** Review within 1 business day, retrain if confirmed
+- **Detection logic:** `if acf_peak_period != stored_period: fire INFO alert`
+
+### 4.2 Deterioration Alert — MAPE Increased > 2% Week-over-Week
+- **Threshold:** current_week_mape - prev_week_mape > 2.0
+- **Level:** WARNING if resulting MAPE < 15%, CRITICAL if > 15%
+- **Endpoint:** `GET /api/accuracy/alerts` + `GET /api/accuracy/alerts/final`
+- **Current:** SKU-00343 (+4.8pts), SKU-00474 (+3.1pts)
+
+### 4.3 Data Quality Alert
+- **Trigger:** Any data quality check (Section 3.3) fires
+- **Level:** CRITICAL for missing/stale data, WARNING for outliers
+- **Notification:** L1 engineer immediate, [PM_EMAIL] if unresolved > 1 hour
+- **Action:** Freeze affected SKU forecast, use last valid forecast, note in log
+
+### 4.4 Alert Notification Logic
+```
+function send_alert(sku_id, level, message):
+    log to forecast.log
+    post to Slack #forecast-alerts
+
+    if level == CRITICAL:
+        email [PM_EMAIL] with subject "[CRITICAL] SupplyMind Forecast Alert"
+        body includes: SKU, current MAPE, recommended action, ETA
+        trigger POST /api/accuracy/alerts/notify
+
+    if alert unresolved after 2 hours AND level == CRITICAL:
+        escalate to ML lead
+        page on-call engineer via PagerDuty
+```
+
+### 4.5 Alert Resolution Protocol
+1. Engineer acknowledges alert in Slack within SLA
+2. Diagnoses root cause (data issue vs model issue vs real demand shift)
+3. Applies fix (data correction / retrain / safety stock increase)
+4. Verifies alert clears (MAPE drops below threshold)
+5. Writes post-mortem note if CRITICAL
+6. Closes alert in `weekly_audit_log.csv`
+
+---
+
+## 5. RETRAINING PROTOCOLS
+
+### 5.1 Automatic Retraining Triggers
+| Trigger | Condition | Action |
+|---------|-----------|--------|
+| MAPE degradation | SKU MAPE increases > 2% from 4-week baseline | Queue retrain for that SKU |
+| System-wide drift | Avg MAPE across all SKUs increases > 1pt WoW for 2 consecutive weeks | Full retrain all SKUs |
+| Structural break detected | Chow test p-value < 0.05 | Retrain from break point only |
+| Tier migration | SKU moves to higher tier | Retrain with tier-appropriate model |
+| Calendar trigger | Every 30 days regardless of performance | Scheduled full retrain |
+
+### 5.2 Retraining Procedure
+1. Freeze current model (keep serving forecasts from cached model)
+2. Pull latest `demand_history.csv` — verify completeness
+3. Apply per-SKU training window (e.g. SKU-00351 starts from 2023-08-01)
+4. Retrain model — approx 5 minutes per SKU for LightGBM
+5. Validate on 30-day holdout — must beat current MAPE or tie
+6. If validated: promote new model (clear cache, server auto-refits on next request)
+7. If not validated: keep old model, flag for ML lead review
+8. Log retrain event in `weekly_audit_log.csv`
+
+### 5.3 Retraining Schedule
+- **Daily:** Data refresh (append latest actuals to demand_history.csv)
+- **Weekly:** Score all SKUs, queue retrains for degraded ones
+- **Monthly:** Full benchmark retrain — all 30 SKUs, compare vs baseline
+
+---
+
+## 6. DASHBOARD REQUIREMENTS
+
+### 6.1 Existing Dashboard: forecast_accuracy_dashboard.html
+Currently displays:
+- Avg MAPE (current week)
+- Excellent + Good count
+- Poor classification count
+- Deterioration alerts count
+- Weekly trend line chart (4 weeks)
+- Top 5 / Bottom 5 SKUs
+- Deterioration alerts panel
+- SKU performance heatmap (color-coded by classification)
+
+### 6.2 New Sections Added (Week 7)
+- **MAPE by Category:** Bar chart showing avg MAPE per category (9 categories)
+- **SKU Tier Distribution:** Pie chart — Stable/Moderate/High/Extreme
+- **Variability Dashboard:** CV score per SKU with driver tags
+- **Forecast Confidence:** High/Medium/Low per SKU based on tier + MAPE
+- **Governance Status Panel:** Daily checklist completion, last retrain date, next audit date
+
+### 6.3 Dashboard Access
+- Local: `file:///C:/Users/RAHUL K/Downloads/forecast_accuracy_dashboard.html`
+- Hosted: Netlify (deploy via netlify.com/drop)
+- API backend: `http://127.0.0.1:8000/api/accuracy/dashboard`
+
+---
+
+## 7. TESTING PROTOCOL
+
+### 7.1 Test 1 — MAPE Degradation Alert Simulation
+**Objective:** Verify CRITICAL and WARNING alerts fire correctly
+
+**Steps:**
+1. Temporarily set SKU-00278 (normally MAPE 5.17%) MAPE to 16.0% in test data
+2. Call `GET /api/accuracy/alerts/final`
+3. Verify SKU-00278 appears in `poor_mape_alerts` list
+4. Verify alert level is CRITICAL (MAPE > 15%)
+5. Verify email preview generated by `POST /api/accuracy/alerts/notify`
+6. Restore original MAPE value
+7. Call alerts endpoint again — verify SKU-00278 no longer flagged
+
+**Expected outcome:** Alert fires within 1 API call, clears after restoration. ✅
+
+### 7.2 Test 2 — Deterioration Alert (WoW > 2%)
+**Objective:** Verify week-over-week deterioration detection
+
+**Steps:**
+1. In accuracy_history.json, set SKU-00278 week 3 MAPE = 5.17%, week 4 MAPE = 8.5%
+2. Delta = +3.33 pts — should trigger deterioration alert
+3. Call `GET /api/accuracy/alerts`
+4. Verify SKU-00278 in deterioration_alerts with delta = 3.33
+5. Restore original values
+
+**Expected outcome:** Alert fires correctly, delta value accurate. ✅
+
+### 7.3 Test 3 — Data Quality Alert
+**Objective:** Verify missing/stale data detection
+
+**Steps:**
+1. Remove last row for SKU-00064 from demand_history.csv (simulate stale data)
+2. Run daily quality check script
+3. Verify CRITICAL data quality alert fires for SKU-00064
+4. Verify forecast for SKU-00064 freezes at last valid value
+5. Restore the row
+
+**Expected outcome:** Alert fires, forecast not disrupted by stale data. ✅
+
+### 7.4 Test 4 — Dashboard Update Verification
+**Objective:** Confirm dashboard reflects real-time data
+
+**Steps:**
+1. Update accuracy_history.json with new week's scores
+2. Reload forecast_accuracy_dashboard.html in browser
+3. Verify metric cards update (avg MAPE, classifications)
+4. Verify trend line extends to new week
+5. Verify heatmap re-colors if any SKU classification changed
+
+**Expected outcome:** All dashboard components update without page refresh needed. ✅
+
+### 7.5 Test 5 — Retraining Trigger Verification
+**Objective:** Confirm retrain queues correctly on MAPE degradation
+
+**Steps:**
+1. Simulate SKU-00062 MAPE rising from 6.88% to 9.5% (> 2pt increase)
+2. Run weekly scoring script
+3. Verify SKU-00062 appears in retrain queue log
+4. Simulate retrain — new holdout MAPE = 7.1% (improvement)
+5. Verify new model promoted, retrain event logged in weekly_audit_log.csv
+
+**Expected outcome:** Retrain triggered, validated, promoted, and logged. ✅
+
+### 7.6 Test 6 — Tier Migration Alert
+**Objective:** Confirm tier migration detected and alerted
+
+**Steps:**
+1. Set SKU-00278 CV from 14.2% to 23.5% (crosses Tier 1→2 boundary)
+2. Run tier assignment script
+3. Verify SKU-00278 reclassified as Tier 2
+4. Verify INFO alert fired: "SKU-00278 migrated from Tier 1 to Tier 2"
+5. Verify model recommendation updated to LightGBM
+
+**Expected outcome:** Migration detected, alert fires, model updated. ✅
+
+---
+
+## 8. GOVERNANCE CALENDAR
+
+| Cadence | Activity | Owner | Output |
+|---------|----------|-------|--------|
+| Daily 07:00 | Monitoring checklist + alert review | Rahul K | Checklist log |
+| Weekly Monday 09:00 | Accuracy audit + retrain scoring | Rahul K | weekly_audit_log.csv |
+| Weekly Monday 10:30 | Standup to #team-supplymind | Rahul K | Standup message |
+| Monthly (1st Mon) | Full accuracy audit + ML review | Rahul K + ML Lead | Audit report |
+| Monthly (1st Mon) | Scheduled full retrain | Rahul K | Retrain log |
+| Quarterly | Feature importance review | ML Lead | Feature update plan |
+| Quarterly | Full model benchmark | ML Lead | Benchmark report |
+
+---
+
+## 9. GOVERNANCE STATUS SUMMARY
+
+| Area | Status | Notes |
+|------|--------|-------|
+| Forecast accuracy | ⚠️ 9.45% (target <9%) | QW4 deployment will push below 9% |
+| CRITICAL alerts | 🔴 4 SKUs | SKU-00026, 00351, 00201, 00343 |
+| WARNING alerts | 🟡 4 SKUs | SKU-00474, 00350, 00244, 00179 |
+| Data quality | ✅ Clean | 0 missing values, 0 zero-demand days |
+| Dashboard | ✅ Live | forecast_accuracy_dashboard.html |
+| Retraining | ✅ Scheduled | Weekly scoring + monthly full retrain |
+| Documentation | ✅ Complete | All governance docs in forecasting/ folder |
+
+---
+
+*SupplyMind Demand Forecasting Governance Framework v1.0*
+*Rahul K | Week 7 Day 5 | 2026-06-27*
+*Next review: 2026-07-07 (Weekly audit)*
