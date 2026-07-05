@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ActionCard from "./ActionCard";
 import { SUPPLIER_ACTIONS_API } from "../api/config";
 import { mockActions } from "../mocks/mockActions";
-
+import "./ActionCard.css";
 
 const urgencyOrder = {
   URGENT: 1,
@@ -16,43 +16,42 @@ function ActionList() {
   const [loading, setLoading] = useState(true);
 
   const fetchActions = async () => {
-  try {
-    const res = await fetch(SUPPLIER_ACTIONS_API);
-    const data = await res.json();
+    try {
+      const res = await fetch(SUPPLIER_ACTIONS_API);
+      const data = await res.json();
 
-   const sourceData =
-  Array.isArray(data) && data.length > 0 ? data : [];
+      const sourceData = Array.isArray(data) && data.length > 0 ? data : [];
 
-const flattenedActions = sourceData.flatMap((supplier) =>
-  supplier.recommended_actions.map((action, index) => ({
-    action_id: `${supplier.supplier_id}-${index}`,
-    supplier_id: supplier.supplier_id,
-    supplier_name: supplier.supplier_name,
-    category: supplier.category,
-    urgency: action.urgency,
-    action: action.action,
-    reason: action.reason,
-    act_within: action.act_within,
-  }))
-);
+      const flattenedActions = sourceData.flatMap((supplier) =>
+        supplier.recommended_actions.map((action, index) => ({
+          action_id: `${supplier.supplier_id}-${index}`,
+          supplier_id: supplier.supplier_id,
+          supplier_name: supplier.supplier_name,
+          category: supplier.category,
+          urgency: action.urgency,
+          action: action.action,
+          reason: action.reason,
+          act_within: action.act_within,
+        }))
+      );
 
-const sorted = flattenedActions.sort(
-  (a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
-);
+      const sorted = flattenedActions.sort(
+        (a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
+      );
 
-setActions(sorted);
-  } catch (error) {
-    console.error("Failed to fetch supplier actions. Using mock data:", error);
+      setActions(sorted);
+    } catch (error) {
+      console.error("Failed to fetch supplier actions. Using mock data:", error);
 
-    const sortedMock = mockActions
-      .filter((item) => item.status === "PENDING")
-      .sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]);
+      const sortedMock = mockActions
+        .filter((item) => item.status === "PENDING")
+        .sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]);
 
-    setActions(sortedMock);
-  } finally {
-    setLoading(false);
-  }
-};
+      setActions(sortedMock);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchActions();
@@ -62,9 +61,7 @@ setActions(sorted);
     try {
       await fetch(`${SUPPLIER_ACTIONS_API}/${action.action_id}/complete`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: "COMPLETED",
           marked_by: "Prem Sannith",
@@ -84,9 +81,7 @@ setActions(sorted);
     try {
       await fetch(`${SUPPLIER_ACTIONS_API}/${action.action_id}/snooze`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           snoozed_until: new Date(
             Date.now() + 7 * 24 * 60 * 60 * 1000
@@ -102,24 +97,28 @@ setActions(sorted);
     }
   };
 
-  if (loading) return <p>Loading recommended actions...</p>;
-
   return (
-    <div className="page">
-      <h2>Recommended Supplier Actions</h2>
-      <p>Pending supplier actions sorted by urgency.</p>
+    <div className="actions-page">
+      <h1>Recommended Supplier Actions</h1>
+      <p className="actions-subtitle">
+        Pending supplier actions sorted by urgency.
+      </p>
 
-      {actions.length === 0 ? (
-        <p>No pending supplier actions.</p>
+      {loading ? (
+        <div className="actions-loading">Loading recommended actions...</div>
+      ) : actions.length === 0 ? (
+        <div className="actions-empty">No pending supplier actions.</div>
       ) : (
-        actions.map((action) => (
-          <ActionCard
-            key={action.action_id}
-            action={action}
-            onDone={handleDone}
-            onSnooze={handleSnooze}
-          />
-        ))
+        <div className="actions-list">
+          {actions.map((action) => (
+            <ActionCard
+              key={action.action_id}
+              action={action}
+              onDone={handleDone}
+              onSnooze={handleSnooze}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

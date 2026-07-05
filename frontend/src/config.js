@@ -31,11 +31,19 @@ export const SUPPLIER_PEERS_API =
   `${BASE_URL}/api/analytics/supplier-peers`
 
 
+  export const SUPPLIER_RELATIONSHIPS_API =
+  `${BASE_URL}/api/analytics/supplier-relationships`
+
+
   export const SUPPLIER_ACTIONS_API =
   `${BASE_URL}/api/supplier-actions`
 
 export const SUPPLIER_ACTION_STATUS_API =
+
   `${BASE_URL}/api/supplier-actions`
+
+  
+
 
 
 /* Karthi Render URL */

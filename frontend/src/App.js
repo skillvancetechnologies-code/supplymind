@@ -2,8 +2,8 @@ import { useState } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route} from 'react-router-dom'
 import SupplierDetail
-from './pages/SupplierDetail'
-import SupplierIntelligenceDashboard from './pages/SupplierIntelligenceDashboard'
+from './components/SupplierDetail'
+import SupplierIntelligenceDashboard from './components/SupplierIntelligenceDashboard'
 import Dashboard from './components/Dashboard'
 import Inventory from './components/Inventory'
 import Suppliers from './components/Suppliers'
@@ -21,32 +21,20 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
-  const [page, setPage] = useState(localStorage.getItem('page') || 'dashboard')
-
+  const [page, setPage] = useState('dashboard')
 const goToPage = (pageName) => {
-  localStorage.setItem('page', pageName)
-  setPage(pageName)
-  window.location.href = '/'
-}
+  setPage(pageName);
+};
   
 
   return (
     <BrowserRouter>
-    <div style={{
-      display:'flex',
-      minHeight:'100vh',
-      background:'#F4F7FB'
-    }}>
+    <div className="app-layout">
 
       {/* Sidebar */}
 
       {sidebarOpen && (
-        <div style={{
-          width:'250px',
-          background:'#1B2A4A',
-          color:'white',
-          padding:'30px 20px'
-        }}>
+        <div className="sidebar">
 
           <h1>
             SupplyMind
@@ -118,8 +106,9 @@ const goToPage = (pageName) => {
 </div>
 <div
   onClick={() => {
-  window.location.href = '/actions'
-}}
+    window.history.pushState({}, '', '/')
+    goToPage('actions')
+  }}
   style={{
     cursor:'pointer',
     fontWeight:'bold'
@@ -134,14 +123,17 @@ const goToPage = (pageName) => {
 
       {/* Main Content */}
 
-      <div style={{flex:1}}>
+     <div className="main-content">
 
         {/* Top Bar */}
 
-        <div style={{
-          padding:'20px 30px'
-        }}>
-
+      <div
+  className="top-bar"
+  style={{
+    background:
+      "radial-gradient(circle at top left, rgba(37,99,235,.20), transparent 30%), linear-gradient(135deg, #020617 0%, #07111f 45%, #020617 100%)",
+  }}
+>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             style={{
@@ -170,6 +162,7 @@ const goToPage = (pageName) => {
         {page === 'disruptions' && <Disruptions />}
         {page === 'forecasts' && <Forecasts />}
         {page === 'supplierIntelligence' && <SupplierIntelligenceDashboard />}
+        {page === 'actions' && <ActionList />}
       </>
     }
   />

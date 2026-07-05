@@ -107,29 +107,47 @@ const Forecasts = () => {
   }, [])
 
   return (
-    <div style={{
-      padding:'40px',
-      flex:1,
-      background:'#F4F6F9',
-      minHeight:'100vh'
-    }}>
-
-      <h2 style={{ color:'#1B2A4A' }}>
-        Forecast Center
-      </h2>
-
-      <p style={{ color:'#4A5568' }}>
+   <div
+  style={{
+    padding: "34px",
+    flex: 1,
+    minHeight: "100vh",
+    color: "#e5e7eb",
+   
+  }}
+>
+     <h1
+  style={{
+    fontSize: "42px",
+    fontWeight: 900,
+    margin: 0,
+    color: "#F8FAFC",
+    textShadow:
+      "0 0 12px rgba(96,165,250,.55),0 0 35px rgba(37,99,235,.35)",
+  }}
+>
+  Forecast Center
+</h1>
+     <p
+  style={{
+    color: "#94A3B8",
+    marginTop: "10px",
+    marginBottom: "28px",
+    fontSize: "15px",
+  }}
+>
         AI-powered demand forecasting 
       </p>
 
       <div style={{
-        background:'white',
-        padding:'24px',
-        borderRadius:'10px',
-        boxShadow:'0 2px 4px rgba(0,0,0,0.1)'
+        background:"rgba(15,23,42,.88)",
+padding:"24px",
+borderRadius:"22px",
+border:"1px solid rgba(148,163,184,.18)",
+boxShadow:"0 24px 60px rgba(0,0,0,.34)"
       }}>
 
-        <h3 style={{ color:'#1B2A4A' }}>
+        <h3 style={{  color:"#F8FAFC"}}>
           Forecast Output
         </h3>
 
@@ -147,16 +165,25 @@ const Forecasts = () => {
         <table style={{
           width:'100%',
           borderCollapse:'collapse',
-          background:'white'
+          background:"#111827"
         }}>
           <thead>
             <tr style={{
-              background:'#1B2A4A',
-              color:'white'
+             background:"linear-gradient(90deg,#1E3A8A,#2563EB)"
+          
             }}>
-              <th style={{ padding:'12px' }}>SKU ID</th>
-              <th style={{ padding:'12px' }}>Predicted Demand</th>
-              <th style={{ padding:'12px' }}>Confidence</th>
+              <th style={{ padding:"14px",
+textTransform:"uppercase",
+letterSpacing:".7px",
+fontSize:"12px" }}>SKU ID</th>
+              <th style={{ padding:"14px",
+textTransform:"uppercase",
+letterSpacing:".7px",
+fontSize:"12px" }}>Predicted Demand</th>
+              <th style={{ padding:"14px",
+textTransform:"uppercase",
+letterSpacing:".7px",
+fontSize:"12px" }}>Confidence</th>
             </tr>
           </thead>
 
@@ -168,33 +195,36 @@ const Forecasts = () => {
                 style={{
                   cursor:'pointer',
                   borderBottom:'1px solid #E2E8F0',
-                  background:selectedForecast?.sku_id === item.sku_id
-                    ? '#E8F0FE'
-                    : 'white'
+                 background:
+selectedForecast?.sku_id===item.sku_id
+? "#1D4ED8"
+: "#111827",
                 }}
               >
                 <td style={{
-                  padding:'12px',
-                  textAlign:'center',
-                  fontWeight:'bold'
-                }}>
+padding:"14px",
+textAlign:"center",
+color:"#E2E8F0",
+borderBottom:"1px solid rgba(255,255,255,.05)"
+}}>
                   {item.sku_id}
                 </td>
 
                 <td style={{
-                  padding:'12px',
-                  textAlign:'center',
-                  fontWeight:'bold'
-                }}>
+padding:"14px",
+textAlign:"center",
+color:"#E2E8F0",
+borderBottom:"1px solid rgba(255,255,255,.05)"
+}}>
                   {item.predicted_demand}
                 </td>
 
                 <td style={{
-                  padding:'12px',
-                  textAlign:'center',
-                  color:'#1A6B3A',
-                  fontWeight:'bold'
-                }}>
+padding:"14px",
+textAlign:"center",
+color:"#E2E8F0",
+borderBottom:"1px solid rgba(255,255,255,.05)"
+}}>
                   {item.confidence}
                 </td>
               </tr>
@@ -205,13 +235,13 @@ const Forecasts = () => {
         {selectedForecast && (
           <div style={{
             marginTop:'30px',
-            background:'#F8FAFC',
+          background:"#111827",
             padding:'24px',
             borderRadius:'12px',
-            border:'1px solid #E2E8F0'
+            border:"1px solid rgba(148,163,184,.18)"
           }}>
 
-            <h3 style={{ color:'#1B2A4A' }}>
+            <h3 style={{  color:"#F8FAFC"}}>
               30-Day Forecast — {selectedForecast.sku_id}
             </h3>
 
@@ -244,19 +274,21 @@ const Forecasts = () => {
                   type="monotone"
                   dataKey="confidenceRange"
                   stroke="none"
-                  fill="#CBD5E1"
-                  fillOpacity={0.35}
+                 fill="#3B82F6"
+fillOpacity={0.12}
+                  
                   name="Confidence band"
                 />
 
                 <ReferenceLine
                   y={Number(selectedForecast.predicted_demand)}
-                  stroke="red"
+                  stroke="#EF4444"
                   strokeDasharray="5 5"
                   label="Average Demand"
                 />
 
-                <Line
+              <Line
+stroke="#60A5FA"
                   type="monotone"
                   dataKey="demand"
                   strokeWidth={3}

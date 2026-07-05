@@ -1,78 +1,130 @@
-.action-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  margin-bottom: 16px;
+.actions-page {
+  padding: 34px;
+  min-height: 100vh;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top right, rgba(37,99,235,.18), transparent 28%),
+   
 }
 
-.action-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+.actions-page h1{
+    font-size:42px;
+    font-weight:900;
+    color:#F8FAFC;
+    margin:0;
 }
 
-.urgency-badge {
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
+.actions-subtitle{
+    color:#94A3B8;
+    margin-top:10px;
+    margin-bottom:30px;
 }
 
-.urgent {
-  background: #fee2e2;
-  color: #dc2626;
+.actions-loading,
+.actions-empty{
+    background:rgba(15,23,42,.88);
+    border:1px solid rgba(148,163,184,.18);
+    border-radius:20px;
+    padding:25px;
+    color:white;
 }
 
-.high {
-  background: #ffedd5;
-  color: #ea580c;
+.actions-list{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
 }
 
-.medium {
-  background: #fef3c7;
-  color: #ca8a04;
+.action-card{
+    background:rgba(15,23,42,.88);
+    border:1px solid rgba(148,163,184,.18);
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 20px 45px rgba(0,0,0,.35);
+    transition:.25s;
 }
 
-.low {
-  background: #f3f4f6;
-  color: #4b5563;
+.action-card:hover{
+    transform:translateY(-5px);
+    border-color:#3B82F6;
 }
 
-.supplier-id {
-  color: #64748b;
-  font-size: 13px;
+.action-card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.action-card h3{
+    color:#F8FAFC;
+    margin-bottom:15px;
 }
 
 .reason,
-.supplier {
-  color: #475569;
-  font-size: 14px;
+.supplier{
+    color:#CBD5E1;
+    line-height:1.7;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
+.reason strong,
+.supplier strong{
+    color:white;
 }
 
-.done-btn,
-.snooze-btn {
-  border: none;
-  padding: 10px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
+.supplier-id{
+    color:#60A5FA;
+    font-weight:700;
 }
 
-.done-btn {
-  background: #2563eb;
-  color: white;
+.urgency-badge{
+    padding:8px 16px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:800;
 }
 
-.snooze-btn {
-  background: #f1f5f9;
-  color: #334155;
+.urgent{
+    background:rgba(239,68,68,.15);
+    color:#EF4444;
+}
+
+.high{
+    background:rgba(249,115,22,.15);
+    color:#FB923C;
+}
+
+.medium{
+    background:rgba(245,158,11,.15);
+    color:#FBBF24;
+}
+
+.low{
+    background:rgba(34,197,94,.15);
+    color:#22C55E;
+}
+
+.action-buttons{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+}
+
+.done-btn{
+    background:linear-gradient(135deg,#2563EB,#1D4ED8);
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.snooze-btn{
+    background:#1E293B;
+    color:white;
+    border:1px solid rgba(148,163,184,.2);
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
 }

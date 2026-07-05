@@ -1,84 +1,181 @@
-/* ===============================
-   SupplyMind Professional UI Theme
-   Safe replacement for App.css
-   No API / data / logic changes
-================================ */
+/* =========================================================
+   SupplyMind Final Enterprise UI Theme
+   Clean App.css
+   No API / React logic changes
+========================================================= */
 
 :root {
-  --sm-navy: #0f172a;
-  --sm-navy-2: #1e293b;
-  --sm-blue: #2563eb;
-  --sm-cyan: #06b6d4;
-  --sm-green: #16a34a;
-  --sm-red: #dc2626;
-  --sm-amber: #d97706;
-  --sm-bg: #f8fafc;
-  --sm-card: rgba(255, 255, 255, 0.92);
-  --sm-border: #e2e8f0;
-  --sm-text: #0f172a;
-  --sm-muted: #64748b;
-  --sm-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
-  --sm-shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --bg-main: #020617;
+  --bg-mid: #07111f;
+  --panel: rgba(15, 23, 42, 0.88);
+  --panel-2: rgba(30, 41, 59, 0.78);
+  --border: rgba(148, 163, 184, 0.18);
+  --text-main: #f8fafc;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+  --blue: #2563eb;
+  --blue-light: #60a5fa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --shadow-dark: 0 24px 60px rgba(0, 0, 0, 0.34);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg-main);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
 .App {
   text-align: left;
 }
 
-/* Page background */
-div[style*="background: rgb(244, 246, 249)"],
-div[style*="background: #F4F6F9"],
-div[style*="background:#F4F6F9"],
-div[style*="background: #F4F7FB"],
-div[style*="background:#F4F7FB"] {
+/* =========================================================
+   MAIN APP LAYOUT
+========================================================= */
+
+.app-layout {
+  display: flex !important;
+  height: 100vh !important;
+  overflow: hidden;
+
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 28%),
-    linear-gradient(135deg, #f8fafc 0%, #eef4ff 48%, #f8fafc 100%) !important;
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%),
+    linear-gradient(135deg, var(--bg-main) 0%, var(--bg-mid) 45%, var(--bg-main) 100%) !important;
 }
 
-/* Sidebar */
-div[style*="width: 250px"],
-div[style*="background: rgb(27, 42, 74)"],
-div[style*="background:#1B2A4A"],
-div[style*="background: #1B2A4A"] {
-  background: linear-gradient(180deg, #0f172a 0%, #172554 55%, #0f172a 100%) !important;
-  box-shadow: 18px 0 45px rgba(15, 23, 42, 0.18);
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  width: 250px !important;
+  min-width: 250px !important;
+  height: 100vh !important;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  overflow: hidden;
+
+  padding: 34px 22px !important;
+  flex-shrink: 0 !important;
+
+  background:
+    linear-gradient(135deg, var(--bg-main) 0%, var(--bg-mid) 45%, var(--bg-main) 100%) !important;
+
+  color: var(--text-main) !important;
+  border-right: 1px solid rgba(59, 130, 246, 0.14);
+  box-shadow: 18px 0 45px rgba(0, 0, 0, 0.35);
 }
 
-div[style*="width: 250px"] h1 {
-  margin: 0;
-  font-size: 28px;
-  letter-spacing: -0.8px;
-  font-weight: 900;
+.sidebar h1 {
+  margin: 0 0 45px 0 !important;
+  color: #ffffff !important;
+  font-size: 34px !important;
+  font-weight: 900 !important;
+  letter-spacing: -1px;
+  text-shadow: 0 0 15px rgba(96, 165, 250, 0.38);
 }
 
-div[style*="width: 250px"] h1::after {
-  content: 'AI Supply Chain Suite';
+.sidebar h1::after {
+  content: "AI Supply Chain Suite";
   display: block;
   margin-top: 6px;
   color: #93c5fd;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.4px;
 }
 
-div[style*="width: 250px"] div[style*="cursor: pointer"] {
-  padding: 13px 14px !important;
+.sidebar div[style*="cursor"] {
+  color: var(--text-soft) !important;
+  padding: 14px 16px !important;
   border-radius: 14px !important;
-  color: #dbeafe;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease !important;
+  margin-bottom: 8px;
 }
 
-div[style*="width: 250px"] div[style*="cursor: pointer"]:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  transform: translateX(4px);
+.sidebar div[style*="cursor"]:hover {
+  background: rgba(37, 99, 235, 0.13) !important;
+  color: #ffffff !important;
+  transform: translateX(6px);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.18);
 }
 
-/* Top menu button */
+/* =========================================================
+   MAIN CONTENT + TOP BAR
+========================================================= */
+
+.main-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+
+  margin-left: 250px;
+
+  height: 100vh;
+
+  overflow-y: auto;
+
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%),
+    linear-gradient(135deg, var(--bg-main) 0%, var(--bg-mid) 45%, var(--bg-main) 100%) !important;
+}
+
+.top-bar {
+  padding: 18px 30px !important;
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+.top-bar button,
+button[style*="background: none"] {
+  background: rgba(15, 23, 42, 0.9) !important;
+  color: var(--text-main) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.32) !important;
+}
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY
+========================================================= */
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text-main);
+}
+
+h2 {
+  font-size: 32px;
+  letter-spacing: -0.8px;
+}
+
+h3 {
+  letter-spacing: -0.25px;
+}
+
+p {
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   GLOBAL BUTTONS
+========================================================= */
+
 button {
   font-family: inherit;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -86,65 +183,12 @@ button {
 
 button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
 }
 
-button[style*="background: none"] {
-  background: white !important;
-  border: 1px solid var(--sm-border) !important;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px !important;
-  box-shadow: var(--sm-shadow-soft);
-}
+/* =========================================================
+   TABLES
+========================================================= */
 
-/* Headings */
-h2 {
-  color: var(--sm-text) !important;
-  font-size: 32px !important;
-  letter-spacing: -0.8px;
-  margin: 0 0 8px 0 !important;
-}
-
-h3 {
-  color: var(--sm-text) !important;
-  letter-spacing: -0.25px;
-}
-
-p {
-  color: var(--sm-muted) !important;
-}
-
-/* Cards / panels */
-div[style*="background: white"],
-div[style*="background:white"] {
-  background: var(--sm-card) !important;
-  border: 1px solid rgba(226, 232, 240, 0.85) !important;
-  border-radius: 20px !important;
-  box-shadow: var(--sm-shadow) !important;
-  backdrop-filter: blur(14px);
-}
-
-/* KPI cards */
-div[style*="min-width: 200px"] {
-  position: relative;
-  overflow: hidden;
-  border-radius: 22px !important;
-}
-
-div[style*="min-width: 200px"]::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 5px;
-  background: linear-gradient(90deg, var(--sm-blue), var(--sm-cyan));
-}
-
-div[style*="min-width: 200px"] h2 {
-  font-size: 34px !important;
-}
-
-/* Tables */
 table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
@@ -170,8 +214,6 @@ th {
 
 td {
   padding: 14px 16px !important;
-  color: #334155;
-  border-bottom: 1px solid #edf2f7;
 }
 
 tbody tr {
@@ -179,58 +221,69 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: #eff6ff !important;
-  transform: scale(1.004);
+  background: rgba(30, 41, 59, 0.95) !important;
+  transform: scale(1.002);
 }
 
-/* Links */
+/* =========================================================
+   LINKS
+========================================================= */
+
 a {
-  color: #1d4ed8 !important;
+  color: #60a5fa !important;
   font-weight: 800 !important;
 }
 
 a:hover {
-  color: #0f172a !important;
+  color: #93c5fd !important;
 }
 
-/* Status colors remain meaningful but cleaner */
+/* =========================================================
+   DARK CARDS / INLINE STYLE COMPATIBILITY
+========================================================= */
+
+div[style*="background: white"],
+div[style*="background:white"],
+div[style*="background: #FFFFFF"],
+div[style*="background:'#FFFFFF'"] {
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-main) !important;
+  box-shadow: var(--shadow-dark) !important;
+}
+
+div[style*="background: #F8FAFC"],
+div[style*="background:'#F8FAFC'"] {
+  background: #111827 !important;
+  color: var(--text-soft) !important;
+}
+
+/* =========================================================
+   STATUS COLORS
+========================================================= */
+
 td[style*="color: rgb(197, 48, 48)"],
 td[style*="color:#C53030"],
 td[style*="color: #C53030"] {
-  color: var(--sm-red) !important;
+  color: var(--red) !important;
 }
 
 td[style*="color: rgb(183, 121, 31)"],
 td[style*="color:#B7791F"],
 td[style*="color: #B7791F"] {
-  color: var(--sm-amber) !important;
+  color: var(--amber) !important;
 }
 
 td[style*="color: rgb(26, 107, 58)"],
 td[style*="color:#1A6B3A"],
 td[style*="color: #1A6B3A"] {
-  color: var(--sm-green) !important;
+  color: var(--green) !important;
 }
 
-/* Primary action buttons */
-button[style*="background: rgb(27, 42, 74)"],
-button[style*="background:#1B2A4A"],
-button[style*="background: #1B2A4A"] {
-  background: linear-gradient(135deg, #2563eb, #0f172a) !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-  font-weight: 800;
-  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.24);
-}
+/* =========================================================
+   CHARTS
+========================================================= */
 
-/* Forecast selected row */
-tr[style*="background: rgb(232, 240, 254)"],
-tr[style*="background:#E8F0FE"],
-tr[style*="background: #E8F0FE"] {
-  background: #dbeafe !important;
-}
-
-/* Chart cards */
 .recharts-wrapper {
   font-family: inherit !important;
 }
@@ -238,49 +291,29 @@ tr[style*="background: #E8F0FE"] {
 .recharts-cartesian-grid line,
 .recharts-cartesian-axis-line,
 .recharts-cartesian-axis-tick-line {
-  stroke: #e2e8f0;
+  stroke: rgba(148, 163, 184, 0.28);
 }
 
-/* Response plan text */
-pre {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 18px;
-  border-radius: 16px;
-  color: #1e293b !important;
+.recharts-text {
+  fill: #94a3b8 !important;
 }
 
-/* Responsive layout */
-@media (max-width: 900px) {
-  div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr !important;
-  }
+/* =========================================================
+   AI RESPONSE PLAN STYLES
+========================================================= */
 
-  div[style*="width: 250px"] {
-    width: 220px !important;
-  }
-
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  h2 {
-    font-size: 26px !important;
-  }
-}
 .ai-plan-card {
   margin-top: 30px;
-  background: #ffffff;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 22px;
   padding: 28px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+  box-shadow: var(--shadow-dark);
 }
 
 .ai-plan-main-title {
   margin-bottom: 24px;
-  color: #0f172a !important;
+  color: var(--text-main) !important;
   font-size: 18px;
   font-weight: 900;
 }
@@ -302,7 +335,7 @@ pre {
   margin: 0;
   font-size: 25px;
   font-weight: 900;
-  color: #08215c !important;
+  color: var(--text-main) !important;
   padding-left: 16px;
 }
 
@@ -317,11 +350,11 @@ pre {
 }
 
 .plan-heading-row.blue h4 {
-  border-left: 5px solid #2563eb;
+  border-left: 5px solid var(--blue);
 }
 
 .plan-heading-row.green h4 {
-  border-left: 5px solid #16a34a;
+  border-left: 5px solid var(--green);
 }
 
 .plan-heading-row.purple h4 {
@@ -333,80 +366,73 @@ pre {
 }
 
 .plan-heading-row.blue .plan-side-icon {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.28);
 }
 
 .plan-heading-row.green .plan-side-icon {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
 }
 
 .plan-heading-row.purple .plan-side-icon {
-  background: #faf5ff;
-  border: 1px solid #d8b4fe;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.28);
 }
 
 .plan-heading-row.orange .plan-side-icon {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.28);
 }
 
-.plan-info-box {
+.plan-info-box,
+.plan-action-card {
   margin-left: 70px;
   padding: 18px 22px;
-  background: #f8fbff;
-  border: 1px solid #bfdbfe;
+  background: #111827;
+  border: 1px solid var(--border);
   border-radius: 14px;
-  color: #0f172a !important;
+  color: var(--text-soft) !important;
   font-size: 16px;
   line-height: 1.8;
   font-weight: 500;
 }
 
 .plan-action-card {
-  margin-left: 70px;
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 14px 18px;
-  background: #f8fbff;
-  border: 1px solid #bfdbfe;
-  border-radius: 13px;
-  color: #0f172a !important;
   font-size: 15.5px;
-  line-height: 1.7;
-  font-weight: 500;
+  border-radius: 13px;
 }
 
 .plan-number-badge {
   min-width: 31px;
   height: 31px;
   border-radius: 50%;
-  background: #2563eb;
+  background: var(--blue);
   color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
 }
+
 .recommended-qty-box {
   width: 300px;
   margin-left: 70px;
   margin-top: 12px;
   margin-bottom: 12px;
-
-  background: #fff7ed;
-  border: 2px solid #fb923c;
+  background: rgba(249, 115, 22, 0.12);
+  border: 2px solid rgba(251, 146, 60, 0.55);
   border-radius: 16px;
-
   padding: 18px;
   text-align: center;
 }
 
 .recommended-qty-box span {
   display: block;
-  color: #ea580c;
+  color: #fb923c;
   font-size: 14px;
   font-weight: 800;
   margin-bottom: 4px;
@@ -415,11 +441,121 @@ pre {
 .recommended-qty-box strong {
   font-size: 42px;
   font-weight: 900;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .recommended-qty-box small {
   margin-left: 6px;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 18px;
+}
+
+/* =========================================================
+   DASHBOARD KPI HOVER
+========================================================= */
+
+.dashboard-kpi-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    0 0 38px rgba(96, 165, 250, 0.22) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-size: 26px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    display: block !important;
+    height: auto !important;
+    overflow: auto !important;
+  }
+
+  .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    padding: 22px !important;
+    box-shadow: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.18);
+  }
+
+  .sidebar h1 {
+    font-size: 28px !important;
+    margin-bottom: 22px !important;
+  }
+
+  .sidebar > div {
+    gap: 10px !important;
+    margin-top: 20px !important;
+  }
+
+  .sidebar div[style*="cursor"],
+  .sidebar a {
+    width: 100% !important;
+    display: block !important;
+    font-size: 15px !important;
+    padding: 12px 14px !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .top-bar {
+    padding: 14px 18px !important;
+  }
+
+  .main-content > div {
+    padding: 20px !important;
+  }
+
+  div[style*="display: flex"] {
+    flex-direction: column !important;
+  }
+
+  div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  h1 {
+    font-size: 30px !important;
+  }
+
+  h2 {
+    font-size: 24px !important;
+  }
+
+  h3 {
+    font-size: 18px !important;
+  }
 }
