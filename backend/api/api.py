@@ -28,7 +28,7 @@ def log_request(endpoint, latency_ms, row_count, status):
 # PostgreSQL connection
 import os
 engine = create_engine(
-    os.environ.get("DATABASE_URL")
+    os.environ.get("DATABASE_URL"))
 supplier_df=pd.read_sql("SELECT * FROM suppliers",engine)
 
 # FastAPI app
@@ -1720,5 +1720,442 @@ def diversification_recommendations():
         return {
             "error": str(e)
         }
+@app.get("/api/analytics/supplier-resilience")
+def supplier_resilience():
+    start = time.time()
+    try:
+        df = pd.read_sql("""
+            SELECT
+                sk.sku_id,
+                sk.sku_name,
+                sk.primary_supplier_id,
+                sk.secondary_supplier_id,
+                sk.is_single_source,
+                s1.annual_contract_value_inr,
+                s1.supplier_name as primary_name,
+                s2.supplier_name as backup_name
+            FROM skus sk
+            LEFT JOIN suppliers s1
+                ON sk.primary_supplier_id = s1.supplier_id
+            LEFT JOIN suppliers s2
+                ON sk.secondary_supplier_id = s2.supplier_id
+        """, engine)
+
+        # Get capacity utilization per supplier
+        capacity_df = pd.read_sql("""
+            SELECT supplier_id,
+                   AVG(capacity_utilization_pct) as avg_capacity
+            FROM supplier_performance
+            GROUP BY supplier_id
+        """, engine)
+
+        capacity_dict = dict(zip(
+            capacity_df["supplier_id"],
+            capacity_df["avg_capacity"]
+        ))
+
+        value_threshold = df['annual_contract_value_inr'].median()
+
+        results = []
+        for _, row in df.iterrows():
+            has_backup = pd.notna(row['secondary_supplier_id'])
+            backup_capacity = capacity_dict.get(
+                row['secondary_supplier_id'], 0) if has_backup else 0
+            primary_capacity = capacity_dict.get(
+                row['primary_supplier_id'], 0)
+
+            # Resilience score calculation (1-10)
+            score = 10
+            if row['is_single_source']:
+                score -= 5
+            if not has_backup:
+                score -= 3
+            if backup_capacity > 90:
+                score -= 1
+            if row['annual_contract_value_inr'] > value_threshold:
+                score -= 1
+            score = max(score, 1)
+
+            # Capacity available at backup
+            capacity_available = round(100 - backup_capacity, 1) if has_backup else 0
+
+            # Cost increase estimate (more critical = higher switching cost)
+            if not has_backup:
+                cost_increase = "N/A - No backup"
+                switch_timeline = "N/A - No backup available"
+            elif capacity_available > 50:
+                cost_increase = "10%"
+                switch_timeline = "1 week"
+            elif capacity_available > 20:
+                cost_increase = "20%"
+                switch_timeline = "2-3 weeks"
+            else:
+                cost_increase = "30%"
+                switch_timeline = "1 month"
+
+            results.append({
+                  "sku_id": row["sku_id"],
+                "sku_name": row["sku_name"],
+                "primary_supplier_id": None if pd.isna(row["primary_supplier_id"]) else row["primary_supplier_id"],
+                "primary_supplier_name": None if pd.isna(row["primary_name"]) else row["primary_name"],
+                "has_backup": has_backup,
+                "backup_supplier_id": None if pd.isna(row["secondary_supplier_id"]) else row["secondary_supplier_id"],
+                "backup_supplier_name": None if pd.isna(row["backup_name"]) else row["backup_name"],
+                "backup_capacity_available_pct": capacity_available,
+                "estimated_cost_increase": cost_increase,
+                "switch_timeline": switch_timeline,
+                "resilience_score": score,
+                "is_critical": bool(row['is_single_source'] and row['annual_contract_value_inr'] > value_threshold)
+            })
+
+        # Sort by resilience score (lowest = most urgent)
+        results.sort(key=lambda x: x['resilience_score'])
+
+        critical_no_backup = [
+            r for r in results
+            if not r['has_backup'] and r['is_critical']
+        ]
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-resilience", latency, len(results), "200")
+
+        return {
+            "total_skus_analyzed": len(results),
+            "critical_no_backup_count": len(critical_no_backup),
+            "critical_no_backup_alerts": critical_no_backup[:10],
+            "resilience_data": results
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("supplier-resilience", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+@app.get("/api/analytics/resilience-scenarios")
+def resilience_scenarios():
+    start = time.time()
+    try:
+        # Get critical suppliers (single source, high value)
+        df = pd.read_sql("""
+            SELECT
+                sk.sku_id, sk.sku_name,
+                sk.primary_supplier_id,
+                sk.is_single_source,
+                s.annual_contract_value_inr,
+                s.supplier_name
+            FROM skus sk
+            JOIN suppliers s
+                ON sk.primary_supplier_id = s.supplier_id
+            WHERE sk.is_single_source = 1
+        """, engine)
+
+        value_threshold = df['annual_contract_value_inr'].median()
+        critical_skus = df[
+            df['annual_contract_value_inr'] > value_threshold
+        ]
+
+        scenarios = [
+            {
+                "scenario_name": "Critical Supplier Failure",
+                "probability_pct": 5,
+                "affected_skus": len(critical_skus),
+                "impact": f"{len(critical_skus)} SKUs at risk of stockout",
+                "recovery_timeline": "2-4 weeks (find new supplier + onboard)",
+                "severity": "HIGH"
+            },
+            {
+                "scenario_name": "Logistics Provider Failure",
+                "probability_pct": 3,
+                "affected_skus": len(df),
+                "impact": "Delivery delays across all active shipments",
+                "recovery_timeline": "1-2 weeks (switch logistics partner)",
+                "severity": "MEDIUM"
+            },
+            {
+                "scenario_name": "Multiple Supplier Failure",
+                "probability_pct": 1,
+                "affected_skus": len(critical_skus) * 2,
+                "impact": "Severe supply chain disruption across categories",
+                "recovery_timeline": "1-3 months (full sourcing strategy overhaul)",
+                "severity": "CRITICAL"
+            }
+        ]
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("resilience-scenarios", latency, len(scenarios), "200")
+
+        return {"scenarios": scenarios}
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("resilience-scenarios", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+@app.get("/api/analytics/governance-status")
+def governance_status():
+    start = time.time()
+    try:
+        # Get all suppliers with risk and backup data
+        sup_df = pd.read_sql("""
+            SELECT
+                s.supplier_id,
+                s.supplier_name,
+                AVG(sp.otif_percentage) as avg_otif,
+                AVG(sp.quality_reject_rate_pct) as avg_quality_reject
+            FROM suppliers s
+            JOIN supplier_performance sp
+                ON s.supplier_id = sp.supplier_id
+            GROUP BY s.supplier_id, s.supplier_name
+        """, engine)
+
+        # Get single source flag from SKUs
+        sku_df = pd.read_sql("""
+            SELECT
+    sk.primary_supplier_id,
+    MAX(sk.is_single_source) AS has_single_source_sku,
+    SUM(s.annual_contract_value_inr) AS total_value
+FROM skus sk
+JOIN suppliers s
+    ON sk.primary_supplier_id = s.supplier_id
+GROUP BY sk.primary_supplier_id;
+        """, engine)
+
+        single_source_dict = dict(zip(
+            sku_df["primary_supplier_id"],
+            sku_df["has_single_source_sku"]
+        ))
+        value_dict = dict(zip(
+            sku_df["primary_supplier_id"],
+            sku_df["total_value"]
+        ))
+
+        value_threshold = sku_df['total_value'].median()
+
+        def classify_status(row):
+            otif = row['avg_otif']
+            quality = row['avg_quality_reject']
+            is_single = single_source_dict.get(row['supplier_id'], 0) == 1
+            value = value_dict.get(row['supplier_id'], 0)
+
+            is_critical_supplier = is_single and value > value_threshold
+
+            if otif < 70 or quality > 5:
+                if is_critical_supplier:
+                    return "RED"
+                return "YELLOW"
+            elif otif < 85 or quality > 2:
+                return "YELLOW"
+            else:
+                return "GREEN"
+
+        sup_df['status'] = sup_df.apply(classify_status, axis=1)
+
+        red_count = len(sup_df[sup_df['status'] == 'RED'])
+        yellow_count = len(sup_df[sup_df['status'] == 'YELLOW'])
+        green_count = len(sup_df[sup_df['status'] == 'GREEN'])
+        total = len(sup_df)
+        if total == 0:
+           return {"error": "No suppliers found"}
+
+        red_suppliers = sup_df[sup_df['status'] == 'RED'][
+            ['supplier_id', 'supplier_name', 'avg_otif', 'avg_quality_reject']
+        ].to_dict(orient='records')
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("governance-status", latency, total, "200")
+
+        return {
+            "total_suppliers": total,
+            "health_summary": {
+                "red_pct": round(red_count/total*100, 1),
+                "yellow_pct": round(yellow_count/total*100, 1),
+                "green_pct": round(green_count/total*100, 1),
+                "red_count": red_count,
+                "yellow_count": yellow_count,
+                "green_count": green_count
+            },
+            "critical_alerts": red_suppliers,
+            "escalation_required": red_count > 0
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("governance-status", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+escalation_log = {}
+
+@app.post("/api/analytics/escalation/{supplier_id}")
+def trigger_escalation(supplier_id: str, level: str = "RED"):
+    start = time.time()
+    try:
+        from datetime import datetime, timedelta
+
+        escalation_log[supplier_id] = {
+            "level": level,
+            "triggered_at": str(datetime.now()),
+            "pm_notified": True if level == "RED" else False,
+            "action_deadline": str(
+                datetime.now() + timedelta(hours=1)
+            ) if level == "RED" else str(
+                datetime.now() + timedelta(days=7)
+            ),
+            "status": "open"
+        }
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("escalation-trigger", latency, 1, "200")
+
+        return {
+            "supplier_id": supplier_id,
+            "escalation_level": level,
+            "pm_notified": escalation_log[supplier_id]["pm_notified"],
+            "action_deadline": escalation_log[supplier_id]["action_deadline"],
+            "message": f"Escalation triggered for {supplier_id} at {level} level"
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("escalation-trigger", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+
+
+@app.get("/api/analytics/escalations")
+def get_all_escalations():
+    return {
+        "total_escalations": len(escalation_log),
+        "escalations": escalation_log
+    }
+@app.get("/api/analytics/supplier-scorecard-weighted/{supplier_id}")
+def supplier_scorecard_weighted(supplier_id: str):
+    start = time.time()
+    try:
+        # Get performance data
+        perf_df = pd.read_sql("""
+            SELECT
+                AVG(otif_percentage) as avg_otif,
+                AVG(quality_reject_rate_pct) as avg_quality,
+                AVG(fill_rate_pct) as avg_fill
+            FROM supplier_performance
+            WHERE supplier_id = %(sid)s
+        """, engine, params={"sid": supplier_id})
+
+        if perf_df.empty:
+            return {"detail": "Not found"}
+
+        p = perf_df.iloc[0].to_dict()
+        otif = float(p.get("avg_otif") or 0)
+        quality = float(p.get("avg_quality") or 0)
+        fill = float(p.get("avg_fill") or 0)
+
+        # Check backup availability
+        sku_df = pd.read_sql("""
+            SELECT COUNT(*) as backup_count
+            FROM skus
+            WHERE primary_supplier_id = %(sid)s
+            AND secondary_supplier_id IS NOT NULL
+            AND secondary_supplier_id<> 'NONE'
+        """, engine, params={"sid": supplier_id})
+
+        has_backup = int(sku_df.iloc[0]["backup_count"]) > 0
+
+        # Weighted scorecard calculation
+        otif_score = otif
+        risk_score = max(0, 100 - (quality * 10))
+        resilience_score = 100 if has_backup else 0
+        compliance_score = 80
+
+        overall_score = round(
+            (otif_score * 0.40) +
+            (risk_score * 0.30) +
+            (resilience_score * 0.20) +
+            (compliance_score * 0.10), 1
+        )
+
+        if overall_score >= 90:
+            tier = "Tier 1 — Excellent"
+            action = "Increase order volume"
+        elif overall_score >= 70:
+            tier = "Tier 2 — Good"
+            action = "Maintain current relationship"
+        elif overall_score >= 50:
+            tier = "Tier 3 — At Risk"
+            action = "Increase monitoring frequency"
+        else:
+            tier = "Tier 4 — Critical"
+            action = "Activate backup supplier, prepare transition"
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("scorecard-weighted", latency, 1, "200")
+
+        return {
+            "supplier_id": supplier_id,
+            "scores": {
+                "otif_score": round(otif_score, 1),
+                "risk_score": round(risk_score, 1),
+                "resilience_score": resilience_score,
+                "compliance_score": compliance_score
+            },
+            "weights": {
+                "otif_weight": "40%",
+                "risk_weight": "30%",
+                "resilience_weight": "20%",
+                "compliance_weight": "10%"
+            },
+            "overall_score": overall_score,
+            "performance_tier": tier,
+            "recommended_action": action
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("scorecard-weighted", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
+@app.get("/api/analytics/otif-drift/{supplier_id}")
+def otif_drift(supplier_id: str):
+    start = time.time()
+    try:
+        df = pd.read_sql("""
+            SELECT month, otif_percentage
+            FROM supplier_performance
+            WHERE supplier_id = %(sid)s
+            ORDER BY month DESC
+            LIMIT 9
+        """, engine, params={"sid": supplier_id})
+
+        if len(df) < 2:
+            return {"detail": "Insufficient data"}
+
+        df = df.sort_values('month')
+        otif_values = df['otif_percentage'].tolist()
+
+        # 8 week moving average baseline
+        baseline = round(sum(otif_values[:-1]) / len(otif_values[:-1]), 2)
+        current = round(otif_values[-1], 2)
+        change = round(current - baseline, 2)
+        drift_detected = change < -5
+
+        latency = round((time.time()-start)*1000, 2)
+        log_request("otif-drift", latency, len(df), "200")
+
+        return {
+            "supplier_id": supplier_id,
+            "baseline_otif": baseline,
+            "current_otif": current,
+            "change_pct": change,
+            "drift_detected": drift_detected,
+            "alert_level": "RED" if drift_detected and current < 70
+                          else "YELLOW" if drift_detected
+                          else "GREEN",
+            "action_required": "Investigate supplier immediately" if drift_detected
+                              else "No action required",
+            "otif_history": [
+                {"month": str(row["month"]), "otif": round(float(row["otif_percentage"]), 1)}
+                for _, row in df.iterrows()
+            ]
+        }
+
+    except Exception as e:
+        latency = round((time.time()-start)*1000, 2)
+        log_request("otif-drift", latency, 0, f"ERROR:{str(e)}")
+        return {"error": str(e)}
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
+ 
